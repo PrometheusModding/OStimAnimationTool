@@ -1,0 +1,28 @@
+﻿<Window x:Class="OStimConversionTool.Startup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        Title="SexLab to OStim Animation Conversion Tool" Height="540" Width="480">
+
+    <DockPanel Margin="10,10,10,10">
+        <WrapPanel HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0,0,0,10" RenderTransformOrigin="0.478,7.491" />
+        <ListBox Name="lbFiles" Height="200" Width="460" DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+        <Button x:Name="run" Click="ConversionProcess_Click" Content = "Convert" DockPanel.Dock="Bottom" RenderTransformOrigin="0.5,0.5" Height="38" Width="167">
+            <Button.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform />
+                    <SkewTransform />
+                    <RotateTransform />
+                    <TranslateTransform X="0" Y="-5" />
+                </TransformGroup>
+            </Button.RenderTransform>
+        </Button>
+        <Grid Width="460" RenderTransformOrigin="0.499,-0.241" Height="260">
+            <xctk:WatermarkTextBox x:Name="animName" Watermark="Animation Name" RenderTransformOrigin="0.558,-17.968" Margin="0,100,0,114" VerticalAlignment="Top" />
+            <xctk:WatermarkTextBox x:Name="moduleName" Watermark="Module Name" Margin="0,50,0,164" VerticalAlignment="Top" />
+            <xctk:WatermarkTextBox x:Name="animClass" Watermark="Animation Class" Margin="0,147,0,0" VerticalAlignment="Top" />
+            <Button x:Name="rootDir" Click="ChooseRootDir_Click" Content="Animation Pack Folder" Margin="0,0,0,214" VerticalAlignment="Top" />
+            <Button x:Name="chooseFiles" Click="ChooseFiles_Click" Content="Choose files" RenderTransformOrigin="0.5,0.5" Margin="0,200,0,0" VerticalAlignment="Top" />
+        </Grid>
+    </DockPanel>
+</Window>

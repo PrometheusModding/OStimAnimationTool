@@ -1,0 +1,7 @@
+﻿<Application x:Class="SL_OStim_conversion_tool.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="Startup.xaml">
+    <Application.Resources>
+    </Application.Resources>
+</Application>
