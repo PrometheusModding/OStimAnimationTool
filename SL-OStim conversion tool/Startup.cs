@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.IO;
 using System.Windows;
 
@@ -27,6 +28,7 @@ namespace OStimConversionTool
                 sourceDir = sourceDir.Remove(sourceDir.Length - openFileDialog.SafeFileName.Length);
                 foreach (string filename in openFileDialog.FileNames)
                     lbFiles.Items.Add(Path.GetFileName(filename));
+                MessageBox.Show(sourceDir);
             }
         }
 
@@ -35,7 +37,7 @@ namespace OStimConversionTool
             Ookii.Dialogs.Wpf.VistaFolderBrowserDialog folderBrowserDialog = new() { };
             {
                 if (folderBrowserDialog.ShowDialog() == true)
-                {
+            {
                     rootDir.Content = folderBrowserDialog.SelectedPath;
                 }
             }
@@ -52,6 +54,7 @@ namespace OStimConversionTool
             }
             for (int i = 0; i < lbFiles.Items.Count; i++)
             {
+                var ls = (mN: moduleName.GetLineText(0), aC: animClass.GetLineText(0), aN: animName.GetLineText(0), rD: rootDir.Content.ToString());
                 var oldName = lbFiles.Items[i].ToString();
                 var stage = Char.GetNumericValue(oldName[^5]) - 1;
                 var actor = Char.GetNumericValue(oldName[^8]) - 1;
