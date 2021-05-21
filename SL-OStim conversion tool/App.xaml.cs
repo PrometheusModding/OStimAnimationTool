@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace SL_OStim_conversion_tool
+namespace OStimConversionTool
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -3,9 +3,13 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
-    <RootNamespace>OStimCconversionTtool</RootNamespace>
+    <RootNamespace>OStimConversionTool</RootNamespace>
     <UseWPF>true</UseWPF>
     <AssemblyName>SL-OStim Conversion Tool</AssemblyName>
+    <Authors>Prometheus</Authors>
+    <Company />
+    <Version>0.5.1</Version>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
