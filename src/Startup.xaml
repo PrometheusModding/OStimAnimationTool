@@ -24,6 +24,5 @@
             <Button x:Name="rootDir" Click="ChooseRootDir_Click" Content="Animation Pack Folder" Margin="0,0,0,214" VerticalAlignment="Top" />
             <Button x:Name="chooseFiles" Click="ChooseFiles_Click" Content="Choose files" RenderTransformOrigin="0.5,0.5" Margin="0,200,0,0" VerticalAlignment="Top" />
         </Grid>
-        <Button Name="run" Click="ConversionProcess_Click" Content = "Convert" Height="25" Width="50" />
     </DockPanel>
 </Window>
