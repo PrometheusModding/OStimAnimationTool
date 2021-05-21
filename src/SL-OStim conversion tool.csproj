@@ -10,6 +10,8 @@
     <Company />
     <Version>0.5.1</Version>
     <StartupObject></StartupObject>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
