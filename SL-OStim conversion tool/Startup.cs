@@ -48,7 +48,7 @@ namespace OStimConversionTool
             var animDir = Path.Combine(ls.rD, @"meshes\0SA\mod\0Sex\anim\", ls.mN, ls.aC, ls.aN);
             var xmlDir = Path.Combine(ls.rD, @"meshes\0SA\mod\0Sex\scene", ls.mN, ls.aC);
             var fnis_path = Path.Combine(ls.rD, @$"meshes\actors\character\animations\0Sex_{ls.mN}_A");
-            
+
             if (!Directory.Exists(animDir))
                 Directory.CreateDirectory(animDir);
 
@@ -68,7 +68,10 @@ namespace OStimConversionTool
             {
                 var oldName = lbFiles.Items[i].ToString();
                 var stage = char.GetNumericValue(oldName[^5]) - 1;
-                var actor = char.GetNumericValue(oldName[^8]) - 1;
+                var actor = 0;
+                if (char.GetNumericValue(oldName[^8]) == 1)
+                    actor = 1;
+
                 var newName = $"0Sx{ls.mN}_{ls.aC}-{ls.aN}_S{stage}_{actor}.hkx";
 
                 File.Copy(Path.Combine(sourceDir, oldName), Path.Combine(animDir, newName));
@@ -79,7 +82,7 @@ namespace OStimConversionTool
             lbFiles.Items.Clear();
         }
 
-        private void XmlScriber(string xmlPath)
+        private static void XmlScriber(string xmlPath)
         {
         }
     }
