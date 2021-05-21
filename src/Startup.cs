@@ -4,9 +4,9 @@ using System.Windows;
 
 namespace OStimConversionTool
 {
-    public partial class Startup : Window
+    public partial class Startup
     {
-        public string sourceDir = string.Empty;
+        private string _sourceDir = string.Empty;
 
         public Startup()
         {
@@ -18,36 +18,50 @@ namespace OStimConversionTool
             Microsoft.Win32.OpenFileDialog openFileDialog = new()
             {
                 Multiselect = true,
-                Filter = "Text files (*.hkx)|*hkx|All files (*.*)|*.*",
+                Filter = "Havok Animation files (*.hkx)|*hkx|All files (*.*)|*.*",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             };
-            if (openFileDialog.ShowDialog() == true)
-            {
-                sourceDir = openFileDialog.FileName;
-                sourceDir = sourceDir.Remove(sourceDir.Length - openFileDialog.SafeFileName.Length);
-                foreach (string filename in openFileDialog.FileNames)
-                    lbFiles.Items.Add(Path.GetFileName(filename));
-                MessageBox.Show(sourceDir);
-            }
+            
+            if (openFileDialog.ShowDialog() != true) return;
+            
+            _sourceDir = openFileDialog.FileName;
+            _sourceDir = _sourceDir.Remove(_sourceDir.Length - openFileDialog.SafeFileName.Length);
+            
+            foreach (string filename in openFileDialog.FileNames)
+                LbFiles.Items.Add(Path.GetFileName(filename));
+            MessageBox.Show($"Source Dir is {_sourceDir}");
         }
 
         private void ChooseRootDir_Click(object sender, RoutedEventArgs e)
         {
-            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog folderBrowserDialog = new() { };
+            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog folderBrowserDialog = new();
             {
                 if (folderBrowserDialog.ShowDialog() == true)
                 {
-                    rootDir.Content = folderBrowserDialog.SelectedPath;
+                    RootDir.Content = folderBrowserDialog.SelectedPath;
                 }
             }
         }
 
         private void ConversionProcess_Click(object sender, RoutedEventArgs e)
         {
-            var ls = (mN: moduleName.GetLineText(0), aC: animClass.GetLineText(0), aN: animName.GetLineText(0), rD: rootDir.Content.ToString());
-            var animDir = Path.Combine(ls.rD, @"meshes\0SA\mod\0Sex\anim\", ls.mN, ls.aC, ls.aN);
-            var xmlDir = Path.Combine(ls.rD, @"meshes\0SA\mod\0Sex\scene", ls.mN, ls.aC);
-            var fnis_path = Path.Combine(ls.rD, @$"meshes\actors\character\animations\0Sex_{ls.mN}_A");
+            var moduleName = ModuleName.GetLineText(0);
+            var animClass = AnimClass.GetLineText(0);
+            var animName = AnimName.GetLineText(0);
+            var rootDir = RootDir.Content?.ToString();
+
+            if (moduleName == null)
+                throw new NotImplementedException();
+            if (animClass == null)
+                throw new NotImplementedException();
+            if (animName == null)
+                throw new NotImplementedException();
+            if (rootDir == null)
+                throw new NotImplementedException();
+            
+            var animDir = Path.Combine(rootDir, @"meshes\0SA\mod\0Sex\anim\", moduleName, animClass, animName);
+            var xmlDir = Path.Combine(rootDir, @"meshes\0SA\mod\0Sex\scene", moduleName, animClass);
+            var fnisPath = Path.Combine(rootDir, @$"meshes\actors\character\animations\0Sex_{moduleName}_A");
 
             if (!Directory.Exists(animDir))
                 Directory.CreateDirectory(animDir);
@@ -55,31 +69,34 @@ namespace OStimConversionTool
             if (!Directory.Exists(xmlDir))
             {
                 Directory.CreateDirectory(xmlDir);
-                File.WriteAllText(xmlDir + $@"\{ls.aN}", "");
+                File.WriteAllText(Path.Combine(xmlDir, $"{animName}"), "");
             }
 
-            if (!Directory.Exists(fnis_path))
+            if (!Directory.Exists(fnisPath))
             {
-                Directory.CreateDirectory(fnis_path);
-                File.WriteAllText(fnis_path + @$"\FNIS_0Sex_{ls.mN}_A_List.txt", "");
+                Directory.CreateDirectory(fnisPath);
+                File.WriteAllText(Path.Combine(fnisPath, $"FNIS_0Sex_{moduleName}_A_List.txt"), "");
             }
 
-            for (int i = 0; i < lbFiles.Items.Count; i++)
+            foreach (var lbFileItem in LbFiles.Items)
             {
-                var oldName = lbFiles.Items[i].ToString();
+                var oldName = lbFileItem?.ToString();
+                if (oldName == null) continue;
+
                 var stage = char.GetNumericValue(oldName[^5]) - 1;
                 var actor = 0;
-                if (char.GetNumericValue(oldName[^8]) == 1)
+                if (Math.Abs(char.GetNumericValue(oldName[^8]) - 1) < double.Epsilon)
                     actor = 1;
-
-                var newName = $"0Sx{ls.mN}_{ls.aC}-{ls.aN}_S{stage}_{actor}.hkx";
-
-                File.Copy(Path.Combine(sourceDir, oldName), Path.Combine(animDir, newName));
-                File.AppendAllText(fnis_path + @$"\FNIS_0Sex_{ls.mN}_A_List.txt", @$"b -Tn {Path.GetFileName(newName)} ..\..\..\..\{animDir}\{newName}{Environment.NewLine}");
+                
+                var newName = $"0Sx{moduleName}_{animClass}-{animName}_S{stage}_{actor}.hkx";
+                
+                File.Copy(Path.Combine(_sourceDir, oldName), Path.Combine(animDir, newName));
+                var contents = @$"b -Tn {Path.GetFileName(newName)} ..\..\..\..\{animDir}\{newName}{Environment.NewLine}";
+                File.AppendAllText(Path.Combine(fnisPath, $"FNIS_0Sex_{moduleName}_A_List.txt"), contents);
             }
-
-            XmlScriber(xmlDir + $@"\{ls.aN}");
-            lbFiles.Items.Clear();
+            
+            XmlScriber(Path.Combine(xmlDir, $"{animName}"));
+            LbFiles.Items.Clear();
         }
 
         private static void XmlScriber(string xmlPath)
