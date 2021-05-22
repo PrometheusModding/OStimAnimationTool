@@ -119,7 +119,7 @@ namespace OStimConversionTool
                 File.AppendAllText(xmlPath, string.Format(
 @$"<speed a=""0"" min=""0"" max=""{LbFiles.Items.Count / 2}"" name=""thrusts"">
     <sp mtx = ""{speedUnit}"" tar = ""1"" type = """" >
-        <anim id=""{animID}_sourceDir{i}"" t=""L"" l=""2"" i0=""{i}"" i1=""{i}"""));
+        <anim id=""{animID}_sourceDir{i}"" t=""L"" l=""2"" i0=""{i}"" i1=""{i}""/>"));
 
                 if (i > 0)
                     File.AppendAllText(xmlPath, string.Format(
