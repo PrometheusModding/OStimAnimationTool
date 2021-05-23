@@ -1,16 +1,44 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace OStimConversionTool
 {
-    public class Animation : IEquatable<Animation>
+    public class Animation : IEditableObject, INotifyPropertyChanged
     {
-        private readonly string animationSet;
-        private readonly string animationName;
+        private string setName;
+        private string animationName;
 
-        public Animation(string animSet, string animName)
+        public string SetName
         {
-            animationSet = animSet;
+            get { return this.setName; }
+            set
+            {
+                if (value != this.setName)
+                {
+                    this.setName = value;
+                    NotifyPropertyChanged("AnimationSet");
+                }
+            }
+        }
+
+        public string AnimationName
+        {
+            get { return this.animationName; }
+            set
+            {
+                if (value != this.animationName)
+                {
+                    this.setName = value;
+                    NotifyPropertyChanged("AnimationName");
+                }
+            }
+        }
+
+        public Animation(string animName, string setName)
+        {
+            this.setName = setName;
             animationName = animName;
         }
 
@@ -19,28 +47,41 @@ namespace OStimConversionTool
             if (other is null)
                 throw new NullReferenceException();
 
-            if (animationSet.Equals(other.animationSet) && animationName.Equals(other.animationName))
+            if (animationName.Equals(other.animationName))
                 return true;
 
             return false;
         }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private void NotifyPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        public void BeginEdit()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CancelEdit()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void EndEdit()
+        {
+            throw new NotImplementedException();
+        }
     }
 
-    public class AnimationDatabase
+    public class AnimationList : List<Animation> { }
+
+    public class AnimationDatabase : ObservableCollection<Animation>
     {
-        private List<Animation> animationDatabase = new();
-
-        public AnimationDatabase()
-        {
-        }
-
-        public bool Add(string animSet, string animName)
-        {
-            if (animSet is null || animName is null)
-                return false;
-
-            animationDatabase.Add(new Animation(animSet, animName));
-            return true;
-        }
     }
 }

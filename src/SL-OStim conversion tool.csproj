@@ -1,20 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
-    <RootNamespace>OStimConversionTool</RootNamespace>
-    <UseWPF>true</UseWPF>
-    <AssemblyName>SL-OStim Conversion Tool</AssemblyName>
-    <Authors>Prometheus</Authors>
-    <Version>0.5.1</Version>
-    <Nullable>enable</Nullable>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<RootNamespace>OStimConversionTool</RootNamespace>
+		<UseWPF>true</UseWPF>
+		<AssemblyName>SL-OStim Conversion Tool</AssemblyName>
+		<Authors>Prometheus</Authors>
+		<Version>0.5.1</Version>
+		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.1.0" />
-    <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
-  </ItemGroup>
-
+	<ItemGroup>
+		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.1.0" />
+		<PackageReference Include="MaterialDesignThemes" Version="4.1.0" />
+		<PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
+	</ItemGroup>
 </Project>

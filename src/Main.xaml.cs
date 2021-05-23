@@ -1,17 +1,21 @@
 using System;
 using System.IO;
 using System.Windows;
+using System.Xml;
 
 namespace OStimConversionTool
 {
-    public partial class Startup : Window
+    public partial class Main : Window
     {
         private string _sourceDir = string.Empty;
-        public AnimationDatabase animationDatabase = new AnimationDatabase();
+        private string _animationName = string.Empty;
+        private AnimationDatabase animationDatabase = new();
 
-        public Startup()
+        public Main()
         {
             InitializeComponent();
+            Startup startup = new();
+            startup.Show();
         }
 
         private void ChooseFiles_Click(object sender, RoutedEventArgs e)
@@ -29,48 +33,25 @@ namespace OStimConversionTool
             _sourceDir = _sourceDir.Remove(_sourceDir.Length - openFileDialog.SafeFileName.Length);
 
             foreach (string filename in openFileDialog.FileNames)
-                LbFiles.Items.Add(Path.GetFileName(filename));
-        }
-
-        private void ChooseRootDir_Click(object sender, RoutedEventArgs e)
-        {
-            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog folderBrowserDialog = new();
             {
-                if (folderBrowserDialog.ShowDialog() == true)
-                {
-                    RootDir.Content = folderBrowserDialog.SelectedPath;
-                }
+                Animation anim = new(_animationName, Path.GetFileName(filename));
+                if (!animationDatabase.Contains(anim))
+                    animationDatabase.Add(anim);
             }
         }
 
         private void ConversionProcess_Click(object sender, RoutedEventArgs e)
         {
-            var moduleName = ModuleName.GetLineText(0);
-            var animClass = AnimClass.GetLineText(0);
-            var animName = AnimName.GetLineText(0);
-            var rootDir = RootDir.Content?.ToString();
+            var moduleName = Startup.moduleName;
+            var rootDir = Startup.rootDir;
 
             if (moduleName is null)
                 throw new NotImplementedException();
-            if (animClass is null)
-                throw new NotImplementedException();
-            if (animName is null)
-                throw new NotImplementedException();
+
             if (rootDir is null)
                 throw new NotImplementedException();
 
-            var animDir = Path.Combine(rootDir, @"meshes\0SA\mod\0Sex\anim\", moduleName, animClass, animName);
-            var xmlDir = Path.Combine(rootDir, @"meshes\0SA\mod\0Sex\scene", moduleName, animClass);
             var fnisPath = Path.Combine(rootDir, @$"meshes\actors\character\animations\0Sex_{moduleName}_A");
-
-            if (!Directory.Exists(animDir))
-                Directory.CreateDirectory(animDir);
-
-            if (!Directory.Exists(xmlDir))
-            {
-                Directory.CreateDirectory(xmlDir);
-                File.WriteAllText(Path.Combine(xmlDir, $"{animName}.xml"), "");
-            }
 
             if (!Directory.Exists(fnisPath))
             {
@@ -78,10 +59,30 @@ namespace OStimConversionTool
                 File.WriteAllText(Path.Combine(fnisPath, $"FNIS_0Sex_{moduleName}_A_List.txt"), "");
             }
 
-            foreach (var lbFileItem in LbFiles.Items)
+            foreach (Animation a in animationDatabase)
             {
-                var oldName = lbFileItem?.ToString();
-                if (oldName is null) continue;
+                var animClass = AnimClass.GetLineText(0);
+                var animName = AnimName.GetLineText(0);
+
+                if (animClass is null)
+                    throw new NotImplementedException();
+
+                if (animName is null)
+                    throw new NotImplementedException();
+
+                var animDir = Path.Combine(rootDir, @"meshes\0SA\mod\0Sex\anim\", moduleName, animClass, animName);
+                var xmlDir = Path.Combine(rootDir, @"meshes\0SA\mod\0Sex\scene", moduleName, animClass);
+
+                if (!Directory.Exists(animDir))
+                    Directory.CreateDirectory(animDir);
+
+                if (!Directory.Exists(xmlDir))
+                {
+                    Directory.CreateDirectory(xmlDir);
+                    File.WriteAllText(Path.Combine(xmlDir, $"{animName}.xml"), "");
+                }
+
+                var oldName = a.AnimationName;
 
                 var stage = char.GetNumericValue(oldName[^5]) - 1;
                 var actor = 0;
@@ -89,20 +90,22 @@ namespace OStimConversionTool
                     actor = 1;
 
                 var newName = $"0Sx{moduleName}_{animClass}-{animName}_S{stage}_{actor}.hkx";
-                animationDatabase.Add(animName, newName);
+                a.AnimationName = newName;
 
                 File.Copy(Path.Combine(_sourceDir, oldName), Path.Combine(animDir, newName));
                 var contents = @$"b -Tn {Path.GetFileName(newName)} ..\..\..\..\{animDir}\{newName}{Environment.NewLine}";
                 File.AppendAllText(Path.Combine(fnisPath, $"FNIS_0Sex_{moduleName}_A_List.txt"), contents);
-            }
 
-            XmlScriber(Path.Combine(xmlDir, $"{animName}.xml"));
-            LbFiles.Items.Clear();
+                // XmlScriber(Path.Combine(xmlDir, $"{animName}.xml"));
+            }
         }
 
-        private void XmlScriber(string xmlPath)
+        /*private void XmlScriber(string xmlPath)
         {
-            var moduleName = ModuleName.GetLineText(0);
+            XmlWriterSettings settings = new();
+            XmlWriter writer = XmlWriter.Create(xmlPath, settings);
+
+            var moduleName = Startup.moduleName;
             var animClass = AnimClass.GetLineText(0);
             var animName = AnimName.GetLineText(0);
             var animID = $"0Sx{moduleName}_{animClass}-{animName}";
@@ -132,6 +135,6 @@ $@"
 
                 File.AppendAllText(xmlPath, $"</sp>{Environment.NewLine}");
             }
-        }
+        }*/
     }
 }
