@@ -127,8 +127,6 @@ namespace OStimConversionTool
         }
     }
 
-    public class AnimationList : List<Animation> { }
-
     public class AnimationDatabase : ObservableCollection<Animation>
     {
     }

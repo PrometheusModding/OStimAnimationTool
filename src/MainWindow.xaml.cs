@@ -1,6 +1,8 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Data;
 using System.Xml;
 
 namespace OStimConversionTool
@@ -16,9 +18,31 @@ namespace OStimConversionTool
         {
             InitializeComponent();
             _animationDatabase = (AnimationDatabase)this.Resources["animationDatabase"];
+            ICollectionView cvTasks = CollectionViewSource.GetDefaultView(animationDatabaseGrid.ItemsSource);
+            cvTasks.GroupDescriptions.Clear();
+            cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
             StartupWindow startup = new();
             startup.Show();
         }
+
+        /*private void UngroupButton_Click(object sender, RoutedEventArgs e)
+        {
+            ICollectionView cvTasks = CollectionViewSource.GetDefaultView(animationDatabaseGrid.ItemsSource);
+            if (cvTasks != null)
+            {
+                cvTasks.GroupDescriptions.Clear();
+            }
+        }
+
+        private void GroupButton_Click(object sender, RoutedEventArgs e)
+        {
+            ICollectionView cvTasks = CollectionViewSource.GetDefaultView(animationDatabaseGrid.ItemsSource);
+            if (cvTasks != null && cvTasks.CanGroup == true)
+            {
+                cvTasks.GroupDescriptions.Clear();
+                cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
+            }
+        }*/
 
         private void ChooseFiles_Click(object sender, RoutedEventArgs e)
         {
