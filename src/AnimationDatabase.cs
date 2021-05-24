@@ -105,6 +105,16 @@ namespace OStimConversionTool
             _tempAnim = null;
             _activeEdit = false;
         }
+
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as Animation);
+        }
+
+        public override int GetHashCode()
+        {
+            return _animationName.GetHashCode();
+        }
     }
 
     public class AnimationList : List<Animation> { }
