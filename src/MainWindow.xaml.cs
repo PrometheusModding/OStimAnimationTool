@@ -5,17 +5,18 @@ using System.Xml;
 
 namespace OStimConversionTool
 {
-    public partial class Main : Window
+    public partial class MainWindow : Window
     {
         private string _sourceDir = string.Empty;
         private string _animationName = string.Empty;
-        private AnimationDatabase animationDatabase = new();
+        private AnimationDatabase _animationDatabase;
 
-        public Main()
+        public MainWindow()
         {
             InitializeComponent();
             Startup startup = new();
             startup.Show();
+            _animationDatabase = (AnimationDatabase)this.Resources["animationDatabase"];
         }
 
         private void ChooseFiles_Click(object sender, RoutedEventArgs e)
@@ -35,8 +36,8 @@ namespace OStimConversionTool
             foreach (string filename in openFileDialog.FileNames)
             {
                 Animation anim = new(_animationName, Path.GetFileName(filename));
-                if (!animationDatabase.Contains(anim))
-                    animationDatabase.Add(anim);
+                if (!_animationDatabase.Contains(anim))
+                    _animationDatabase.Add(anim);
             }
         }
 
@@ -59,7 +60,7 @@ namespace OStimConversionTool
                 File.WriteAllText(Path.Combine(fnisPath, $"FNIS_0Sex_{moduleName}_A_List.txt"), "");
             }
 
-            foreach (Animation a in animationDatabase)
+            foreach (Animation a in _animationDatabase)
             {
                 var animClass = AnimClass.GetLineText(0);
                 var animName = AnimName.GetLineText(0);

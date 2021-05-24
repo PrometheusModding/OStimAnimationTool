@@ -1,4 +1,4 @@
-<Window x:Class="OStimConversionTool.Main"
+<Window x:Class="OStimConversionTool.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -14,16 +14,17 @@
         Width="{x:Static SystemParameters.PrimaryScreenWidth}">
 
     <Window.Resources>
-        <local:AnimationDatabase x:Key="animData" />
-        <CollectionViewSource x:Key="cvsAnimData" Source="{StaticResource animData}">
+        <local:AnimationDatabase x:Key="animationDatabase" />
+        <CollectionViewSource x:Key="cvsAnimationDatabase" Source="{StaticResource animationDatabase}">
         </CollectionViewSource>
     </Window.Resources>
 
     <DockPanel Margin="10,10,10,10">
         <WrapPanel HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0,0,0,10" RenderTransformOrigin="0.478,7.491" />
         <DataGrid x:Name="animationDatabaseGrid"
-          ItemsSource="{Binding Source={StaticResource cvsAnimData}}"
-          CanUserAddRows="False" Visibility="Visible" Width="1440" />
+          ItemsSource="{Binding Source={StaticResource cvsAnimationDatabase}}"
+          CanUserAddRows="False" Visibility="Visible" Width="1440">
+        </DataGrid>
         <Button x:Name="Run" Click="ConversionProcess_Click" Content = "Convert" DockPanel.Dock="Bottom" RenderTransformOrigin="0.5,0.5" Height="38" Width="167">
             <Button.RenderTransform>
                 <TransformGroup>

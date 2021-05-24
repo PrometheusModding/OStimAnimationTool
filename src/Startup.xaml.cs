@@ -32,8 +32,6 @@ namespace OStimConversionTool
             if (RootDir.Content.Equals("Choose Working Directory") || ModuleName.GetLineText(0) == "")
                 MessageBox.Show("no");
             this.Close();
-            Main main = new();
-            main.Show();
         }
     }
 }
