@@ -113,8 +113,11 @@ namespace OStimConversionTool
             var isTransition = anim.IsTransition;
             var animID = $"0Sx{moduleName}_{animClass}-{setName}";
 
-            XmlWriterSettings settings = new();
-            settings.Indent = true;
+            var settings = new XmlWriterSettings
+            {
+                Indent = true,
+                Encoding = Encoding.UTF8
+            };
 
             XmlWriter writer = XmlWriter.Create(xmlPath, settings);
 
