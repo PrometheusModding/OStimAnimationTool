@@ -7,71 +7,63 @@ namespace OStimConversionTool
 {
     public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
     {
-        private string setName;
-        private string animationName;
-        private string animationClass;
-        private bool isTransition = false;
+        private string _setName;
+        private string _animationName;
+        private string _animationClass;
+        private bool _isTransition;
 
-        private Animation? tempAnim = null;
-        private bool activeEdit = false;
+        private Animation? _tempAnim;
+        private bool _activeEdit;
 
         public string SetName
         {
-            get { return this.setName; }
+            get => _setName;
             set
             {
-                if (value != this.setName)
-                {
-                    this.setName = value;
-                    NotifyPropertyChanged(nameof(SetName));
-                }
+                if (value == _setName) return;
+                _setName = value;
+                NotifyPropertyChanged(nameof(SetName));
             }
         }
 
         public string AnimationName
         {
-            get { return this.animationName; }
+            get => _animationName;
             set
             {
-                if (value != this.animationName)
-                {
-                    this.animationName = value;
-                    NotifyPropertyChanged(nameof(AnimationName));
-                }
+                if (value == _animationName) return;
+                _animationName = value;
+                NotifyPropertyChanged(nameof(AnimationName));
             }
         }
 
         public string AnimationClass
         {
-            get { return this.animationClass; }
+            get => _animationClass;
             set
             {
-                if (value != this.animationClass)
-                {
-                    this.animationClass = value;
-                    NotifyPropertyChanged(nameof(AnimationClass));
-                }
+                if (value == _animationClass) return;
+                _animationClass = value;
+                NotifyPropertyChanged(nameof(AnimationClass));
             }
         }
 
         public bool IsTransition
         {
-            get { return this.isTransition; }
+            get => _isTransition;
             set
             {
-                if (value != this.isTransition)
-                {
-                    this.isTransition = value;
-                    NotifyPropertyChanged(nameof(IsTransition));
-                }
+                if (value == _isTransition) return;
+                _isTransition = value;
+                NotifyPropertyChanged(nameof(IsTransition));
             }
         }
 
         public Animation(string setName, string animName, string animClass)
         {
-            this.setName = setName;
-            animationName = animName;
-            animationClass = animClass;
+            _setName = setName;
+            _animationName = animName;
+            _animationClass = animClass;
         }
 
         public bool Equals(Animation? other)
@@ -79,51 +71,39 @@ namespace OStimConversionTool
             if (other is null)
                 throw new NullReferenceException();
 
-            if (animationName.Equals(other.animationName))
-                return true;
-
-            return false;
+            return _animationName.Equals(other._animationName);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private void NotifyPropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public void BeginEdit()
         {
-            if (activeEdit is false)
-            {
-                tempAnim = this.MemberwiseClone() as Animation;
-                activeEdit = true;
-            }
+            if (_activeEdit is not false) return;
+            _tempAnim = MemberwiseClone() as Animation;
+            _activeEdit = true;
         }
 
         public void CancelEdit()
         {
-            if (activeEdit is true)
-            {
-                if (tempAnim is null)
-                    throw new NullReferenceException();
+            if (_activeEdit is not true) return;
+            if (_tempAnim is null)
+                throw new NullReferenceException();
 
-                this.setName = tempAnim.setName;
-                this.animationName = tempAnim.animationName;
-                activeEdit = false;
-            }
+            _setName = _tempAnim._setName;
+            _animationName = _tempAnim._animationName;
+            _activeEdit = false;
         }
 
         public void EndEdit()
         {
-            if (activeEdit is true)
-            {
-                tempAnim = null;
-                activeEdit = false;
-            }
+            if (_activeEdit is not true) return;
+            _tempAnim = null;
+            _activeEdit = false;
         }
     }
 

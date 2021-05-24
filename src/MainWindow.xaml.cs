@@ -1,21 +1,22 @@
 using System;
 using System.IO;
+using System.Text;
 using System.Windows;
 using System.Xml;
 
 namespace OStimConversionTool
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private string _sourceDir = string.Empty;
         private string _animationName = string.Empty;
         private string _animationClass = string.Empty;
-        private AnimationDatabase _animationDatabase;
+        private readonly AnimationDatabase _animationDatabase;
 
         public MainWindow()
         {
             InitializeComponent();
-            _animationDatabase = (AnimationDatabase)this.Resources["animationDatabase"];
+            _animationDatabase = (AnimationDatabase)Resources["animationDatabase"];
             StartupWindow startup = new();
             startup.Show();
         }
@@ -105,7 +106,7 @@ namespace OStimConversionTool
             }
         }
 
-        private void XmlScriber(string xmlPath, Animation anim)
+        private static void XmlScriber(string xmlPath, Animation anim)
         {
             var moduleName = StartupWindow.moduleName;
             var setName = anim.SetName;
@@ -130,7 +131,7 @@ namespace OStimConversionTool
             writer.WriteAttributeString("animator", "Ceo");
             writer.WriteEndElement();
             writer.WriteStartElement("anim");
-            writer.WriteAttributeString("id", $"{animID}");
+            writer.WriteAttributeString("id", animID);
             writer.WriteAttributeString("t", "L");
             writer.WriteAttributeString("l", "2");
 
