@@ -18,7 +18,7 @@ namespace OStimConversionTool
         public MainWindow()
         {
             InitializeComponent();
-            _animationDatabase = (AnimationDatabase)this.Resources["animationDatabase"];
+            _animationDatabase = (AnimationDatabase)Resources["animationDatabase"];
             ICollectionView cvTasks = CollectionViewSource.GetDefaultView(animationDatabaseGrid.ItemsSource);
             cvTasks.GroupDescriptions.Clear();
             cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));

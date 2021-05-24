@@ -44,14 +44,7 @@
                                         <Expander IsExpanded="True" BorderThickness="1,1,1,5">
                                             <Expander.Header>
                                                 <DockPanel>
-                                                    <TextBox FontWeight="Bold" HorizontalAlignment="Left">
-                                                        <TextBox.Text>
-                                                            <MultiBinding StringFormat="{}{1}, {0}">
-                                                                <Binding Path=Name, Mode=OneWay />
-                                                                    <Binding Path="EmpLastName" />
-                                                            </MultiBinding>
-                                                        </TextBox.Text>
-                                                    </TextBox>
+                                                    <TextBlock FontWeight="Bold" Text="{Binding Path=GroupItem}" HorizontalAlignment="Left" />
                                                 </DockPanel>
                                             </Expander.Header>
                                             <Expander.Content>
