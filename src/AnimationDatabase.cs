@@ -10,6 +10,9 @@ namespace OStimConversionTool
         private string setName;
         private string animationName;
 
+        private Animation? tempAnim = null;
+        private bool activeEdit = false;
+
         public string SetName
         {
             get { return this.setName; }
@@ -65,17 +68,33 @@ namespace OStimConversionTool
 
         public void BeginEdit()
         {
-            throw new NotImplementedException();
+            if (activeEdit is false)
+            {
+                tempAnim = this.MemberwiseClone() as Animation;
+                activeEdit = true;
+            }
         }
 
         public void CancelEdit()
         {
-            throw new NotImplementedException();
+            if (activeEdit is true)
+            {
+                if (tempAnim is null)
+                    throw new NullReferenceException();
+
+                this.setName = tempAnim.setName;
+                this.animationName = tempAnim.animationName;
+                activeEdit = false;
+            }
         }
 
         public void EndEdit()
         {
-            throw new NotImplementedException();
+            if (activeEdit is true)
+            {
+                tempAnim = null;
+                activeEdit = false;
+            }
         }
     }
 

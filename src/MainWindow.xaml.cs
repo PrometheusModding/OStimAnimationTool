@@ -14,13 +14,16 @@ namespace OStimConversionTool
         public MainWindow()
         {
             InitializeComponent();
-            Startup startup = new();
-            startup.Show();
+
             _animationDatabase = (AnimationDatabase)this.Resources["animationDatabase"];
+            StartupWindow startup = new();
+            startup.Show();
         }
 
         private void ChooseFiles_Click(object sender, RoutedEventArgs e)
         {
+            _animationName = AnimName.GetLineText(0);
+
             Microsoft.Win32.OpenFileDialog openFileDialog = new()
             {
                 Multiselect = true,
@@ -35,7 +38,7 @@ namespace OStimConversionTool
 
             foreach (string filename in openFileDialog.FileNames)
             {
-                Animation anim = new(_animationName, Path.GetFileName(filename));
+                Animation anim = new(Path.GetFileName(filename), _animationName);
                 if (!_animationDatabase.Contains(anim))
                     _animationDatabase.Add(anim);
             }
@@ -43,8 +46,8 @@ namespace OStimConversionTool
 
         private void ConversionProcess_Click(object sender, RoutedEventArgs e)
         {
-            var moduleName = Startup.moduleName;
-            var rootDir = Startup.rootDir;
+            var moduleName = StartupWindow.moduleName;
+            var rootDir = StartupWindow.rootDir;
 
             if (moduleName is null)
                 throw new NotImplementedException();
