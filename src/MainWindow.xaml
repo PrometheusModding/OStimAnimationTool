@@ -60,9 +60,8 @@
                 <GroupStyle>
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate>
-                            <DockPanel Background="LightBlue">
-                                <TextBlock Text="{Binding Path=Name, Converter={StaticResource completeConverter}}" Foreground="Blue" Margin="30,0,0,0" Width="100" />
-                                <TextBlock Text="{Binding Path=ItemCount}" Foreground="Blue" />
+                            <DockPanel>
+                                <TextBlock Text="{Binding Path=Name, Converter={StaticResource completeConverter}}" Margin="30,0,0,0" Width="100" />
                             </DockPanel>
                         </DataTemplate>
                     </GroupStyle.HeaderTemplate>
