@@ -44,7 +44,7 @@
                                         <Expander IsExpanded="True" BorderThickness="1,1,1,5">
                                             <Expander.Header>
                                                 <DockPanel>
-                                                    <TextBlock FontWeight="Bold" Text="{Binding Path=GroupItem}" HorizontalAlignment="Left" />
+                                                    <TextBlock FontWeight="Bold" Text="{Binding Path=Name}" HorizontalAlignment="Left" />
                                                 </DockPanel>
                                             </Expander.Header>
                                             <Expander.Content>
