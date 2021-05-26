@@ -19,7 +19,7 @@
     <Window.Resources>
         <local:SetNameConverter x:Key="setNameConverter" />
         <local:AnimationDatabase x:Key="animationDatabase" />
-        <CollectionViewSource x:Key="cvsAnimationDatabase" Source="{StaticResource animationDatabase}">
+        <CollectionViewSource x:Key="cvsAnimationDatabase" Source="{StaticResource animationDatabase}" IsLiveGroupingRequested="True">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="SetName" />
             </CollectionViewSource.GroupDescriptions>
@@ -92,10 +92,9 @@
                 <RowDefinition Height="25*" />
                 <RowDefinition Height="174*" />
             </Grid.RowDefinitions>
-            <xctk:WatermarkTextBox x:Name="AnimName" Watermark="Animation Name" VerticalAlignment="Center" />
-            <xctk:WatermarkTextBox x:Name="AnimClass" Watermark="Animation Class" VerticalAlignment="Center" Grid.Row="1" />
-            <Button x:Name="ChooseFiles" Click="ChooseFiles_Click" Content="Choose files" VerticalAlignment="Center" Grid.Row="2" />
-            <Button x:Name="Run" Click="ConversionProcess_Click" Content = "Convert" VerticalAlignment="Center" Grid.Row="3" />
+            <xctk:WatermarkTextBox x:Name="AnimClass" Watermark="Animation Class" VerticalAlignment="Center" Grid.Row="0" />
+            <Button x:Name="ChooseFiles" Click="ChooseFiles_Click" Content="Choose files" VerticalAlignment="Center" Grid.Row="1" />
+            <Button x:Name="Run" Click="ConversionProcess_Click" Content = "Convert" VerticalAlignment="Center" Grid.Row="2" />
             <ListBox Grid.Row="4">
                 <CheckBox Content="CheckBox" />
                 <CheckBox Content="CheckBox" />

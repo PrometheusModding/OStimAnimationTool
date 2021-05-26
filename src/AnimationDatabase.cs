@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace OStimConversionTool
 {
-    public class Animation : IEditableObject, INotifyPropertyChanged
+    public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
     {
         private string _setName;
         private string _animationName;

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
 using System.Xml;
@@ -49,9 +50,25 @@ namespace OStimConversionTool
 
         private void ChooseFiles_Click(object sender, RoutedEventArgs e)
         {
-            _animationName = AnimName.GetLineText(0);
             _animationClass = AnimClass.GetLineText(0);
             _animator = StartupWindow.animator;
+
+            int animationNameCount = 0;
+            Regex newAnimationRegex = new(@"NewAnimation");
+
+            foreach (Animation anim in _animationDatabase)
+                if (newAnimationRegex.IsMatch(anim.SetName))
+                {
+                    if (string.IsNullOrEmpty(anim.SetName[12..]))
+                    {
+                        if (animationNameCount == 0)
+                            animationNameCount++;
+                    }
+                    else if (int.Parse(anim.SetName[12..]) >= animationNameCount)
+                        animationNameCount = int.Parse(anim.SetName[12..]) + 1;
+                }
+
+            _animationName = animationNameCount > 0 ? $"NewAnimation{animationNameCount}" : "NewAnimation";
 
             Microsoft.Win32.OpenFileDialog openFileDialog = new()
             {
@@ -68,6 +85,7 @@ namespace OStimConversionTool
             foreach (string filename in openFileDialog.FileNames)
             {
                 Animation anim = new(_animationName, Path.GetFileName(filename), _animationClass, _animator);
+
                 if (!_animationDatabase.Contains(anim))
                     _animationDatabase.Add(anim);
             }
@@ -95,7 +113,7 @@ namespace OStimConversionTool
             foreach (Animation anim in _animationDatabase)
             {
                 var animClass = AnimClass.GetLineText(0);
-                var animName = AnimName.GetLineText(0);
+                var animName = anim.AnimationName;
 
                 if (animClass is null)
                     throw new NotImplementedException();
