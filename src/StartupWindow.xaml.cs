@@ -8,6 +8,7 @@ namespace OStimConversionTool
     {
         public static string? rootDir;
         public static string? moduleName;
+        public static string animator = string.Empty;
 
         public StartupWindow()
         {
@@ -28,6 +29,16 @@ namespace OStimConversionTool
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
             moduleName = ModuleName.GetLineText(0);
+            animator = Animator.GetLineText(0);
+
+            if (moduleName.Equals(string.Empty))
+            {
+                const string message = "Please choose a valid token for your Module";
+                const string caption = "No Valid Module Token";
+
+                System.Windows.Forms.MessageBox.Show(message, caption);
+            }
+
             if (RootDir.Content.Equals("Choose Working Directory"))
             {
                 string message = $"You haven't chosen a working Directory. Do You want to use the default {rootDir} Path as Working Directory instead?";
@@ -37,18 +48,12 @@ namespace OStimConversionTool
                 var result = System.Windows.Forms.MessageBox.Show(message, caption, buttons);
                 if (result == System.Windows.Forms.DialogResult.Yes)
                 {
-                    Close();
+                    RootDir.Content = rootDir;
+                    if (!moduleName.Equals(string.Empty))
+                        Close();
                 }
             }
-
-            if (ModuleName.GetLineText(0) == "")
-            {
-                const string message = "Please choose a valid token for your Module";
-                const string caption = "No Valid Module Token";
-
-                System.Windows.Forms.MessageBox.Show(message, caption);
-            }
-            else
+            else if (!moduleName.Equals(string.Empty) && !RootDir.Content.Equals("Choose Working Directory"))
             {
                 Close();
             }

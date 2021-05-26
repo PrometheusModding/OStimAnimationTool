@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -13,6 +14,7 @@ namespace OStimConversionTool
         private string _sourceDir = string.Empty;
         private string _animationName = string.Empty;
         private string _animationClass = string.Empty;
+        private string _animator = string.Empty;
         private readonly AnimationDatabase _animationDatabase;
 
         public MainWindow()
@@ -23,7 +25,7 @@ namespace OStimConversionTool
             cvTasks.GroupDescriptions.Clear();
             cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
             StartupWindow startup = new();
-            startup.Show();
+            startup.ShowDialog();
         }
 
         /*private void UngroupButton_Click(object sender, RoutedEventArgs e)
@@ -49,6 +51,7 @@ namespace OStimConversionTool
         {
             _animationName = AnimName.GetLineText(0);
             _animationClass = AnimClass.GetLineText(0);
+            _animator = StartupWindow.animator;
 
             Microsoft.Win32.OpenFileDialog openFileDialog = new()
             {
@@ -64,7 +67,7 @@ namespace OStimConversionTool
 
             foreach (string filename in openFileDialog.FileNames)
             {
-                Animation anim = new(_animationName, Path.GetFileName(filename), _animationClass);
+                Animation anim = new(_animationName, Path.GetFileName(filename), _animationClass, _animator);
                 if (!_animationDatabase.Contains(anim))
                     _animationDatabase.Add(anim);
             }
@@ -126,16 +129,19 @@ namespace OStimConversionTool
                 var contents = @$"b -Tn {Path.GetFileName(newName)} ..\..\..\..\{animDir}\{newName}{Environment.NewLine}";
                 File.AppendAllText(Path.Combine(fnisPath, $"FNIS_0Sex_{moduleName}_A_List.txt"), contents);
 
-                XmlScriber(Path.Combine(xmlDir, $"{animName}.xml"), anim);
+                XmlScriber(Path.Combine(xmlDir, $"{animName}.xml"), anim, _animationDatabase);
             }
         }
 
-        private static void XmlScriber(string xmlPath, Animation anim)
+        private static void XmlScriber(string xmlPath, Animation anim, AnimationDatabase animationDatabase)
         {
             var moduleName = StartupWindow.moduleName;
             var setName = anim.SetName;
             var animClass = anim.AnimationClass;
+            var animInfo = anim.AnimationInfo;
+            var animator = anim.Animator;
             var isTransition = anim.IsTransition;
+            var setSize = anim.GetSetSize(animationDatabase);
             var animID = $"0Sx{moduleName}_{animClass}-{setName}";
 
             var settings = new XmlWriterSettings
@@ -151,8 +157,8 @@ namespace OStimConversionTool
             writer.WriteAttributeString("actors", "2");
             writer.WriteAttributeString("style", "Oscene");
             writer.WriteStartElement("info", "");
-            writer.WriteAttributeString("name", $"|");
-            writer.WriteAttributeString("animator", "Ceo");
+            writer.WriteAttributeString("name", $"{animInfo}");
+            writer.WriteAttributeString("animator", $"{animator}");
             writer.WriteEndElement();
             writer.WriteStartElement("anim");
             writer.WriteAttributeString("id", animID);
@@ -176,10 +182,86 @@ namespace OStimConversionTool
             {
                 writer.WriteEndElement();
                 writer.WriteStartElement("speed");
+                writer.WriteAttributeString("a", "0");
+                writer.WriteAttributeString("min", "0");
+                writer.WriteAttributeString("max", $"{setSize}");
+                writer.WriteAttributeString("name", "thrusts");
+
+                for (int i = 0; i <= setSize; i++)
+                {
+                    if (i is 0)
+                    {
+                        writer.WriteStartElement("sp");
+                        writer.WriteAttributeString("mtx", "^idle");
+                        writer.WriteAttributeString("tar", "1");
+                        writer.WriteAttributeString("type", "");
+                        writer.WriteStartElement("anim");
+                        writer.WriteAttributeString("id", $"{animID}_S{i}");
+                        writer.WriteAttributeString("t", "L");
+                        writer.WriteAttributeString("l", "2");
+                        writer.WriteAttributeString("i0", $"{i}");
+                        writer.WriteAttributeString("i1", $"{i}");
+                        writer.WriteEndElement();
+                        writer.WriteEndElement();
+                    }
+                    else
+                    {
+                        writer.WriteStartElement("sp");
+                        writer.WriteAttributeString("mtx", "^thrustsPerSec");
+                        writer.WriteAttributeString("qnt", $"{i / 2}");
+                        writer.WriteStartElement("anim");
+                        writer.WriteAttributeString("id", $"{animID}_S{i}");
+                        writer.WriteAttributeString("t", "L");
+                        writer.WriteAttributeString("l", "2");
+                        writer.WriteAttributeString("i0", $"{i}");
+                        writer.WriteAttributeString("i1", $"{i}");
+                        writer.WriteStartElement("ae");
+                        writer.WriteAttributeString("evty", "sexThrustR");
+                        writer.WriteAttributeString("whodid", "0");
+                        writer.WriteAttributeString("tar", "1");
+                        writer.WriteAttributeString("ori", "pussy");
+                        writer.WriteAttributeString("thrust", "cock");
+                        writer.WriteAttributeString("sound", "assimpact");
+                        writer.WriteAttributeString("soundpow", "0");
+                        writer.WriteAttributeString("imp", "ass");
+                        writer.WriteAttributeString("impside", "R");
+                        writer.WriteAttributeString("impforce", "2");
+                        writer.WriteAttributeString("impdmg", ".01");
+                        writer.WriteAttributeString("thrustforce", "2");
+                        writer.WriteAttributeString("oridmg", ".01");
+                        writer.WriteAttributeString("oriopen", ".01");
+                        writer.WriteEndElement();
+                        writer.WriteEndElement();
+                        writer.WriteEndElement();
+                    }
+                }
             }
             writer.WriteEndElement();
             writer.WriteEndElement();
             writer.Close();
+        }
+    }
+
+    public class SetNameConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            return values[0];
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            if (value is string)
+            {
+                object[] lol = new object[targetTypes.Length];
+                for (int o = 1; o < lol.Length; o++)
+                {
+                    lol[o] = value;
+                }
+
+                return lol;
+            }
+            else throw new NotImplementedException();
         }
     }
 }

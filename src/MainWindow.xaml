@@ -17,6 +17,7 @@
         Width="{x:Static SystemParameters.PrimaryScreenWidth}" SizeToContent="Manual" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
+        <local:SetNameConverter x:Key="setNameConverter" />
         <local:AnimationDatabase x:Key="animationDatabase" />
         <CollectionViewSource x:Key="cvsAnimationDatabase" Source="{StaticResource animationDatabase}">
             <CollectionViewSource.GroupDescriptions>
@@ -44,7 +45,21 @@
                                         <Expander IsExpanded="True" BorderThickness="1,1,1,5">
                                             <Expander.Header>
                                                 <DockPanel>
-                                                    <TextBlock FontWeight="Bold" Text="{Binding Path=Name}" HorizontalAlignment="Left" />
+                                                    <TextBox FontWeight="Bold"  HorizontalAlignment="Left">
+                                                        <MultiBinding Converter="{StaticResource setNameConverter}" UpdateSourceTrigger="PropertyChanged">
+                                                            <Binding Path="Name" Mode="OneWay" />
+                                                            <Binding Path="Items[0].SetName" />
+                                                            <Binding Path="Items[1].SetName" />
+                                                            <Binding Path="Items[2].SetName" />
+                                                            <Binding Path="Items[3].SetName" />
+                                                            <Binding Path="Items[4].SetName" />
+                                                            <Binding Path="Items[5].SetName" />
+                                                            <Binding Path="Items[6].SetName" />
+                                                            <Binding Path="Items[7].SetName" />
+                                                            <Binding Path="Items[8].SetName" />
+                                                            <Binding Path="Items[9].SetName" />
+                                                        </MultiBinding>
+                                                    </TextBox>
                                                 </DockPanel>
                                             </Expander.Header>
                                             <Expander.Content>
@@ -61,7 +76,7 @@
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate>
                             <DockPanel>
-                                <TextBlock Text="{Binding Path=Name, Converter={StaticResource completeConverter}}" Margin="30,0,0,0" Width="100" />
+                                <TextBlock Text="{Binding Path=Name, Mode=OneWay}" Margin="30,0,0,0" Width="100" />
                             </DockPanel>
                         </DataTemplate>
                     </GroupStyle.HeaderTemplate>

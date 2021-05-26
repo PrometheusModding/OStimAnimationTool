@@ -1,15 +1,16 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace OStimConversionTool
 {
-    public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
+    public class Animation : IEditableObject, INotifyPropertyChanged
     {
         private string _setName;
         private string _animationName;
         private string _animationClass;
+        private string _animator;
+        private string _animationInfo = string.Empty;
         private bool _isTransition;
 
         private Animation? _tempAnim;
@@ -48,6 +49,28 @@ namespace OStimConversionTool
             }
         }
 
+        public string Animator
+        {
+            get => _animator;
+            set
+            {
+                if (value == _animator) return;
+                _animator = value;
+                NotifyPropertyChanged(nameof(Animator));
+            }
+        }
+
+        public string AnimationInfo
+        {
+            get => _animationInfo;
+            set
+            {
+                if (value == _animationInfo) return;
+                _animationInfo = value;
+                NotifyPropertyChanged(nameof(AnimationInfo));
+            }
+        }
+
         public bool IsTransition
         {
             get => _isTransition;
@@ -59,11 +82,12 @@ namespace OStimConversionTool
             }
         }
 
-        public Animation(string setName, string animName, string animClass)
+        public Animation(string setName, string animName, string animClass, string animator)
         {
             _setName = setName;
             _animationName = animName;
             _animationClass = animClass;
+            _animator = animator;
         }
 
         public bool Equals(Animation? other)
@@ -106,14 +130,14 @@ namespace OStimConversionTool
             _activeEdit = false;
         }
 
-        public override bool Equals(object? obj)
+        public int GetSetSize(AnimationDatabase animationDatabase)
         {
-            return Equals(obj as Animation);
-        }
+            int count = 0;
+            foreach (Animation anim in animationDatabase)
+                if (anim.SetName.Equals(_setName))
+                    count++;
 
-        public override int GetHashCode()
-        {
-            return _animationName.GetHashCode();
+            return count / 2;
         }
     }
 

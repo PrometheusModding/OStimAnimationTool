@@ -14,10 +14,18 @@
         Title="Main" Height="450" Width="800" WindowStyle="None">
 
     <Grid>
-        <Label Content="Working Directory:" HorizontalAlignment="Left" Margin="10,20,0,0" VerticalAlignment="Top" />
-        <Button x:Name="RootDir" Click="ChooseRootDir_Click" Content="Choose Working Directory" Margin="0,60,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Width="592" />
-        <xctk:WatermarkTextBox x:Name="PackName" Watermark="The Name of your Module/Animation Pack" Margin="0,120,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.498,-1.204" HorizontalAlignment="Center" Width="780" />
-        <xctk:WatermarkTextBox x:Name="ModuleName" Watermark="Give your Module a token name (2 to 3 Letters e.g. EX)" VerticalAlignment="Top" Margin="0,180,0,0" HorizontalAlignment="Center" Width="780" />
-        <Button x:Name="Confirm" Click="Confirm_Click" Content="Confirm" Margin="10,398,10,0" VerticalAlignment="Top" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="7*" />
+            <RowDefinition Height="7*" />
+            <RowDefinition Height="7*" />
+            <RowDefinition Height="7*" />
+            <RowDefinition Height="7*" />
+            <RowDefinition Height="10*" />
+        </Grid.RowDefinitions>
+        <Button x:Name="RootDir" Click="ChooseRootDir_Click" Content="Choose Working Directory"  VerticalAlignment="Center" Margin="20,0,20,0" />
+        <xctk:WatermarkTextBox x:Name="PackName" Watermark="The Name of your Module/Animation Pack"  VerticalAlignment="Center" Grid.Row="1" Margin="20,0,20,0" />
+        <xctk:WatermarkTextBox x:Name="ModuleName" Watermark="Give your Module a token name (2 to 3 Letters e.g. EX)" VerticalAlignment="Center" Grid.Row="2" Margin="20,0,20,0" />
+        <xctk:WatermarkTextBox x:Name="Animator" Watermark="The Author of the Animation Pack" VerticalAlignment="Center" Grid.Row="3" Margin="20,0,20,0" />
+        <Button x:Name="Confirm" Click="Confirm_Click" Content="Confirm"  VerticalAlignment="Center" Grid.Row="5" Margin="40,0,40,0" />
     </Grid>
 </Window>
