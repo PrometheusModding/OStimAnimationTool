@@ -16,15 +16,15 @@ namespace OStimConversionTool
         private string _animationName = string.Empty;
         private string _animationClass = string.Empty;
         private string _animator = string.Empty;
-        private readonly AnimationDatabase _animationDatabase;
+        private readonly AnimationDatabase _animationDatabase = new();
 
         public MainWindow()
         {
             InitializeComponent();
-            _animationDatabase = (AnimationDatabase)Resources["animationDatabase"];
+            DataContext = _animationDatabase;
             ICollectionView cvTasks = CollectionViewSource.GetDefaultView(animationDatabaseGrid.ItemsSource);
-            cvTasks.GroupDescriptions.Clear();
-            cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
+            ///cvTasks.GroupDescriptions.Clear();
+            ///cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
             StartupWindow startup = new();
             startup.ShowDialog();
         }
@@ -50,7 +50,6 @@ namespace OStimConversionTool
 
         private void ChooseFiles_Click(object sender, RoutedEventArgs e)
         {
-            _animationClass = AnimClass.GetLineText(0);
             _animator = StartupWindow.animator;
 
             int animationNameCount = 0;
@@ -84,7 +83,7 @@ namespace OStimConversionTool
 
             foreach (string filename in openFileDialog.FileNames)
             {
-                Animation anim = new(_animationName, Path.GetFileName(filename), _animationClass, _animator);
+                Animation anim = new(_animationName, Path.GetFileName(filename), _animator);
 
                 if (!_animationDatabase.Contains(anim))
                     _animationDatabase.Add(anim);
@@ -112,8 +111,9 @@ namespace OStimConversionTool
 
             foreach (Animation anim in _animationDatabase)
             {
-                var animClass = AnimClass.GetLineText(0);
+                var animClass = anim.AnimationClass;
                 var animName = anim.AnimationName;
+                var setName = anim.SetName;
 
                 if (animClass is null)
                     throw new NotImplementedException();
@@ -121,7 +121,7 @@ namespace OStimConversionTool
                 if (animName is null)
                     throw new NotImplementedException();
 
-                var animDir = Path.Combine(rootDir, @"meshes\0SA\mod\0Sex\anim\", moduleName, animClass, animName);
+                var animDir = Path.Combine(rootDir, @"meshes\0SA\mod\0Sex\anim\", moduleName, animClass, setName);
                 var xmlDir = Path.Combine(rootDir, @"meshes\0SA\mod\0Sex\scene", moduleName, animClass);
 
                 if (!Directory.Exists(animDir))
@@ -130,7 +130,7 @@ namespace OStimConversionTool
                 if (!Directory.Exists(xmlDir))
                 {
                     Directory.CreateDirectory(xmlDir);
-                    File.WriteAllText(Path.Combine(xmlDir, $"{animName}.xml"), "");
+                    File.WriteAllText(Path.Combine(xmlDir, $"{setName}.xml"), "");
                 }
 
                 var oldName = anim.AnimationName;
@@ -140,14 +140,14 @@ namespace OStimConversionTool
                 if (Math.Abs(char.GetNumericValue(oldName[^8]) - 1) < double.Epsilon)
                     actor = 1;
 
-                var newName = $"0Sx{moduleName}_{animClass}-{animName}_S{stage}_{actor}.hkx";
+                var newName = $"0Sx{moduleName}_{animClass}-{setName}_S{stage}_{actor}.hkx";
                 anim.AnimationName = newName;
 
                 File.Copy(Path.Combine(_sourceDir, oldName), Path.Combine(animDir, newName));
-                var contents = @$"b -Tn {Path.GetFileName(newName)} ..\..\..\..\{animDir}\{newName}{Environment.NewLine}";
+                var contents = @$"b -Tn {newName.Remove(newName.Length - 4)} ..\..\..\..\{Path.Combine(@"0SA\mod\0Sex\anim\", moduleName, animClass, newName)}{Environment.NewLine}";
                 File.AppendAllText(Path.Combine(fnisPath, $"FNIS_0Sex_{moduleName}_A_List.txt"), contents);
 
-                XmlScriber(Path.Combine(xmlDir, $"{animName}.xml"), anim, _animationDatabase);
+                XmlScriber(Path.Combine(xmlDir, $"{setName}.xml"), anim, _animationDatabase);
             }
         }
 

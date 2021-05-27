@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
 namespace OStimConversionTool
 {
@@ -8,10 +10,11 @@ namespace OStimConversionTool
     {
         private string _setName;
         private string _animationName;
-        private string _animationClass;
+        private string _animationClass = string.Empty;
         private string _animator;
         private string _animationInfo = string.Empty;
         private bool _isTransition;
+        public List<string> AnimationClassList = new() { "Vaginal", "Anal", "Foreplay" };
 
         private Animation? _tempAnim;
         private bool _activeEdit;
@@ -41,6 +44,7 @@ namespace OStimConversionTool
         public string AnimationClass
         {
             get => _animationClass;
+
             set
             {
                 if (value == _animationClass) return;
@@ -82,11 +86,10 @@ namespace OStimConversionTool
             }
         }
 
-        public Animation(string setName, string animName, string animClass, string animator)
+        public Animation(string setName, string animName, string animator)
         {
             _setName = setName;
             _animationName = animName;
-            _animationClass = animClass;
             _animator = animator;
         }
 

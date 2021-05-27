@@ -4,8 +4,8 @@
     xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:local="clr-namespace:OStimConversionTool"
+    av:DataContext="{av:DesignInstance Type=local:AnimationDatabase}"
     mc:Ignorable="av" x:Name="Main_Window" x:Class="OStimConversionTool.MainWindow"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
@@ -18,12 +18,6 @@
 
     <Window.Resources>
         <local:SetNameConverter x:Key="setNameConverter" />
-        <local:AnimationDatabase x:Key="animationDatabase" />
-        <CollectionViewSource x:Key="cvsAnimationDatabase" Source="{StaticResource animationDatabase}" IsLiveGroupingRequested="True">
-            <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="SetName" />
-            </CollectionViewSource.GroupDescriptions>
-        </CollectionViewSource>
     </Window.Resources>
 
     <Grid Margin="10,10,10,10">
@@ -31,9 +25,38 @@
             <ColumnDefinition Width="35*" />
             <ColumnDefinition Width="17*" />
         </Grid.ColumnDefinitions>
-        <DataGrid x:Name="animationDatabaseGrid"
-          ItemsSource="{Binding Source={StaticResource cvsAnimationDatabase}}"
+        <DataGrid x:Name="animationDatabaseGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" IsSynchronizedWithCurrentItem="True" SelectionMode="Single"
           CanUserAddRows="False"  Margin="10,10,10,10">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Animation Set">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding SetName}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Animation Name">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding AnimationName}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Animation Class">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding  AnimationClass}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Author">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding Animator}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
             <DataGrid.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.ContainerStyle>
@@ -84,7 +107,7 @@
             </DataGrid.GroupStyle>
         </DataGrid>
 
-        <Grid HorizontalAlignment="Stretch" Margin="10,10,10,10" VerticalAlignment="Stretch" Grid.Column="1">
+        <Grid  HorizontalAlignment="Stretch" Margin="10,10,10,10" VerticalAlignment="Stretch" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="25*" />
                 <RowDefinition Height="25*" />
@@ -92,15 +115,11 @@
                 <RowDefinition Height="25*" />
                 <RowDefinition Height="174*" />
             </Grid.RowDefinitions>
-            <xctk:WatermarkTextBox x:Name="AnimClass" Watermark="Animation Class" VerticalAlignment="Center" Grid.Row="0" />
             <Button x:Name="ChooseFiles" Click="ChooseFiles_Click" Content="Choose files" VerticalAlignment="Center" Grid.Row="1" />
             <Button x:Name="Run" Click="ConversionProcess_Click" Content = "Convert" VerticalAlignment="Center" Grid.Row="2" />
-            <ListBox Grid.Row="4">
-                <CheckBox Content="CheckBox" />
-                <CheckBox Content="CheckBox" />
-                <CheckBox Content="CheckBox" />
-                <Button Content="Button" />
-            </ListBox>
+            <Grid DataContext="local:Animation" x:Name="AnimationPropertiesListBox" Grid.Row="4">
+                <ComboBox ItemsSource="{Binding AnimationClassList}" SelectedItem="{Binding AnimationClass}" />
+            </Grid>
         </Grid>
     </Grid>
 </Window>
