@@ -6,6 +6,7 @@ namespace OStimConversionTool
 {
     public partial class StartupWindow
     {
+        //TODO: make this non-static
         public static string? rootDir;
         public static string? moduleName;
         public static string animator = string.Empty;
@@ -46,12 +47,10 @@ namespace OStimConversionTool
                 const MessageBoxButtons buttons = MessageBoxButtons.YesNo;
 
                 var result = System.Windows.Forms.MessageBox.Show(message, caption, buttons);
-                if (result == System.Windows.Forms.DialogResult.Yes)
-                {
-                    RootDir.Content = rootDir;
-                    if (!moduleName.Equals(string.Empty))
-                        Close();
-                }
+                if (result != System.Windows.Forms.DialogResult.Yes) return;
+                RootDir.Content = rootDir;
+                if (!moduleName.Equals(string.Empty))
+                    Close();
             }
             else if (!moduleName.Equals(string.Empty) && !RootDir.Content.Equals("Choose Working Directory"))
             {
