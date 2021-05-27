@@ -14,7 +14,9 @@
         FontFamily="{materialDesign:MaterialDesignFont}"
         Title="SexLab to OStim Animation Conversion Tool"  WindowStyle="SingleBorderWindow"
         Height="{x:Static SystemParameters.PrimaryScreenHeight}"
-        Width="{x:Static SystemParameters.PrimaryScreenWidth}" SizeToContent="Manual" WindowStartupLocation="CenterScreen">
+        Width="{x:Static SystemParameters.PrimaryScreenWidth}"
+        SizeToContent="Manual"
+        WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <local:SetNameConverter x:Key="SetNameConverter" />
@@ -118,7 +120,7 @@
             <Button x:Name="ChooseFiles" Click="ChooseFiles_Click" Content="Choose files" VerticalAlignment="Center" Grid.Row="1" />
             <Button x:Name="Run" Click="ConversionProcess_Click" Content = "Convert" VerticalAlignment="Center" Grid.Row="2" />
             <Grid x:Name="AnimationPropertiesListBox" Grid.Row="4">
-                <ComboBox ItemsSource="{Binding AnimationClassList}" SelectedItem="{Binding AnimationClass}" />
+                <ComboBox ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:AnimationClassList}}}" SelectedItem="{Binding AnimationClass}" />
             </Grid>
         </Grid>
     </Grid>

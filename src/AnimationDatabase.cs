@@ -1,11 +1,23 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
 namespace OStimConversionTool
 {
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum AnimationClassList
+    {
+        [Description("Vaginal")]
+        Sx,
+
+        [Description("Anal")]
+        An,
+
+        [Description("Foreplay")]
+        foreplay
+    }
+
     public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
     {
         private string _setName;
@@ -14,7 +26,6 @@ namespace OStimConversionTool
         private string _animator;
         private string _animationInfo = string.Empty;
         private bool _isTransition;
-        public List<string> AnimationClassList { get; set; } = new() { "Vaginal", "Anal", "Foreplay" };
 
         private Animation? _tempAnim;
         private bool _activeEdit;
