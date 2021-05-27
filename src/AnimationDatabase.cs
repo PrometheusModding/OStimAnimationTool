@@ -14,7 +14,7 @@ namespace OStimConversionTool
         private string _animator;
         private string _animationInfo = string.Empty;
         private bool _isTransition;
-        public List<string> AnimationClassList = new() { "Vaginal", "Anal", "Foreplay" };
+        public List<string> AnimationClassList { get; set; } = new() { "Vaginal", "Anal", "Foreplay" };
 
         private Animation? _tempAnim;
         private bool _activeEdit;
@@ -135,10 +135,7 @@ namespace OStimConversionTool
 
         public int GetSetSize(AnimationDatabase animationDatabase)
         {
-            int count = 0;
-            foreach (Animation anim in animationDatabase)
-                if (anim.SetName.Equals(_setName))
-                    count++;
+            var count = animationDatabase.Count(anim => anim.SetName.Equals(_setName));
 
             return count / 2;
         }

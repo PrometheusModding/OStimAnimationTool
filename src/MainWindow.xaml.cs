@@ -22,9 +22,9 @@ namespace OStimConversionTool
         {
             InitializeComponent();
             DataContext = _animationDatabase;
-            ICollectionView cvTasks = CollectionViewSource.GetDefaultView(animationDatabaseGrid.ItemsSource);
-            ///cvTasks.GroupDescriptions.Clear();
-            ///cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
+            ICollectionView cvTasks = CollectionViewSource.GetDefaultView(AnimationDatabaseGrid.ItemsSource);
+            //cvTasks.GroupDescriptions.Clear();
+            //cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
             StartupWindow startup = new();
             startup.ShowDialog();
         }
@@ -52,7 +52,7 @@ namespace OStimConversionTool
         {
             _animator = StartupWindow.animator;
 
-            int animationNameCount = 0;
+            var animationNameCount = 0;
             Regex newAnimationRegex = new(@"NewAnimation");
 
             foreach (Animation anim in _animationDatabase)
@@ -64,7 +64,9 @@ namespace OStimConversionTool
                             animationNameCount++;
                     }
                     else if (int.Parse(anim.SetName[12..]) >= animationNameCount)
+                    {
                         animationNameCount = int.Parse(anim.SetName[12..]) + 1;
+                    }
                 }
 
             _animationName = animationNameCount > 0 ? $"NewAnimation{animationNameCount}" : "NewAnimation";
@@ -205,7 +207,7 @@ namespace OStimConversionTool
                 writer.WriteAttributeString("max", $"{setSize}");
                 writer.WriteAttributeString("name", "thrusts");
 
-                for (int i = 0; i <= setSize; i++)
+                for (var i = 0; i <= setSize; i++)
                 {
                     if (i is 0)
                     {
@@ -269,17 +271,15 @@ namespace OStimConversionTool
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            if (value is string)
+            if (value is not string) throw new NotImplementedException();
+            object[] lol = new object[targetTypes.Length];
+            for (var o = 1; o < lol.Length; o++)
             {
-                object[] lol = new object[targetTypes.Length];
-                for (int o = 1; o < lol.Length; o++)
-                {
-                    lol[o] = value;
-                }
-
-                return lol;
+                lol[o] = value;
             }
-            else throw new NotImplementedException();
+
+            return lol;
+
         }
     }
 }
