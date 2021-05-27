@@ -22,7 +22,7 @@ namespace OStimConversionTool
         {
             InitializeComponent();
             DataContext = _animationDatabase;
-            ICollectionView cvTasks = CollectionViewSource.GetDefaultView(animationDatabaseGrid.ItemsSource);
+            ICollectionView cvTasks = CollectionViewSource.GetDefaultView(AnimationDatabaseGrid.ItemsSource);
             //cvTasks.GroupDescriptions.Clear();
             //cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
             StartupWindow startup = new();
