@@ -18,6 +18,34 @@ namespace OStimConversionTool
         foreplay
     }
 
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum SubAnimationClassList
+    {
+        [Description("Blowjob")]
+        BJ,
+
+        [Description("Handjob")]
+        HJ,
+
+        [Description("Cuddling")]
+        cuddling,
+
+        [Description("Fingering")]
+        fingering,
+
+        [Description("Footjob")]
+        FJ,
+
+        [Description("Cunnilingus")]
+        VJ,
+
+        [Description("Boobjob")]
+        BoJ,
+
+        [Description("Breastfeeding")]
+        BoF
+    }
+
     public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
     {
         private string _setName;

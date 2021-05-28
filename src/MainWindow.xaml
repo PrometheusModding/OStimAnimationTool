@@ -111,16 +111,34 @@
 
         <Grid  HorizontalAlignment="Stretch" Margin="10,10,10,10" VerticalAlignment="Stretch" Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="25*" />
-                <RowDefinition Height="25*" />
-                <RowDefinition Height="25*" />
-                <RowDefinition Height="25*" />
-                <RowDefinition Height="174*" />
+                <RowDefinition Height="100*" />
+                <RowDefinition Height="100*" />
+                <RowDefinition Height="100*" />
+                <RowDefinition Height="100*" />
+                <RowDefinition Height="100*" />
+                <RowDefinition Height="596*" />
             </Grid.RowDefinitions>
-            <Button x:Name="ChooseFiles" Click="ChooseFiles_Click" Content="Choose files" VerticalAlignment="Center" Grid.Row="1" />
-            <Button x:Name="Run" Click="ConversionProcess_Click" Content = "Convert" VerticalAlignment="Center" Grid.Row="2" />
-            <Grid x:Name="AnimationPropertiesListBox" Grid.Row="4">
-                <ComboBox ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:AnimationClassList}}}" SelectedItem="{Binding AnimationClass}" />
+            <Button x:Name="ChooseFiles" Click="ChooseFiles_Click" Content="Choose files" VerticalAlignment="Center" Height="32" />
+            <Button x:Name="Run" Click="ConversionProcess_Click" Content = "Convert" VerticalAlignment="Center" Grid.Row="1" Height="32" />
+            <Grid x:Name="AnimationPropertiesListBox" Grid.Row="5" Margin="0,51,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="100*" />
+                    <RowDefinition Height="100*" />
+                    <RowDefinition Height="346*" />
+                </Grid.RowDefinitions>
+                <ComboBox Grid.Row="0" Name="AnimationClassCombobox" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:AnimationClassList}}}" SelectedItem="{Binding AnimationClass}" Height="23" />
+                <ComboBox Grid.Row="1" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:SubAnimationClassList}}}" SelectedItem="{Binding AnimationClass}" Height="24" Margin="0,68,0,0" VerticalAlignment="Top">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                            <Setter Property="Visibility" Value="Hidden" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedItem, ElementName=AnimationClassCombobox}" Value="foreplay">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
             </Grid>
         </Grid>
     </Grid>
