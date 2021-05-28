@@ -20,6 +20,11 @@
 
     <Window.Resources>
         <local:SetNameConverter x:Key="SetNameConverter" />
+        <CollectionViewSource x:Key="animationDatabaseCollectionViewSource" Source="{Binding}" IsLiveGroupingRequested="False">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="SetName" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
     </Window.Resources>
 
     <Grid Margin="10,10,10,10">
@@ -27,7 +32,7 @@
             <ColumnDefinition Width="35*" />
             <ColumnDefinition Width="17*" />
         </Grid.ColumnDefinitions>
-        <DataGrid x:Name="AnimationDatabaseGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" IsSynchronizedWithCurrentItem="True" SelectionMode="Single"
+        <DataGrid x:Name="AnimationDatabaseGrid" ItemsSource="{Binding Source={StaticResource animationDatabaseCollectionViewSource}}" AutoGenerateColumns="False" IsSynchronizedWithCurrentItem="True" SelectionMode="Single"
           CanUserAddRows="False"  Margin="10,10,10,10">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Animation Set">
@@ -59,15 +64,14 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
-            <!--<DataGrid.GroupStyle>
+            <DataGrid.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.ContainerStyle>
                         <Style TargetType="{x:Type GroupItem}">
-                            <Setter Property="Margin" Value="0,0,0,5" />
                             <Setter Property="Template">
                                 <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type GroupItem}">
-                                        <Expander IsExpanded="True" BorderThickness="1,1,1,5">
+                                    <ControlTemplate>
+                                        <Expander IsExpanded="True">
                                             <Expander.Header>
                                                 <DockPanel>
                                                     <TextBox FontWeight="Bold"  HorizontalAlignment="Left">
@@ -78,18 +82,11 @@
                                                             <Binding Path="Items[2].SetName" />
                                                             <Binding Path="Items[3].SetName" />
                                                             <Binding Path="Items[4].SetName" />
-                                                            <Binding Path="Items[5].SetName" />
-                                                            <Binding Path="Items[6].SetName" />
-                                                            <Binding Path="Items[7].SetName" />
-                                                            <Binding Path="Items[8].SetName" />
-                                                            <Binding Path="Items[9].SetName" />
                                                         </MultiBinding>
                                                     </TextBox>
                                                 </DockPanel>
                                             </Expander.Header>
-                                            <Expander.Content>
-                                                <ItemsPresenter />
-                                            </Expander.Content>
+                                            <ItemsPresenter />
                                         </Expander>
                                     </ControlTemplate>
                                 </Setter.Value>
@@ -97,16 +94,7 @@
                         </Style>
                     </GroupStyle.ContainerStyle>
                 </GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.HeaderTemplate>
-                        <DataTemplate>
-                            <DockPanel>
-                                <TextBlock Text="{Binding Path=Name, Mode=OneWay}" Margin="30,0,0,0" Width="100" />
-                            </DockPanel>
-                        </DataTemplate>
-                    </GroupStyle.HeaderTemplate>
-                </GroupStyle>
-            </DataGrid.GroupStyle>-->
+            </DataGrid.GroupStyle>
         </DataGrid>
 
         <Grid  HorizontalAlignment="Stretch" Margin="10,10,10,10" VerticalAlignment="Stretch" Grid.Column="1">
@@ -126,14 +114,31 @@
                     <RowDefinition Height="100*" />
                     <RowDefinition Height="346*" />
                 </Grid.RowDefinitions>
-                <ComboBox Grid.Row="0" Name="AnimationClassCombobox" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:AnimationClassList}}}" SelectedItem="{Binding AnimationClass}" Height="23" />
-                <ComboBox Grid.Row="1" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:SubAnimationClassList}}}" SelectedItem="{Binding AnimationClass}" Height="24" Margin="0,68,0,0" VerticalAlignment="Top">
+                <ComboBox Grid.Row="0" Name="AnimationClassCombobox" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:AnimationClassList}}}" SelectedItem="{Binding AnimationClass}" />
+                <ComboBox Grid.Row="1" Name="AnimationSubClassCombobox" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:SubAnimationClassList}}}" SelectedItem="{Binding AnimationClass}"  VerticalAlignment="Top">
                     <ComboBox.Style>
                         <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                             <Setter Property="Visibility" Value="Hidden" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding SelectedItem, ElementName=AnimationClassCombobox}" Value="foreplay">
                                     <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
+                <ComboBox Grid.Row="2" SelectedItem="{Binding AnimationClass}" VerticalAlignment="Top">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                            <Setter Property="Visibility" Value="Hidden" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedItem, ElementName=AnimationSubClassCombobox}" Value="BJ">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Setter Property="ItemsSource" Value="{Binding Source={local:EnumBindingSource {x:Type local:BlowjobClassList}}}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedItem, ElementName=AnimationSubClassCombobox}" Value="HJ">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Setter Property="ItemsSource" Value="{Binding Source={local:EnumBindingSource {x:Type local:HandjobClassList}}}" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

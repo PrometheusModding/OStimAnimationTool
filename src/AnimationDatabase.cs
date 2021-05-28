@@ -46,6 +46,44 @@ namespace OStimConversionTool
         BoF
     }
 
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum BlowjobClassList
+    {
+        [Description("(none)")]
+        BJ,
+
+        [Description("Head Held Blowjob")]
+        HhBJ,
+
+        [Description("Penisjob (Blowjob with Jerking)")]
+        PJ,
+
+        [Description("Head Held Penisjob")]
+        HhPJ,
+
+        [Description("Self")]
+        SJ
+    }
+
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum HandjobClassList
+    {
+        [Description("(none)")]
+        HJ,
+
+        [Description("Masturbate")]
+        Po,
+
+        [Description("Head Held Masturbate")]
+        HhPo,
+
+        [Description("Apart Handjob")]
+        ApHJ,
+
+        [Description("Dual Handjob")]
+        DHJ
+    }
+
     public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
     {
         private string _setName;

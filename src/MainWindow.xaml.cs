@@ -24,9 +24,6 @@ namespace OStimConversionTool
         {
             InitializeComponent();
             DataContext = _animationDatabase;
-            ICollectionView cvTasks = CollectionViewSource.GetDefaultView(AnimationDatabaseGrid.ItemsSource);
-            //cvTasks.GroupDescriptions.Clear();
-            //cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
             StartupWindow startup = new();
             startup.ShowDialog();
         }
@@ -91,6 +88,13 @@ namespace OStimConversionTool
 
                 if (!_animationDatabase.Contains(anim))
                     _animationDatabase.Add(anim);
+            }
+
+            ICollectionView cvTasks = CollectionViewSource.GetDefaultView(AnimationDatabaseGrid.ItemsSource);
+            if (cvTasks != null && cvTasks.CanGroup == true)
+            {
+                cvTasks.GroupDescriptions.Clear();
+                cvTasks.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
             }
         }
 
