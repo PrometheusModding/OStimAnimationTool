@@ -19,11 +19,17 @@ namespace OStimConversionTool
         private string _animationClass = string.Empty;
         private string _animator = string.Empty;
         private readonly AnimationDatabase _animationDatabase = new();
+        internal CollectionViewSource AnimationDatabaseViewSource { get; set; } = new CollectionViewSource();
+        public ICollectionView AnimationDatabaseView { get { return AnimationDatabaseViewSource.View; } }
 
         public MainWindow()
         {
+            AnimationDatabaseViewSource.Source = _animationDatabase;
+            AnimationDatabaseView.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
+
             InitializeComponent();
-            DataContext = _animationDatabase;
+            DataContext = this;
+
             StartupWindow startup = new();
             startup.ShowDialog();
         }
