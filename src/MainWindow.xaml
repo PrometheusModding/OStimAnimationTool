@@ -20,11 +20,6 @@
 
     <Window.Resources>
         <local:SetNameConverter x:Key="SetNameConverter" />
-        <CollectionViewSource x:Key="animationDatabaseCollectionViewSource" Source="{Binding}" IsLiveGroupingRequested="False">
-            <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="SetName" />
-            </CollectionViewSource.GroupDescriptions>
-        </CollectionViewSource>
     </Window.Resources>
 
     <Grid Margin="10,10,10,10">
@@ -32,7 +27,7 @@
             <ColumnDefinition Width="35*" />
             <ColumnDefinition Width="17*" />
         </Grid.ColumnDefinitions>
-        <DataGrid x:Name="AnimationDatabaseGrid" ItemsSource="{Binding Source={StaticResource animationDatabaseCollectionViewSource}}" AutoGenerateColumns="False" IsSynchronizedWithCurrentItem="True" SelectionMode="Single"
+        <DataGrid x:Name="AnimationDatabaseGrid" ItemsSource="{Binding AnimationDatabaseView}" AutoGenerateColumns="False" IsSynchronizedWithCurrentItem="True" SelectionMode="Single"
           CanUserAddRows="False"  Margin="10,10,10,10">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Animation Set">
