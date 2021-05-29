@@ -27,7 +27,7 @@
             <ColumnDefinition Width="35*" />
             <ColumnDefinition Width="17*" />
         </Grid.ColumnDefinitions>
-        <DataGrid x:Name="AnimationDatabaseGrid" ItemsSource="{Binding AnimationDatabaseView}" AutoGenerateColumns="False" IsSynchronizedWithCurrentItem="True" SelectionMode="Single"
+        <DataGrid x:Name="AnimationDatabaseGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" IsSynchronizedWithCurrentItem="True" SelectionMode="Single"
           CanUserAddRows="False"  Margin="10,10,10,10">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Animation Set">

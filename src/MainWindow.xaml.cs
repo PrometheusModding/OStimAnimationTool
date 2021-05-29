@@ -28,7 +28,7 @@ namespace OStimConversionTool
             AnimationDatabaseView.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
 
             InitializeComponent();
-            DataContext = this;
+            DataContext = AnimationDatabaseView;
 
             StartupWindow startup = new();
             startup.ShowDialog();
