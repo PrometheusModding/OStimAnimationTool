@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
@@ -57,25 +56,6 @@ namespace OStimConversionTool
         {
             _animator = StartupWindow.animator;
 
-            var animationNameCount = 0;
-            Regex newAnimationRegex = new(@"NewAnimation");
-
-            foreach (Animation anim in _animationDatabase)
-                if (newAnimationRegex.IsMatch(anim.SetName))
-                {
-                    if (string.IsNullOrEmpty(anim.SetName[12..]))
-                    {
-                        if (animationNameCount == 0)
-                            animationNameCount++;
-                    }
-                    else if (int.Parse(anim.SetName[12..]) >= animationNameCount)
-                    {
-                        animationNameCount = int.Parse(anim.SetName[12..]) + 1;
-                    }
-                }
-
-            _animationName = animationNameCount > 0 ? $"NewAnimation{animationNameCount}" : "NewAnimation";
-
             Microsoft.Win32.OpenFileDialog openFileDialog = new()
             {
                 Multiselect = true,
@@ -90,7 +70,9 @@ namespace OStimConversionTool
 
             foreach (string filename in openFileDialog.FileNames)
             {
-                Animation anim = new(_animationName, Path.GetFileName(filename), _animator);
+                _animationName = !string.IsNullOrEmpty(AnimationSetnameTextbox.Text) ? AnimationSetnameTextbox.Text : Path.GetFileName(filename).Remove(openFileDialog.SafeFileName.Length - 10);
+                _animationClass = !string.IsNullOrEmpty(AnimationClassTextbox.Text) ? AnimationClassTextbox.Text : string.Empty;
+                Animation anim = new(_animationName, Path.GetFileName(filename), _animationClass, _animator);
 
                 if (!_animationDatabase.Contains(anim))
                     _animationDatabase.Add(anim);

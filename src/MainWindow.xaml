@@ -4,6 +4,7 @@
     xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:xtcs="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:local="clr-namespace:OStimConversionTool"
     av:DataContext="{av:DesignInstance Type=local:AnimationDatabase}"
     mc:Ignorable="av" x:Class="OStimConversionTool.MainWindow"
@@ -27,7 +28,7 @@
             <ColumnDefinition Width="35*" />
             <ColumnDefinition Width="17*" />
         </Grid.ColumnDefinitions>
-        <DataGrid x:Name="AnimationDatabaseGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" IsSynchronizedWithCurrentItem="True" SelectionMode="Single"
+        <DataGrid x:Name="AnimationDatabaseGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" IsSynchronizedWithCurrentItem="True" SelectionMode="Extended"
           CanUserAddRows="False"  Margin="10,10,10,10">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Animation Set">
@@ -47,7 +48,7 @@
                 <DataGridTemplateColumn Header="Animation Class">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding  AnimationClass}" />
+                            <TextBlock Name="AnimationClassTextblock" Text="{Binding  AnimationClass}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -69,14 +70,19 @@
                                         <Expander IsExpanded="True">
                                             <Expander.Header>
                                                 <DockPanel>
-                                                    <TextBox FontWeight="Bold"  HorizontalAlignment="Left">
+                                                    <TextBox x:Name="SetNameHeader" FontWeight="Bold"  HorizontalAlignment="Left">
                                                         <MultiBinding Converter="{StaticResource SetNameConverter}" UpdateSourceTrigger="PropertyChanged">
                                                             <Binding Path="Name" Mode="OneWay" />
-                                                            <Binding Path="Items[0].SetName" />
-                                                            <Binding Path="Items[1].SetName" />
-                                                            <Binding Path="Items[2].SetName" />
-                                                            <Binding Path="Items[3].SetName" />
-                                                            <Binding Path="Items[4].SetName" />
+                                                            <Binding Path="Items[0].SetName" Mode="OneWayToSource" />
+                                                            <Binding Path="Items[1].SetName" Mode="OneWayToSource" />
+                                                            <Binding Path="Items[2].SetName" Mode="OneWayToSource" />
+                                                            <Binding Path="Items[3].SetName" Mode="OneWayToSource" />
+                                                            <Binding Path="Items[4].SetName" Mode="OneWayToSource" />
+                                                            <Binding Path="Items[5].SetName" Mode="OneWayToSource" />
+                                                            <Binding Path="Items[6].SetName" Mode="OneWayToSource" />
+                                                            <Binding Path="Items[7].SetName" Mode="OneWayToSource" />
+                                                            <Binding Path="Items[8].SetName" Mode="OneWayToSource" />
+                                                            <Binding Path="Items[9].SetName" Mode="OneWayToSource" />
                                                         </MultiBinding>
                                                     </TextBox>
                                                 </DockPanel>
@@ -103,14 +109,15 @@
             </Grid.RowDefinitions>
             <Button x:Name="ChooseFiles" Click="ChooseFiles_Click" Content="Choose files" VerticalAlignment="Center" Height="32" />
             <Button x:Name="Run" Click="ConversionProcess_Click" Content = "Convert" VerticalAlignment="Center" Grid.Row="1" Height="32" />
-            <Grid x:Name="AnimationPropertiesListBox" Grid.Row="5" Margin="0,51,0,0">
+            <Grid x:Name="AnimationPropertiesListBox" Grid.Row="5">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="100*" />
-                    <RowDefinition Height="100*" />
-                    <RowDefinition Height="346*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="49*" />
                 </Grid.RowDefinitions>
-                <ComboBox Grid.Row="0" Name="AnimationClassCombobox" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:AnimationClassList}}}" SelectedItem="{Binding AnimationClass}" />
-                <ComboBox Grid.Row="1" Name="AnimationSubClassCombobox" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:SubAnimationClassList}}}" SelectedItem="{Binding AnimationClass}"  VerticalAlignment="Top">
+                <ComboBox Name="AnimationClassCombobox" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:AnimationClassList}}}" SelectedItem="{Binding AnimationClass}" />
+                <ComboBox Grid.Row="1" Name="AnimationSubClassCombobox" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type local:SubAnimationClassList}}}" SelectedItem="{Binding AnimationClass}">
                     <ComboBox.Style>
                         <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                             <Setter Property="Visibility" Value="Hidden" />
@@ -122,7 +129,7 @@
                         </Style>
                     </ComboBox.Style>
                 </ComboBox>
-                <ComboBox Grid.Row="2" SelectedItem="{Binding AnimationClass}" VerticalAlignment="Top">
+                <ComboBox Grid.Row="4" SelectedItem="{Binding AnimationClass}" VerticalAlignment="Center">
                     <ComboBox.Style>
                         <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                             <Setter Property="Visibility" Value="Hidden" />
@@ -135,11 +142,21 @@
                                     <Setter Property="Visibility" Value="Visible" />
                                     <Setter Property="ItemsSource" Value="{Binding Source={local:EnumBindingSource {x:Type local:HandjobClassList}}}" />
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedItem, ElementName=AnimationSubClassCombobox}" Value="cuddling">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Setter Property="ItemsSource" Value="{Binding Source={local:EnumBindingSource {x:Type local:CuddlingClassList}}}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedItem, ElementName=AnimationSubClassCombobox}" Value="fingering">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Setter Property="ItemsSource" Value="{Binding Source={local:EnumBindingSource {x:Type local:FingeringClassList}}}" />
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </ComboBox.Style>
                 </ComboBox>
             </Grid>
+            <xtcs:WatermarkTextBox Name="AnimationSetnameTextbox" Watermark="You can enter a Set Name here beforehand" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="2" VerticalAlignment="Center" />
+            <xtcs:WatermarkTextBox Name="AnimationClassTextbox" Watermark="You can enter a Animation Class here beforehand" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="3" VerticalAlignment="Center" />
         </Grid>
     </Grid>
 </Window>

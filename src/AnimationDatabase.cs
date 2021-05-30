@@ -2,7 +2,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Data;
 
 namespace OStimConversionTool
 {
@@ -63,7 +62,10 @@ namespace OStimConversionTool
         HhPJ,
 
         [Description("Self")]
-        SJ
+        SJ,
+
+        [Description("69 with Blowjob")]
+        VBJ
     }
 
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]
@@ -82,7 +84,42 @@ namespace OStimConversionTool
         ApHJ,
 
         [Description("Dual Handjob")]
-        DHJ
+        DHJ,
+
+        [Description("69 with Handjob")]
+        VHJ
+    }
+
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum CuddlingClassList
+    {
+        [Description("Standing Apart")]
+        Ap,
+
+        [Description("Standing Apart Undressing")]
+        ApU,
+
+        [Description("Embracing")]
+        Em,
+
+        [Description("Holding")]
+        Ho,
+
+        [Description("Rough Holding")]
+        Ro
+    }
+
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum FingeringClassList
+    {
+        [Description("Rubbing Clit")]
+        Cr,
+
+        [Description("1 Finger")]
+        Pf1,
+
+        [Description("2 Fingers")]
+        Pf2
     }
 
     public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
@@ -164,10 +201,11 @@ namespace OStimConversionTool
             }
         }
 
-        public Animation(string setName, string animName, string animator)
+        public Animation(string setName, string animName, string animClass, string animator)
         {
             _setName = setName;
             _animationName = animName;
+            _animationClass = animClass;
             _animator = animator;
         }
 

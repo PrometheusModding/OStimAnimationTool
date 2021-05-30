@@ -8,6 +8,7 @@ namespace OStimConversionTool
     {
         //TODO: make this non-static
         public static string? rootDir;
+
         public static string? moduleName;
         public static string animator = string.Empty;
 
