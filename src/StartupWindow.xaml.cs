@@ -20,7 +20,7 @@ namespace OStimConversionTool
 
         private void ChooseRootDir_Click(object sender, RoutedEventArgs e)
         {
-            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog folderBrowserDialog = new();
+            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog folderBrowserDialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
             {
                 if (folderBrowserDialog.ShowDialog() != true) return;
                 RootDir.Content = folderBrowserDialog.SelectedPath;

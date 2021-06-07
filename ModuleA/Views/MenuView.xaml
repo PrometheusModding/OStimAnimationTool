@@ -1,0 +1,14 @@
+<UserControl x:Class="AnimationDatabaseExplorer.Views.MenuView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:prism="http://prismlibrary.com/"
+      prism:ViewModelLocator.AutoWireViewModel="True">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Button Command="{Binding NewAnimationDatabaseCommand}" Content="Create New Animation Database" Grid.Row="0"/>
+    </Grid>
+</UserControl>

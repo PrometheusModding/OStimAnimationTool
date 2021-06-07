@@ -2,24 +2,22 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
 using System.Xml;
+using Microsoft.Win32;
 
 namespace OStimConversionTool
 {
     public partial class MainWindow
     {
-        private string _sourceDir = string.Empty;
-        private string _animationName = string.Empty;
-        private string _animationClass = string.Empty;
-        private string _animator = string.Empty;
         private readonly AnimationDatabase _animationDatabase = new();
-        internal CollectionViewSource AnimationDatabaseViewSource { get; set; } = new CollectionViewSource();
-        public ICollectionView AnimationDatabaseView { get { return AnimationDatabaseViewSource.View; } }
+        private string _animationClass = string.Empty;
+        private string _animationName = string.Empty;
+        private string _animator = string.Empty;
+        private string _sourceDir = string.Empty;
 
         public MainWindow()
         {
@@ -32,6 +30,9 @@ namespace OStimConversionTool
             StartupWindow startup = new();
             startup.ShowDialog();
         }
+
+        internal CollectionViewSource AnimationDatabaseViewSource { get; set; } = new();
+        public ICollectionView AnimationDatabaseView => AnimationDatabaseViewSource.View;
 
         /*private void UngroupButton_Click(object sender, RoutedEventArgs e)
         {
@@ -56,7 +57,7 @@ namespace OStimConversionTool
         {
             _animator = StartupWindow.animator;
 
-            Microsoft.Win32.OpenFileDialog openFileDialog = new()
+            OpenFileDialog openFileDialog = new()
             {
                 Multiselect = true,
                 Filter = "Havok Animation files (*.hkx)|*hkx|All files (*.*)|*.*",
@@ -70,8 +71,12 @@ namespace OStimConversionTool
 
             foreach (string filename in openFileDialog.FileNames)
             {
-                _animationName = !string.IsNullOrEmpty(AnimationSetnameTextbox.Text) ? AnimationSetnameTextbox.Text : Path.GetFileName(filename).Remove(openFileDialog.SafeFileName.Length - 10);
-                _animationClass = !string.IsNullOrEmpty(AnimationClassTextbox.Text) ? AnimationClassTextbox.Text : string.Empty;
+                _animationName = !string.IsNullOrEmpty(AnimationSetnameTextbox.Text)
+                    ? AnimationSetnameTextbox.Text
+                    : Path.GetFileName(filename).Remove(openFileDialog.SafeFileName.Length - 10);
+                _animationClass = !string.IsNullOrEmpty(AnimationClassTextbox.Text)
+                    ? AnimationClassTextbox.Text
+                    : string.Empty;
                 Animation anim = new(_animationName, Path.GetFileName(filename), _animationClass, _animator);
 
                 if (!_animationDatabase.Contains(anim))
@@ -139,7 +144,8 @@ namespace OStimConversionTool
                 anim.AnimationName = newName;
 
                 File.Copy(Path.Combine(_sourceDir, oldName), Path.Combine(animDir, newName));
-                var contents = @$"b -Tn {newName.Remove(newName.Length - 4)} ..\..\..\..\{Path.Combine(@"0SA\mod\0Sex\anim\", moduleName, animClass, newName)}{Environment.NewLine}";
+                var contents =
+                    @$"b -Tn {newName.Remove(newName.Length - 4)} ..\..\..\..\{Path.Combine(@"0SA\mod\0Sex\anim\", moduleName, animClass, newName)}{Environment.NewLine}";
                 File.AppendAllText(Path.Combine(fnisPath, $"FNIS_0Sex_{moduleName}_A_List.txt"), contents);
 
                 XmlScriber(Path.Combine(xmlDir, $"{setName}.xml"), anim, _animationDatabase);
@@ -180,7 +186,7 @@ namespace OStimConversionTool
 
             if (isTransition)
             {
-                writer.WriteAttributeString("dest", $"myDocuments");
+                writer.WriteAttributeString("dest", "myDocuments");
                 writer.WriteStartElement("dfx");
                 writer.WriteAttributeString("a", "0");
                 writer.WriteAttributeString("fx", "1");
@@ -201,7 +207,6 @@ namespace OStimConversionTool
                 writer.WriteAttributeString("name", "thrusts");
 
                 for (var i = 0; i <= setSize; i++)
-                {
                     if (i is 0)
                     {
                         writer.WriteStartElement("sp");
@@ -247,8 +252,8 @@ namespace OStimConversionTool
                         writer.WriteEndElement();
                         writer.WriteEndElement();
                     }
-                }
             }
+
             writer.WriteEndElement();
             writer.WriteEndElement();
             writer.Close();
@@ -264,12 +269,12 @@ namespace OStimConversionTool
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            if (value is not string) throw new NotImplementedException();
-            object[] lol = new object[targetTypes.Length];
-            for (var o = 1; o < lol.Length; o++)
+            /*if (value != (string))
             {
-                lol[o] = value;
-            }
+                throw new NotImplementedException();
+            }*/
+            object[] lol = new object[targetTypes.Length];
+            for (var o = 1; o < lol.Length; o++) lol[o] = value;
 
             return lol;
         }
@@ -282,19 +287,23 @@ namespace OStimConversionTool
         {
         }
 
-        public override object? ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        public override object? ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
+            Type destinationType)
         {
             if (destinationType == typeof(string))
             {
                 if (value != null)
                 {
 #pragma warning disable CS8604 // Possible null reference argument.
-                    FieldInfo? fi = value.GetType().GetField(value.ToString());
+                    var fi = value.GetType().GetField(value.ToString());
 #pragma warning restore CS8604 // Possible null reference argument.
                     if (fi != null)
                     {
-                        var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-                        return ((attributes.Length > 0) && (!string.IsNullOrEmpty(attributes[0].Description))) ? attributes[0].Description : value.ToString();
+                        var attributes =
+                            (DescriptionAttribute[]) fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+                        return attributes.Length > 0 && !string.IsNullOrEmpty(attributes[0].Description)
+                            ? attributes[0].Description
+                            : value.ToString();
                     }
                 }
 
@@ -309,6 +318,15 @@ namespace OStimConversionTool
     {
         private Type? _enumType;
 
+        public EnumBindingSourceExtension()
+        {
+        }
+
+        public EnumBindingSourceExtension(Type enumType)
+        {
+            EnumType = enumType;
+        }
+
         public Type? EnumType
         {
             get => _enumType;
@@ -322,18 +340,10 @@ namespace OStimConversionTool
                         if (!enumType.IsEnum)
                             throw new ArgumentException("Type must be for an Enum.");
                     }
+
                     _enumType = value;
                 }
             }
-        }
-
-        public EnumBindingSourceExtension()
-        {
-        }
-
-        public EnumBindingSourceExtension(Type enumType)
-        {
-            EnumType = enumType;
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)

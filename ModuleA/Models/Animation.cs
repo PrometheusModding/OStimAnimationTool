@@ -1,102 +1,12 @@
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 
-namespace OStimConversionTool
+namespace AnimationDatabaseExplorer.Models
 {
-    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
-    public enum AnimationClassList
-    {
-        [Description("Vaginal")] Sx,
-
-        [Description("Anal")] An,
-
-        [Description("Foreplay")] foreplay
-    }
-
-    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
-    public enum SubAnimationClassList
-    {
-        [Description("Blowjob")] BJ,
-
-        [Description("Handjob")] HJ,
-
-        [Description("Cuddling")] cuddling,
-
-        [Description("Fingering")] fingering,
-
-        [Description("Footjob")] FJ,
-
-        [Description("Cunnilingus")] VJ,
-
-        [Description("Boobjob")] BoJ,
-
-        [Description("Breastfeeding")] BoF
-    }
-
-    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
-    public enum BlowjobClassList
-    {
-        [Description("(none)")] BJ,
-
-        [Description("Head Held Blowjob")] HhBJ,
-
-        [Description("Penisjob (Blowjob with Jerking)")]
-        PJ,
-
-        [Description("Head Held Penisjob")] HhPJ,
-
-        [Description("Self")] SJ,
-
-        [Description("69 with Blowjob")] VBJ
-    }
-
-    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
-    public enum HandjobClassList
-    {
-        [Description("(none)")] HJ,
-
-        [Description("Masturbate")] Po,
-
-        [Description("Head Held Masturbate")] HhPo,
-
-        [Description("Apart Handjob")] ApHJ,
-
-        [Description("Dual Handjob")] DHJ,
-
-        [Description("69 with Handjob")] VHJ
-    }
-
-    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
-    public enum CuddlingClassList
-    {
-        [Description("Standing Apart")] Ap,
-
-        [Description("Standing Apart Undressing")]
-        ApU,
-
-        [Description("Embracing")] Em,
-
-        [Description("Holding")] Ho,
-
-        [Description("Rough Holding")] Ro
-    }
-
-    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
-    public enum FingeringClassList
-    {
-        [Description("Rubbing Clit")] Cr,
-
-        [Description("1 Finger")] Pf1,
-
-        [Description("2 Fingers")] Pf2
-    }
-
     public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
     {
         private bool _activeEdit;
-        private string _animationClass = string.Empty;
+        private string _animationClass;
         private string _animationInfo = string.Empty;
         private string _animationName;
         private string _animator;
@@ -220,15 +130,11 @@ namespace OStimConversionTool
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public int GetSetSize(AnimationDatabase animationDatabase)
+        /*public int GetSetSize(AnimationDatabase animationDatabase)
         {
             var count = animationDatabase.Count(anim => anim.SetName.Equals(_setName));
 
             return count / 2;
-        }
-    }
-
-    public class AnimationDatabase : ObservableCollection<Animation>
-    {
+        }*/
     }
 }

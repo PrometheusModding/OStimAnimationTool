@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
         TextElement.FontWeight="Medium"
@@ -23,9 +22,9 @@
             <RowDefinition Height="10*" />
         </Grid.RowDefinitions>
         <Button x:Name="RootDir" Click="ChooseRootDir_Click" Content="Choose Working Directory"  VerticalAlignment="Center" Margin="20,0,20,0" />
-        <xctk:WatermarkTextBox x:Name="PackName" Watermark="The Name of your Module/Animation Pack"  VerticalAlignment="Center" Grid.Row="1" Margin="20,0,20,0" />
-        <xctk:WatermarkTextBox x:Name="ModuleName" Watermark="Give your Module a token name (2 to 3 Letters e.g. EX)" VerticalAlignment="Center" Grid.Row="2" Margin="20,0,20,0" />
-        <xctk:WatermarkTextBox x:Name="Animator" Watermark="The Author of the Animation Pack" VerticalAlignment="Center" Grid.Row="3" Margin="20,0,20,0" />
+        <TextBox x:Name="PackName" Text="The Name of your Module/Animation Pack"  VerticalAlignment="Center" Grid.Row="1" Margin="20,0,20,0" />
+        <TextBox x:Name="ModuleName" Text="Give your Module a token name (2 to 3 Letters e.g. EX)" VerticalAlignment="Center" Grid.Row="2" Margin="20,0,20,0" />
+        <TextBox x:Name="Animator" Text="The Author of the Animation Pack" VerticalAlignment="Center" Grid.Row="3" Margin="20,0,20,0" />
         <Button x:Name="Confirm" Click="Confirm_Click" Content="Confirm"  VerticalAlignment="Center" Grid.Row="5" Margin="40,0,40,0" />
     </Grid>
 </Window>

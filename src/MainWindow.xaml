@@ -4,7 +4,6 @@
     xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:xtcs="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:local="clr-namespace:OStimConversionTool"
     av:DataContext="{av:DesignInstance Type=local:AnimationDatabase}"
     mc:Ignorable="av" x:Class="OStimConversionTool.MainWindow"
@@ -155,8 +154,8 @@
                     </ComboBox.Style>
                 </ComboBox>
             </Grid>
-            <xtcs:WatermarkTextBox Name="AnimationSetnameTextbox" Watermark="You can enter a Set Name here beforehand" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="2" VerticalAlignment="Center" />
-            <xtcs:WatermarkTextBox Name="AnimationClassTextbox" Watermark="You can enter a Animation Class here beforehand" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="3" VerticalAlignment="Center" />
+            <TextBox Name="AnimationSetnameTextbox" Text="You can enter a Set Name here beforehand" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="2" VerticalAlignment="Center" />
+            <TextBox Name="AnimationClassTextbox" Text="You can enter a Animation Class here beforehand" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="3" VerticalAlignment="Center" />
         </Grid>
     </Grid>
 </Window>
