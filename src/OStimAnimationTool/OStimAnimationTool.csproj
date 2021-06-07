@@ -5,7 +5,7 @@
 		<TargetFramework>net5.0-windows</TargetFramework>
 		<RootNamespace>OStimConversionTool</RootNamespace>
 		<UseWPF>true</UseWPF>
-		<AssemblyName>SL-OStim Conversion Tool</AssemblyName>
+		<AssemblyName>OStimAnimationTool</AssemblyName>
 		<Authors>Prometheus</Authors>
 		<Version>0.5.1</Version>
 		<Nullable>enable</Nullable>
