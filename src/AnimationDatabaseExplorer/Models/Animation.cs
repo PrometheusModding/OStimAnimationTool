@@ -15,12 +15,9 @@ namespace AnimationDatabaseExplorer.Models
 
         private Animation? _tempAnim;
 
-        public Animation(string setName, string animName, string animClass, string animator)
+        public Animation(string animName)
         {
-            _setName = setName;
             _animationName = animName;
-            _animationClass = animClass;
-            _animator = animator;
         }
 
         public string SetName

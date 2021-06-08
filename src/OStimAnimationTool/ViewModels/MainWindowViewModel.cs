@@ -21,7 +21,9 @@ namespace OStimConversionTool.ViewModels
 
         private void OnNewAnimationDatabase(string name)
         {
-            NavigationParameters p = new () {{"name", name}};
+            NavigationParameters p = new();
+            p.Add("regionManager", _regionManager);
+            p.Add("name", name);
 
             _regionManager.RequestNavigate("TabRegion", "AnimationSetDatagridView", p);
         }

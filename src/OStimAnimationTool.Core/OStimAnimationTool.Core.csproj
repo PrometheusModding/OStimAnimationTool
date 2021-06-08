@@ -6,7 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Prism.Wpf" Version="8.1.97" />
+    <Compile Remove="Prism\**" />
+    <EmbeddedResource Remove="Prism\**" />
+    <None Remove="Prism\**" />
+    <Page Remove="Prism\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
   </ItemGroup>
 
 </Project>

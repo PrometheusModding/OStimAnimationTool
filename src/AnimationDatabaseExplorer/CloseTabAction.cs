@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Xaml.Behaviors;
@@ -23,8 +23,28 @@ namespace AnimationDatabaseExplorer
             if (region is null)
                 return;
 
-            if (region.Views.Contains(tabItem))
-                region.Remove(tabItem);
+            RemoveItemFromRegion(tabItem, region);
+        }
+
+        private void RemoveItemFromRegion(object item, IRegion region)
+        {
+            var navigationContext = new NavigationContext(region.NavigationService, null);
+            if (CanRemove(item, navigationContext)) region.Remove(item);
+        }
+
+        private bool CanRemove(object item, NavigationContext navigationContext)
+        {
+            var canRemove = true;
+
+            if (item is IConfirmNavigationRequest confirmRequestItem)
+                confirmRequestItem.ConfirmNavigationRequest(navigationContext, result => { canRemove = result; });
+
+            if (item is FrameworkElement frameworkElement && canRemove)
+                if (frameworkElement.DataContext is IConfirmNavigationRequest confirmNavigationRequest)
+                    confirmNavigationRequest.ConfirmNavigationRequest(navigationContext,
+                        result => { canRemove = result; });
+
+            return canRemove;
         }
 
         private static T FindParent<T>(DependencyObject child) where T : DependencyObject

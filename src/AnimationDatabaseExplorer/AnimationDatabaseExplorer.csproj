@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
-    <PackageReference Include="Prism.Wpf" Version="8.1.97" />
   </ItemGroup>
 
   <ItemGroup>
