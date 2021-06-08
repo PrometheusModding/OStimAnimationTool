@@ -4,7 +4,6 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:AnimationDatabaseExplorer"
     xmlns:viewModels="clr-namespace:AnimationDatabaseExplorer.ViewModels"
-    xmlns:core="clr-namespace:OStimAnimationTool.Core;assembly=OStimAnimationTool.Core"
     xmlns:prism="http://prismlibrary.com/"
     x:Class="AnimationDatabaseExplorer.Views.AnimationSetDetailView"
     Header="{Binding Title}"
@@ -42,12 +41,14 @@
             <RowDefinition Height="134*" />
             <RowDefinition Height="75*" />
         </Grid.RowDefinitions>
-        <ContentControl prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1" Grid.Column="0"/>
-        <DataGrid Name="AnimationSetDatagrid" ItemsSource="{Binding AnimationSet}" Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0"
+        <ContentControl prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1" Grid.Column="0" />
+        <DataGrid Name="AnimationSetDatagrid" ItemsSource="{Binding AnimationSet}" Grid.Row="4" Grid.ColumnSpan="2"
+                  Grid.Column="0"
                   AutoGenerateColumns="False">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
-                    <prism:InvokeCommandAction Command="{Binding OpenAnimationDetailCommand}" CommandParameter="{Binding SelectedItem, ElementName=AnimationSetDatagrid}"/>
+                    <prism:InvokeCommandAction Command="{Binding OpenAnimationDetailCommand}"
+                                               CommandParameter="{Binding SelectedItem, ElementName=AnimationSetDatagrid}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
             <DataGrid.Columns>

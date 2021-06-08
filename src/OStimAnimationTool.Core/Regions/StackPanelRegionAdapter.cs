@@ -1,7 +1,7 @@
-using Prism.Regions;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
+using Prism.Regions;
 
 namespace OStimAnimationTool.Core.Regions
 {

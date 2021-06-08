@@ -12,7 +12,7 @@
             <RowDefinition Height="1*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <TextBox Text="{Binding Name}" Margin="10"/>
-        <Button Content="Confirm" Command="{Binding ConfirmDialogCommand}" Grid.Row="1" Margin="10"/>
+        <TextBox Text="{Binding Name}" Margin="10" />
+        <Button Content="Confirm" Command="{Binding ConfirmDialogCommand}" Grid.Row="1" Margin="10" />
     </Grid>
 </UserControl>

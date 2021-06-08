@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using OStimAnimationTool.Core.Prism;
 using OStimAnimationTool.Core.Regions;
+using OStimConversionTool.Views;
 using Prism.DryIoc;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -16,7 +17,7 @@ namespace OStimConversionTool
     {
         protected override Window CreateShell()
         {
-            return Container.Resolve<Views.MainWindow>();
+            return Container.Resolve<MainWindow>();
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
