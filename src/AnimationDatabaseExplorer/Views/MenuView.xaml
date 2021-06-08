@@ -4,11 +4,11 @@
       xmlns:prism="http://prismlibrary.com/"
       prism:ViewModelLocator.AutoWireViewModel="True">
 
-    <Grid>
+    <Grid Margin="10 10">
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
-        <Button Command="{Binding NewAnimationDatabaseCommand}" Content="Create New Animation Database" Grid.Row="0"/>
+        <Button Command="{Binding NewAnimationDatabaseCommand}" Content="Create New Animation Database" Grid.Row="0" VerticalAlignment="Top"/>
     </Grid>
 </UserControl>
