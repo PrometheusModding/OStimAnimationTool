@@ -26,6 +26,7 @@ namespace AnimationDatabaseExplorer
             containerRegistry.RegisterDialog<NewAnimationDatabaseDialog, NewAnimationDatabaseDialogViewModel>();
             containerRegistry.RegisterForNavigation<AnimationSetDatagridView>();
             containerRegistry.RegisterForNavigation<AnimationSetDetailView>();
+            containerRegistry.RegisterForNavigation<AnimationDetailView>();
         }
     }
 }

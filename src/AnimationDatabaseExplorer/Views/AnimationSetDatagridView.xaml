@@ -23,8 +23,9 @@
                         <core:InteractivityItems>
                             <core:InteractivityItems.Triggers>
                                 <i:EventTrigger EventName="MouseDoubleClick">
-                                    <prism:InvokeCommandAction Command="{Binding DataContext.OpenSetDetailCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                                                               CommandParameter="{Binding SelectedItem, ElementName=AnimationDatabaseGrid}" />
+                                    <prism:InvokeCommandAction
+                                        Command="{Binding DataContext.OpenSetDetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding SelectedItem, ElementName=AnimationDatabaseGrid}" />
                                 </i:EventTrigger>
                             </core:InteractivityItems.Triggers>
                         </core:InteractivityItems>

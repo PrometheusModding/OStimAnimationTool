@@ -76,7 +76,9 @@ namespace AnimationDatabaseExplorer.ViewModels
             if (animationSet is null)
                 return;
 
-            var p = new NavigationParameters {{"animationSet", animationSet}};
+            var p = new NavigationParameters();
+            p.Add("animationSet", animationSet);
+            p.Add("regionManager", _regionManager);
             _regionManager.RequestNavigate("TabRegion", "AnimationSetDetailView", p);
         }
     }

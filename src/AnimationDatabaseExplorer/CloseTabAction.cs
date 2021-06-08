@@ -26,13 +26,13 @@ namespace AnimationDatabaseExplorer
             RemoveItemFromRegion(tabItem, region);
         }
 
-        private void RemoveItemFromRegion(object item, IRegion region)
+        private static void RemoveItemFromRegion(object item, IRegion region)
         {
             var navigationContext = new NavigationContext(region.NavigationService, null);
             if (CanRemove(item, navigationContext)) region.Remove(item);
         }
 
-        private bool CanRemove(object item, NavigationContext navigationContext)
+        private static bool CanRemove(object item, NavigationContext navigationContext)
         {
             var canRemove = true;
 

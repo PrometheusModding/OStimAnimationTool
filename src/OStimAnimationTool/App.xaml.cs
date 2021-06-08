@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using OStimAnimationTool.Core.Prism;
 using OStimAnimationTool.Core.Regions;
 using Prism.DryIoc;
 using Prism.Ioc;
@@ -20,6 +21,7 @@ namespace OStimConversionTool
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+            containerRegistry.Register<IRegionNavigationContentLoader, ScopedRegionNavigationContentLoader>();
         }
 
         protected override void ConfigureRegionAdapterMappings(RegionAdapterMappings regionAdapterMappings)
@@ -27,6 +29,12 @@ namespace OStimConversionTool
             base.ConfigureRegionAdapterMappings(regionAdapterMappings);
             regionAdapterMappings.RegisterMapping(typeof(StackPanel),
                 Container.Resolve<StackPanelRegionAdapter>());
+        }
+
+        protected override void ConfigureDefaultRegionBehaviors(IRegionBehaviorFactory regionBehaviors)
+        {
+            base.ConfigureDefaultRegionBehaviors(regionBehaviors);
+            regionBehaviors.AddIfMissing(RegionManagerAwareBehavior.BehaviorKey, typeof(RegionManagerAwareBehavior));
         }
 
         protected override IModuleCatalog CreateModuleCatalog()
