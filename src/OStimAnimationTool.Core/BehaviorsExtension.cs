@@ -20,25 +20,9 @@ namespace OStimAnimationTool.Core
         private List<Behavior> _behaviors;
         private List<TriggerBase> _triggers;
 
-        public new List<TriggerBase> Triggers
-        {
-            get
-            {
-                if (_triggers == null)
-                    _triggers = new List<TriggerBase>();
-                return _triggers;
-            }
-        }
+        public new List<TriggerBase> Triggers => _triggers ??= new List<TriggerBase>();
 
-        public List<Behavior> Behaviors
-        {
-            get
-            {
-                if (_behaviors == null)
-                    _behaviors = new List<Behavior>();
-                return _behaviors;
-            }
-        }
+        public List<Behavior> Behaviors => _behaviors ??= new List<Behavior>();
 
 
         public static InteractivityTemplate GetTemplate(DependencyObject obj)
@@ -55,16 +39,16 @@ namespace OStimAnimationTool.Core
             DependencyObject d,
             DependencyPropertyChangedEventArgs e)
         {
-            var dt = (InteractivityTemplate) e.NewValue;
-            var ih = (InteractivityItems) dt.LoadContent();
-            var bc = Interaction.GetBehaviors(d);
-            var tc = Interaction.GetTriggers(d);
+            var template = (InteractivityTemplate) e.NewValue;
+            var items = (InteractivityItems) template.LoadContent();
+            var behaviorCollection = Interaction.GetBehaviors(d);
+            var triggerCollection = Interaction.GetTriggers(d);
 
-            foreach (var behavior in ih.Behaviors)
-                bc.Add(behavior);
+            foreach (var behavior in items.Behaviors)
+                behaviorCollection.Add(behavior);
 
-            foreach (var trigger in ih.Triggers)
-                tc.Add(trigger);
+            foreach (var trigger in items.Triggers)
+                triggerCollection.Add(trigger);
         }
     }
 }
