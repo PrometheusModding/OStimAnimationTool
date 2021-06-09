@@ -6,9 +6,7 @@ namespace AnimationDatabaseExplorer.Models
     public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
     {
         private bool _activeEdit;
-        private string _animationInfo = string.Empty;
         private string _animationName;
-        private string _animator = string.Empty;
         private bool _isTransition;
 
         private Animation? _tempAnim;
@@ -29,27 +27,6 @@ namespace AnimationDatabaseExplorer.Models
             }
         }
 
-        public string Animator
-        {
-            get => _animator;
-            set
-            {
-                if (value == _animator) return;
-                _animator = value;
-                NotifyPropertyChanged(nameof(Animator));
-            }
-        }
-
-        public string AnimationInfo
-        {
-            get => _animationInfo;
-            set
-            {
-                if (value == _animationInfo) return;
-                _animationInfo = value;
-                NotifyPropertyChanged(nameof(AnimationInfo));
-            }
-        }
 
         public bool IsTransition
         {

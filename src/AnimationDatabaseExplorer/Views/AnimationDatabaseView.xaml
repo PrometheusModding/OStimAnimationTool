@@ -8,7 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:AnimationDatabaseExplorer.ViewModels"
-    xmlns:models="clr-namespace:AnimationDatabaseExplorer.Models"
+    xmlns:models="clr-namespace:AnimationDatabaseExplorer.Models;assembly=OStimAnimationTool.Core"
     x:Class="AnimationDatabaseExplorer.Views.AnimationDatabaseView"
     prism:ViewModelLocator.AutoWireViewModel="True"
     Header="{Binding Title}"
