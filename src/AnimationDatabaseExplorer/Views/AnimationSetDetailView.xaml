@@ -6,7 +6,8 @@
     xmlns:viewModels="clr-namespace:AnimationDatabaseExplorer.ViewModels"
     xmlns:models="clr-namespace:AnimationDatabaseExplorer.Models"
     xmlns:prism="http://prismlibrary.com/" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
     x:Class="AnimationDatabaseExplorer.Views.AnimationSetDetailView"
     Header="{Binding Title}"
     HeaderTemplate="{DynamicResource CloseButtonHeader}"
@@ -18,8 +19,8 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <ContentControl Content="{Binding }" />
-                <Button Grid.Column="1" Content="x">
+                <ContentControl Content="{Binding }" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 5 0" />
+                <Button Grid.Column="1" Content="x" Width="25" Height="25" FontSize="16" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="5 2 -3 2" Padding="0 0 1 6" Background="Red">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
                             <local:CloseTabAction />
@@ -31,11 +32,38 @@
     </TabItem.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="8*" />
+            <RowDefinition Height="3*" />
         </Grid.RowDefinitions>
-        <ContentControl prism:RegionManager.RegionName="AnimationDetailRegion" />
-        <DataGrid Name="AnimationSetDatagrid" ItemsSource="{Binding AnimationSet}" Grid.Row="1"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="5*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding AnimationSet.SetName, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBlock Text="{Binding AnimationSet.AnimationClass, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0"
+                   Grid.Column="1" />
+        <Menu Name="AnimationClassMenu" Grid.Row="0" Grid.Column="2" ItemsSource="{Binding AnimationClassMenuItems}">
+            <Menu.ItemContainerStyle>
+                <Style TargetType="MenuItem">
+                    <Setter Property="Command"
+                            Value="{Binding DataContext.AnimationClassMenuCommand, RelativeSource={RelativeSource AncestorType=Menu}}" />
+                    <Setter Property="CommandParameter" Value="{Binding ClassToken}" />
+                </Style>
+            </Menu.ItemContainerStyle>
+            <Menu.ItemTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type viewModels:AnimationClassMenuItemViewModel}"
+                                          ItemsSource="{Binding Path=MenuItems}">
+                    <TextBlock Text="{Binding Header}" />
+                </HierarchicalDataTemplate>
+            </Menu.ItemTemplate>
+        </Menu>
+        <ContentControl prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1" Grid.ColumnSpan="4"
+                        Grid.Column="0" />
+        <DataGrid Name="AnimationSetDatagrid" ItemsSource="{Binding AnimationSet}" Grid.Row="2" Grid.ColumnSpan="4"
+                  Grid.Column="0"
                   AutoGenerateColumns="False">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
@@ -48,13 +76,6 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="models:Animation">
                             <TextBox Text="{Binding AnimationName}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Animation Class">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="models:Animation">
-                            <TextBlock Text="{Binding AnimationClass}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

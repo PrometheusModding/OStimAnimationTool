@@ -11,9 +11,7 @@ namespace AnimationDatabaseExplorer.ViewModels
     public class AnimationDatabaseViewModel : TabViewModelBase
     {
         private readonly IRegionManager _regionManager;
-        private AnimationDatabase _animationDatabase = new("");
-        private string _name = string.Empty;
-
+        private AnimationDatabase _animationDatabase = new("New Animation Database");
         protected AnimationDatabaseViewModel(IRegionManager regionManager)
         {
             _regionManager = regionManager;
@@ -27,21 +25,16 @@ namespace AnimationDatabaseExplorer.ViewModels
             private set => SetProperty(ref _animationDatabase, value);
         }
 
-        public string Name
-        {
-            get => _name;
-            set => SetProperty(ref _name, value);
-        }
-
         public DelegateCommand AddAnimationSetCommand { get; }
 
         public DelegateCommand<AnimationSet> OpenSetDetailCommand { get; }
 
         public override void OnNavigatedTo(NavigationContext navigationContext)
         {
-            _name = navigationContext.Parameters.GetValue<string>("name");
-            AnimationDatabase = new AnimationDatabase(_name);
-            Title = _name;
+            if(!string.IsNullOrEmpty(navigationContext.Parameters.GetValue<string>("name")))
+                AnimationDatabase.Name = navigationContext.Parameters.GetValue<string>("name");
+            
+            Title = AnimationDatabase.Name;
         }
 
         private void AddAnimationSet()

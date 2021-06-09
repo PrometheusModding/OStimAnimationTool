@@ -2,15 +2,17 @@ using System.Collections.ObjectModel;
 
 namespace AnimationDatabaseExplorer.ViewModels
 {
-    public class MenuItemViewModel
+    public class AnimationClassMenuItemViewModel
     {
-        public MenuItemViewModel(string header)
+        public AnimationClassMenuItemViewModel(string header, string classToken)
         {
             Header = header;
+            ClassToken = classToken;
         }
 
+        public string ClassToken { get; }
         public string Header { get; init; }
 
-        public ObservableCollection<MenuItemViewModel>? MenuItems { get; set; }
+        public ObservableCollection<AnimationClassMenuItemViewModel>? MenuItems { get; set; }
     }
 }

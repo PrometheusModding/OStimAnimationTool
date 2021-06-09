@@ -9,75 +9,75 @@ namespace AnimationDatabaseExplorer.ViewModels
 {
     public class AnimationSetDetailViewModel : TabViewModelBase, IRegionManagerAware
     {
-        private AnimationSet _animationSet = new("");
+        private AnimationSet _animationSet = new("New Animation Set");
 
         public AnimationSetDetailViewModel()
         {
             AnimationClassMenuCommand = new DelegateCommand<string>(SetAnimationClass);
             OpenAnimationDetailCommand = new DelegateCommand<Animation>(OpenAnimationDetail);
 
-            AnimationClassMenuItems = new ObservableCollection<MenuItemViewModel>
+            AnimationClassMenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
             {
-                new("Vaginal"),
-                new("Anal"),
-                new("Foreplay")
+                new("Vaginal", "Sx"),
+                new("Anal", "An"),
+                new("Foreplay","BJ")
                 {
-                    MenuItems = new ObservableCollection<MenuItemViewModel>
+                    MenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
                     {
-                        new("Blowjob")
+                        new("Blowjob", "BJ")
                         {
-                            MenuItems = new ObservableCollection<MenuItemViewModel>
+                            MenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
                             {
-                                new("Normal"),
-                                new("Head Held Blowjob"),
-                                new("Penisjob (Blowjob with Jerking)"),
-                                new("Head Held Penisjob"),
-                                new("Self")
+                                new("Normal", "BJ"),
+                                new("Head Held Blowjob","HhBJ"),
+                                new("Penisjob (Blowjob with Jerking)","ApPJ"),
+                                new("Head Held Penisjob","HhPJ"),
+                                new("Self","SJ")
                             }
                         },
-                        new("Handjob")
+                        new("Handjob", "HJ")
                         {
-                            MenuItems = new ObservableCollection<MenuItemViewModel>
+                            MenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
                             {
-                                new("Normal"),
-                                new("Masturbate"),
-                                new("Head Held Masturbate"),
-                                new("Apart Handjob"),
-                                new("Dual Handjob")
+                                new("Normal", "HJ"),
+                                new("Masturbate","Po"),
+                                new("Head Held Masturbate","HhPo"),
+                                new("Apart Handjob", "ApHJ"),
+                                new("Dual Handjob","DHJ")
                             }
                         },
-                        new("Cuddling")
+                        new("Cuddling", "Em")
                         {
-                            MenuItems = new ObservableCollection<MenuItemViewModel>
+                            MenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
                             {
-                                new("Standing Apart"),
-                                new("Standing Apart Undressing"),
-                                new("Embracing"),
-                                new("Holding"),
-                                new("Rough Holding")
+                                new("Standing Apart","Ap"),
+                                new("Standing Apart Undressing","ApU"),
+                                new("Embracing","Em"),
+                                new("Holding","Ho"),
+                                new("Rough Holding","Ro")
                             }
                         },
-                        new("Fingering")
+                        new("Fingering", "Cr")
                         {
-                            Header = "Fingering", MenuItems = new ObservableCollection<MenuItemViewModel>
+                            Header = "Fingering", MenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
                             {
-                                new("Rubbing Clit"),
-                                new("1 Finger"),
-                                new("2 Finger")
+                                new("Rubbing Clit","Cr"),
+                                new("1 Finger","Pf1"),
+                                new("2 Finger","Pf2")
                             }
                         },
-                        new("69")
+                        new("69", "VBJ")
                         {
-                            Header = "69", MenuItems = new ObservableCollection<MenuItemViewModel>
+                            Header = "69", MenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
                             {
-                                new("69 with Blowjob"),
-                                new("69 with Handjob")
+                                new("69 with Blowjob","VBJ"),
+                                new("69 with Handjob","VHJ")
                             }
                         },
-                        new("Cunnilingus"),
-                        new("Footjob"),
-                        new("Boobjob"),
-                        new("Breastfeeding")
+                        new("Cunnilingus", "VJ"),
+                        new("Footjob","FJ"),
+                        new("Boobjob","BoJ"),
+                        new("Breastfeeding","BoF")
                     }
                 }
             };
@@ -86,7 +86,7 @@ namespace AnimationDatabaseExplorer.ViewModels
         public DelegateCommand<string> AnimationClassMenuCommand { get; }
         public DelegateCommand<Animation> OpenAnimationDetailCommand { get; }
 
-        public ObservableCollection<MenuItemViewModel> AnimationClassMenuItems { get; }
+        public ObservableCollection<AnimationClassMenuItemViewModel> AnimationClassMenuItems { get; }
 
         public AnimationSet AnimationSet
         {
@@ -107,6 +107,7 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         private void SetAnimationClass(string animationClass)
         {
+            AnimationSet.AnimationClass = animationClass;
         }
 
         public override void OnNavigatedTo(NavigationContext navigationContext)
