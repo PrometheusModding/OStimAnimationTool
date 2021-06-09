@@ -4,10 +4,13 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:AnimationDatabaseExplorer"
     xmlns:viewModels="clr-namespace:AnimationDatabaseExplorer.ViewModels"
-    xmlns:prism="http://prismlibrary.com/"
+    xmlns:models="clr-namespace:AnimationDatabaseExplorer.Models"
+    xmlns:prism="http://prismlibrary.com/" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
     x:Class="AnimationDatabaseExplorer.Views.AnimationSetDetailView"
     Header="{Binding Title}"
-    HeaderTemplate="{DynamicResource CloseButtonHeader}">
+    HeaderTemplate="{DynamicResource CloseButtonHeader}"
+    d:DataContext="{d:DesignInstance viewModels:AnimationSetDetailViewModel}">
     <TabItem.Resources>
         <DataTemplate x:Key="CloseButtonHeader">
             <Grid>
@@ -26,24 +29,13 @@
             </Grid>
         </DataTemplate>
     </TabItem.Resources>
-    <TabItem.DataContext>
-        <viewModels:AnimationSetDetailViewModel />
-    </TabItem.DataContext>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="367*" />
-            <ColumnDefinition Width="1681*" />
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25*" />
-            <RowDefinition Height="25*" />
-            <RowDefinition Height="25*" />
-            <RowDefinition Height="134*" />
-            <RowDefinition Height="75*" />
+            <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
-        <ContentControl prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1" Grid.Column="0" />
-        <DataGrid Name="AnimationSetDatagrid" ItemsSource="{Binding AnimationSet}" Grid.Row="4" Grid.ColumnSpan="2"
-                  Grid.Column="0"
+        <ContentControl prism:RegionManager.RegionName="AnimationDetailRegion" />
+        <DataGrid Name="AnimationSetDatagrid" ItemsSource="{Binding AnimationSet}" Grid.Row="1"
                   AutoGenerateColumns="False">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
@@ -54,55 +46,26 @@
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Animation Name">
                     <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
+                        <DataTemplate DataType="models:Animation">
                             <TextBox Text="{Binding AnimationName}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Animation Class">
                     <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
+                        <DataTemplate DataType="models:Animation">
                             <TextBlock Text="{Binding AnimationClass}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Author">
                     <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
+                        <DataTemplate DataType="models:Animation">
                             <TextBox Text="{Binding Animator}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding AnimationSet.SetName}" TextWrapping="Wrap"
-                 VerticalAlignment="Center" />
-        <Menu ItemsSource="{Binding AnimationClassMenuItems}" Grid.Row="2" Grid.Column="0">
-            <!--<Menu.ItemContainerStyle>
-                <Style TargetType="MenuItem">
-                    <Setter Property="core:InteractivityItems.Template">
-                        <Setter.Value>
-                            <core:InteractivityTemplate>
-                                <core:InteractivityItems>
-                                    <core:InteractivityItems.Triggers>
-                                        <i:EventTrigger EventName="MouseDoubleClick">
-                                            <prism:InvokeCommandAction
-                                                Command="{Binding DataContext.AnimationClassMenuCommand, RelativeSource={RelativeSource AncestorType=Menu}}"
-                                                CommandParameter="{Binding SelectedItem, ElementName=AnimationDatabaseGrid}" />
-                                        </i:EventTrigger>
-                                    </core:InteractivityItems.Triggers>
-                                </core:InteractivityItems>
-                            </core:InteractivityTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Menu.ItemContainerStyle>-->
-            <Menu.ItemTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type viewModels:MenuItemViewModel}"
-                                          ItemsSource="{Binding Path=MenuItems}">
-                    <TextBlock Text="{Binding Header}" />
-                </HierarchicalDataTemplate>
-            </Menu.ItemTemplate>
-        </Menu>
     </Grid>
 </TabItem>

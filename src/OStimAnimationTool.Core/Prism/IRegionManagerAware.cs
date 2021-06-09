@@ -4,6 +4,6 @@ namespace OStimAnimationTool.Core.Prism
 {
     public interface IRegionManagerAware
     {
-        IRegionManager RegionManager { get; set; }
+        IRegionManager? RegionManager { get; set; }
     }
 }

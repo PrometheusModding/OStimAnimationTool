@@ -2,9 +2,10 @@ using System.Windows.Controls;
 
 namespace AnimationDatabaseExplorer.Views
 {
-    public partial class AnimationDetailView : UserControl
+    public partial class AnimationDatabaseView : TabItem
+
     {
-        public AnimationDetailView()
+        public AnimationDatabaseView()
         {
             InitializeComponent();
         }

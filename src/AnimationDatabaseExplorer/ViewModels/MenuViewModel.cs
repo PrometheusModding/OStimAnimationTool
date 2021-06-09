@@ -29,40 +29,5 @@ namespace AnimationDatabaseExplorer.ViewModels
                         .Publish(result.Parameters.GetValue<string>("name"));
             });
         }
-
-        /*private void AnimationsSelect()
-        {
-            var openFileDialog = new OpenFileDialog
-            {
-                Multiselect = true,
-                Filter = "Havok Animation files (*.hkx)|*hkx|All files (*.*)|*.*",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-            };
-
-            if (openFileDialog.ShowDialog() != true) return;
-
-            _sourceDir = openFileDialog.FileName;
-            _sourceDir = _sourceDir.Remove(_sourceDir.Length - openFileDialog.SafeFileName.Length);
-
-            foreach (var filename in openFileDialog.FileNames)
-            {
-                _animationName = !string.IsNullOrEmpty(AnimationSetnameTextbox.Text)
-                    ? AnimationSetnameTextbox.Text
-                    : Path.GetFileName(filename).Remove(openFileDialog.SafeFileName.Length - 10);
-                _animationClass = !string.IsNullOrEmpty(AnimationClassTextbox.Text)
-                    ? AnimationClassTextbox.Text
-                    : string.Empty;
-                Animation anim = new(_animationName, Path.GetFileName(filename), _animationClass, _animator);
-
-                if (!_animationDatabase.Contains(anim))
-                    _animationDatabase.Add(anim);
-            }
-
-            if (AnimationDatabaseView != null)
-            {
-                AnimationDatabaseView.GroupDescriptions.Clear();
-                AnimationDatabaseView.GroupDescriptions.Add(new PropertyGroupDescription("SetName"));
-            }
-        }*/
     }
 }

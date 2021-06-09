@@ -7,7 +7,7 @@ namespace AnimationDatabaseExplorer.Dialogs
 {
     internal class NewAnimationDatabaseDialogViewModel : BindableBase, IDialogAware
     {
-        private string _name;
+        private string _name = string.Empty;
 
         public NewAnimationDatabaseDialogViewModel()
         {
@@ -36,7 +36,7 @@ namespace AnimationDatabaseExplorer.Dialogs
         }
 
         public string Title => "Create New Animation-Database";
-        public event Action<IDialogResult> RequestClose;
+        public event Action<IDialogResult>? RequestClose;
 
         private void ConfirmDialog()
         {

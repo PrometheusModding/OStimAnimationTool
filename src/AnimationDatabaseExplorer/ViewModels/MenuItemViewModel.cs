@@ -9,8 +9,8 @@ namespace AnimationDatabaseExplorer.ViewModels
             Header = header;
         }
 
-        public string Header { get; set; }
+        public string Header { get; init; }
 
-        public ObservableCollection<MenuItemViewModel> MenuItems { get; set; }
+        public ObservableCollection<MenuItemViewModel>? MenuItems { get; set; }
     }
 }

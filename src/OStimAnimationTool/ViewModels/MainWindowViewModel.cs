@@ -25,7 +25,7 @@ namespace OStimConversionTool.ViewModels
             p.Add("regionManager", _regionManager);
             p.Add("name", name);
 
-            _regionManager.RequestNavigate("TabRegion", "AnimationSetDatagridView", p);
+            _regionManager.RequestNavigate("TabRegion", "AnimationDatabaseView", p);
         }
 
 

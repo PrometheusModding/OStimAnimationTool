@@ -24,7 +24,7 @@ namespace AnimationDatabaseExplorer
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterDialog<NewAnimationDatabaseDialog, NewAnimationDatabaseDialogViewModel>();
-            containerRegistry.RegisterForNavigation<AnimationSetDatagridView>();
+            containerRegistry.RegisterForNavigation<AnimationDatabaseView>();
             containerRegistry.RegisterForNavigation<AnimationSetDetailView>();
             containerRegistry.RegisterForNavigation<AnimationDetailView>();
         }

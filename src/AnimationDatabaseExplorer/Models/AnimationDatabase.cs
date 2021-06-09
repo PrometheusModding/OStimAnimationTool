@@ -12,11 +12,6 @@ namespace AnimationDatabaseExplorer.Models
 
         public string Name { get; set; }
 
-        public new bool Contains(AnimationSet animationSet)
-        {
-            return this.Any(animSet => animSet.SetName.Equals(animationSet.SetName));
-        }
-
         public bool Contains(Animation animation)
         {
             return this.Any(animSet => animSet.Contains(animation));

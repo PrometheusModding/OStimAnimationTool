@@ -6,29 +6,17 @@ namespace AnimationDatabaseExplorer.Models
     public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
     {
         private bool _activeEdit;
-        private string _animationClass;
+        private string _animationClass = string.Empty;
         private string _animationInfo = string.Empty;
         private string _animationName;
-        private string _animator;
+        private string _animator = string.Empty;
         private bool _isTransition;
-        private string _setName;
 
         private Animation? _tempAnim;
 
         public Animation(string animName)
         {
             _animationName = animName;
-        }
-
-        public string SetName
-        {
-            get => _setName;
-            set
-            {
-                if (value == _setName) return;
-                _setName = value;
-                NotifyPropertyChanged(nameof(SetName));
-            }
         }
 
         public string AnimationName
@@ -100,7 +88,6 @@ namespace AnimationDatabaseExplorer.Models
             if (_tempAnim is null)
                 throw new NullReferenceException();
 
-            _setName = _tempAnim._setName;
             _animationName = _tempAnim._animationName;
             _activeEdit = false;
         }
@@ -108,7 +95,6 @@ namespace AnimationDatabaseExplorer.Models
         public void EndEdit()
         {
             if (_activeEdit != true) return;
-            _tempAnim = null;
             _activeEdit = false;
         }
 

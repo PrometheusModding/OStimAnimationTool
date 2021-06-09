@@ -8,14 +8,15 @@ using Prism.Regions;
 
 namespace AnimationDatabaseExplorer.ViewModels
 {
-    public class AnimationSetDatagridViewModel : TabViewModelBase
+    public class AnimationDatabaseViewModel : TabViewModelBase
     {
-        private AnimationDatabase _animationDatabase;
-        private string _name;
-        private IRegionManager _regionManager;
+        private readonly IRegionManager _regionManager;
+        private AnimationDatabase _animationDatabase = new("");
+        private string _name = string.Empty;
 
-        public AnimationSetDatagridViewModel()
+        protected AnimationDatabaseViewModel(IRegionManager regionManager)
         {
+            _regionManager = regionManager;
             AddAnimationSetCommand = new DelegateCommand(AddAnimationSet);
             OpenSetDetailCommand = new DelegateCommand<AnimationSet>(OpenSetDetail);
         }
@@ -23,9 +24,8 @@ namespace AnimationDatabaseExplorer.ViewModels
         public AnimationDatabase AnimationDatabase
         {
             get => _animationDatabase;
-            set => SetProperty(ref _animationDatabase, value);
+            private set => SetProperty(ref _animationDatabase, value);
         }
-
 
         public string Name
         {
@@ -40,12 +40,11 @@ namespace AnimationDatabaseExplorer.ViewModels
         public override void OnNavigatedTo(NavigationContext navigationContext)
         {
             _name = navigationContext.Parameters.GetValue<string>("name");
-            _regionManager = navigationContext.Parameters.GetValue<IRegionManager>("regionManager");
             AnimationDatabase = new AnimationDatabase(_name);
             Title = _name;
         }
 
-        public void AddAnimationSet()
+        private void AddAnimationSet()
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -73,12 +72,7 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         private void OpenSetDetail(AnimationSet animationSet)
         {
-            if (animationSet is null)
-                return;
-
-            var p = new NavigationParameters();
-            p.Add("animationSet", animationSet);
-            p.Add("regionManager", _regionManager);
+            var p = new NavigationParameters {{"animationSet", animationSet}};
             _regionManager.RequestNavigate("TabRegion", "AnimationSetDetailView", p);
         }
     }

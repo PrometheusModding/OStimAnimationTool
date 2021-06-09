@@ -9,7 +9,7 @@ namespace AnimationDatabaseExplorer.ViewModels
 {
     public class AnimationSetDetailViewModel : TabViewModelBase, IRegionManagerAware
     {
-        private AnimationSet _animationSet;
+        private AnimationSet _animationSet = new("");
 
         public AnimationSetDetailViewModel()
         {
@@ -86,20 +86,22 @@ namespace AnimationDatabaseExplorer.ViewModels
         public DelegateCommand<string> AnimationClassMenuCommand { get; }
         public DelegateCommand<Animation> OpenAnimationDetailCommand { get; }
 
-        public ObservableCollection<MenuItemViewModel> AnimationClassMenuItems { get; set; }
+        public ObservableCollection<MenuItemViewModel> AnimationClassMenuItems { get; }
 
         public AnimationSet AnimationSet
         {
             get => _animationSet;
-            set => SetProperty(ref _animationSet, value);
+            private set => SetProperty(ref _animationSet, value);
         }
 
-        public IRegionManager RegionManager { get; set; }
+        public IRegionManager? RegionManager { get; set; }
 
         private void OpenAnimationDetail(Animation animation)
         {
-            var p = new NavigationParameters();
-            p.Add("animation", animation);
+            if (RegionManager is null)
+                return;
+
+            var p = new NavigationParameters {{"animation", animation}};
             RegionManager.RequestNavigate("AnimationDetailRegion", "AnimationDetailView", p);
         }
 

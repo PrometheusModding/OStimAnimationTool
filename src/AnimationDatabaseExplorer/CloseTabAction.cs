@@ -47,7 +47,7 @@ namespace AnimationDatabaseExplorer
             return canRemove;
         }
 
-        private static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        private static T? FindParent<T>(DependencyObject? child) where T : DependencyObject
         {
             var parentObject = VisualTreeHelper.GetParent(child);
 

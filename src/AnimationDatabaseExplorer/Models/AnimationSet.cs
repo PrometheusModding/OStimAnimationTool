@@ -1,8 +1,9 @@
+using System;
 using System.Collections.ObjectModel;
 
 namespace AnimationDatabaseExplorer.Models
 {
-    public class AnimationSet : ObservableCollection<Animation>
+    public class AnimationSet : ObservableCollection<Animation>, IEquatable<AnimationSet>
     {
         private string _setName;
 
@@ -16,9 +17,17 @@ namespace AnimationDatabaseExplorer.Models
             get => _setName;
             set
             {
-                if (value != null && value == _setName) return;
+                if (value == _setName) return;
                 _setName = value;
             }
+        }
+
+        public bool Equals(AnimationSet? other)
+        {
+            if (other is null)
+                throw new NullReferenceException();
+
+            return _setName.Equals(other._setName);
         }
     }
 }

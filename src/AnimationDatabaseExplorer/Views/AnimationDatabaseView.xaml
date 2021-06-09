@@ -5,16 +5,16 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:AnimationDatabaseExplorer"
     xmlns:core="clr-namespace:OStimAnimationTool.Core;assembly=OStimAnimationTool.Core"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:AnimationDatabaseExplorer.ViewModels"
-    x:Class="AnimationDatabaseExplorer.Views.AnimationSetDatagridView"
+    xmlns:models="clr-namespace:AnimationDatabaseExplorer.Models"
+    x:Class="AnimationDatabaseExplorer.Views.AnimationDatabaseView"
     prism:ViewModelLocator.AutoWireViewModel="True"
     Header="{Binding Title}"
-    HeaderTemplate="{DynamicResource CloseButtonHeader}">
-
-    <TabItem.DataContext>
-        <viewModels:AnimationSetDatagridViewModel />
-    </TabItem.DataContext>
-
+    HeaderTemplate="{DynamicResource CloseButtonHeader}"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance viewModels:AnimationDatabaseViewModel}">
     <TabItem.Resources>
         <Style TargetType="DataGridRow">
             <Setter Property="core:InteractivityItems.Template">
@@ -23,6 +23,7 @@
                         <core:InteractivityItems>
                             <core:InteractivityItems.Triggers>
                                 <i:EventTrigger EventName="MouseDoubleClick">
+                                    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                     <prism:InvokeCommandAction
                                         Command="{Binding DataContext.OpenSetDetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                         CommandParameter="{Binding SelectedItem, ElementName=AnimationDatabaseGrid}" />
@@ -56,7 +57,7 @@
         <DataGrid.Columns>
             <DataGridTemplateColumn Header="Animation Set">
                 <DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate>
+                    <DataTemplate DataType="models:AnimationSet">
                         <TextBox Text="{Binding SetName}" />
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
@@ -68,7 +69,7 @@
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="Click">
                                     <prism:InvokeCommandAction
-                                        Command="{Binding DataContext.AddAnimationSetCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" />
+                                        Command="{Binding DataContext.AddAnimationSetCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </Button>
