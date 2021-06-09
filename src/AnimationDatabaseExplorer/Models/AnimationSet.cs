@@ -24,7 +24,7 @@ namespace AnimationDatabaseExplorer.Models
                 NotifyPropertyChanged(nameof(AnimationClass));
             }
         }
-        
+
         public string SetName
         {
             get => _setName;
@@ -43,7 +43,7 @@ namespace AnimationDatabaseExplorer.Models
 
             return _setName.Equals(other._setName);
         }
-        
+
         public new event PropertyChangedEventHandler? PropertyChanged;
 
         private void NotifyPropertyChanged(string propertyName)

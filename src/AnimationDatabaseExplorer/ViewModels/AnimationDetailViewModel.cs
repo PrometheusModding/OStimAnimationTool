@@ -1,6 +1,5 @@
 using AnimationDatabaseExplorer.Models;
 using OStimAnimationTool.Core;
-using Prism.Mvvm;
 using Prism.Regions;
 
 namespace AnimationDatabaseExplorer.ViewModels

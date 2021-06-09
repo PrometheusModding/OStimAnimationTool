@@ -28,7 +28,7 @@ namespace AnimationDatabaseExplorer.Models
                 NotifyPropertyChanged(nameof(AnimationName));
             }
         }
-        
+
         public string Animator
         {
             get => _animator;

@@ -20,7 +20,7 @@ namespace AnimationDatabaseExplorer.ViewModels
             {
                 new("Vaginal", "Sx"),
                 new("Anal", "An"),
-                new("Foreplay","BJ")
+                new("Foreplay", "BJ")
                 {
                     MenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
                     {
@@ -29,10 +29,10 @@ namespace AnimationDatabaseExplorer.ViewModels
                             MenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
                             {
                                 new("Normal", "BJ"),
-                                new("Head Held Blowjob","HhBJ"),
-                                new("Penisjob (Blowjob with Jerking)","ApPJ"),
-                                new("Head Held Penisjob","HhPJ"),
-                                new("Self","SJ")
+                                new("Head Held Blowjob", "HhBJ"),
+                                new("Penisjob (Blowjob with Jerking)", "ApPJ"),
+                                new("Head Held Penisjob", "HhPJ"),
+                                new("Self", "SJ")
                             }
                         },
                         new("Handjob", "HJ")
@@ -40,44 +40,44 @@ namespace AnimationDatabaseExplorer.ViewModels
                             MenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
                             {
                                 new("Normal", "HJ"),
-                                new("Masturbate","Po"),
-                                new("Head Held Masturbate","HhPo"),
+                                new("Masturbate", "Po"),
+                                new("Head Held Masturbate", "HhPo"),
                                 new("Apart Handjob", "ApHJ"),
-                                new("Dual Handjob","DHJ")
+                                new("Dual Handjob", "DHJ")
                             }
                         },
                         new("Cuddling", "Em")
                         {
                             MenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
                             {
-                                new("Standing Apart","Ap"),
-                                new("Standing Apart Undressing","ApU"),
-                                new("Embracing","Em"),
-                                new("Holding","Ho"),
-                                new("Rough Holding","Ro")
+                                new("Standing Apart", "Ap"),
+                                new("Standing Apart Undressing", "ApU"),
+                                new("Embracing", "Em"),
+                                new("Holding", "Ho"),
+                                new("Rough Holding", "Ro")
                             }
                         },
                         new("Fingering", "Cr")
                         {
                             Header = "Fingering", MenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
                             {
-                                new("Rubbing Clit","Cr"),
-                                new("1 Finger","Pf1"),
-                                new("2 Finger","Pf2")
+                                new("Rubbing Clit", "Cr"),
+                                new("1 Finger", "Pf1"),
+                                new("2 Finger", "Pf2")
                             }
                         },
                         new("69", "VBJ")
                         {
                             Header = "69", MenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
                             {
-                                new("69 with Blowjob","VBJ"),
-                                new("69 with Handjob","VHJ")
+                                new("69 with Blowjob", "VBJ"),
+                                new("69 with Handjob", "VHJ")
                             }
                         },
                         new("Cunnilingus", "VJ"),
-                        new("Footjob","FJ"),
-                        new("Boobjob","BoJ"),
-                        new("Breastfeeding","BoF")
+                        new("Footjob", "FJ"),
+                        new("Boobjob", "BoJ"),
+                        new("Breastfeeding", "BoF")
                     }
                 }
             };

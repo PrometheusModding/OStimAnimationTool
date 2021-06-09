@@ -12,6 +12,7 @@ namespace AnimationDatabaseExplorer.ViewModels
     {
         private readonly IRegionManager _regionManager;
         private AnimationDatabase _animationDatabase = new("New Animation Database");
+
         protected AnimationDatabaseViewModel(IRegionManager regionManager)
         {
             _regionManager = regionManager;
@@ -31,9 +32,9 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         public override void OnNavigatedTo(NavigationContext navigationContext)
         {
-            if(!string.IsNullOrEmpty(navigationContext.Parameters.GetValue<string>("name")))
+            if (!string.IsNullOrEmpty(navigationContext.Parameters.GetValue<string>("name")))
                 AnimationDatabase.Name = navigationContext.Parameters.GetValue<string>("name");
-            
+
             Title = AnimationDatabase.Name;
         }
 

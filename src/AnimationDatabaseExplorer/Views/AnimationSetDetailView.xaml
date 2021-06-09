@@ -35,21 +35,20 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="3*" />
+            <RowDefinition Height="11*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="5*" />
+            <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
         <TextBlock Text="{Binding AnimationSet.SetName, UpdateSourceTrigger=PropertyChanged}" />
         <TextBlock Text="{Binding AnimationSet.AnimationClass, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0"
                    Grid.Column="1" />
         <Menu Name="AnimationClassMenu" Grid.Row="0" Grid.Column="2" ItemsSource="{Binding AnimationClassMenuItems}">
             <Menu.ItemContainerStyle>
-                <Style TargetType="MenuItem">
+                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                     <Setter Property="Command"
                             Value="{Binding DataContext.AnimationClassMenuCommand, RelativeSource={RelativeSource AncestorType=Menu}}" />
                     <Setter Property="CommandParameter" Value="{Binding ClassToken}" />
@@ -62,10 +61,10 @@
                 </HierarchicalDataTemplate>
             </Menu.ItemTemplate>
         </Menu>
-        <ContentControl prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1" Grid.ColumnSpan="4"
+        <ContentControl prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1" Grid.ColumnSpan="3"
                         Grid.Column="0" />
         <DataGrid Name="AnimationSetDatagrid" ItemsSource="{Binding AnimationSet, UpdateSourceTrigger=PropertyChanged}"
-                  Grid.Row="2" Grid.ColumnSpan="4" Grid.Column="0"
+                  Grid.Row="0" Grid.RowSpan="2" Grid.Column="3"
                   AutoGenerateColumns="False">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
