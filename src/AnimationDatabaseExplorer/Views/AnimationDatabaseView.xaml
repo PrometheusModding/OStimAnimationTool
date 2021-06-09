@@ -16,7 +16,7 @@
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance viewModels:AnimationDatabaseViewModel}">
     <TabItem.Resources>
-        <Style TargetType="DataGridRow">
+        <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
             <Setter Property="core:InteractivityItems.Template">
                 <Setter.Value>
                     <core:InteractivityTemplate>
@@ -40,8 +40,10 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <ContentControl Content="{Binding }" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 5 0" />
-                <Button Grid.Column="1" Content="x" Width="25" Height="25" FontSize="16" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="5 2 -3 2" Padding="0 0 0 6" Background="Red">
+                <ContentControl Content="{Binding }" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                Margin="0 0 5 0" />
+                <Button Grid.Column="1" Content="x" Width="25" Height="25" FontSize="16" VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right" Margin="5 2 -3 2" Padding="0 0 0 6" Background="Red">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
                             <local:CloseTabAction />
@@ -52,8 +54,9 @@
         </DataTemplate>
     </TabItem.Resources>
 
-    <DataGrid Name="AnimationDatabaseGrid" ItemsSource="{Binding AnimationDatabase, UpdateSourceTrigger=PropertyChanged}"
-              IsSynchronizedWithCurrentItem="True">
+    <DataGrid Name="AnimationDatabaseGrid"
+              ItemsSource="{Binding AnimationDatabase, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single"
+              AutoGenerateColumns="False" IsSynchronizedWithCurrentItem="True">
         <DataGrid.Columns>
             <DataGridTemplateColumn>
                 <DataGridTemplateColumn.HeaderTemplate>
@@ -68,8 +71,6 @@
                         </Button>
                     </DataTemplate>
                 </DataGridTemplateColumn.HeaderTemplate>
-            </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="Animation Set">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate DataType="models:AnimationSet">
                         <TextBox Text="{Binding SetName}" />

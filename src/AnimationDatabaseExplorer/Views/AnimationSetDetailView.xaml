@@ -19,8 +19,10 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <ContentControl Content="{Binding }" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 5 0" />
-                <Button Grid.Column="1" Content="x" Width="25" Height="25" FontSize="16" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="5 2 -3 2" Padding="0 0 1 6" Background="Red">
+                <ContentControl Content="{Binding }" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                Margin="0 0 5 0" />
+                <Button Grid.Column="1" Content="x" Width="25" Height="25" FontSize="16" VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right" Margin="5 2 -3 2" Padding="0 0 1 6" Background="Red">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
                             <local:CloseTabAction />
@@ -62,8 +64,8 @@
         </Menu>
         <ContentControl prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1" Grid.ColumnSpan="4"
                         Grid.Column="0" />
-        <DataGrid Name="AnimationSetDatagrid" ItemsSource="{Binding AnimationSet}" Grid.Row="2" Grid.ColumnSpan="4"
-                  Grid.Column="0"
+        <DataGrid Name="AnimationSetDatagrid" ItemsSource="{Binding AnimationSet, UpdateSourceTrigger=PropertyChanged}"
+                  Grid.Row="2" Grid.ColumnSpan="4" Grid.Column="0"
                   AutoGenerateColumns="False">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
