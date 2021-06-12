@@ -1,8 +1,12 @@
+#region
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Xaml.Behaviors;
 using Prism.Regions;
+
+#endregion
 
 namespace AnimationDatabaseExplorer
 {

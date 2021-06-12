@@ -1,7 +1,11 @@
+#region
+
 using System;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
+
+#endregion
 
 namespace AnimationDatabaseExplorer.Dialogs
 {

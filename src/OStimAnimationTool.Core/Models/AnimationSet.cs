@@ -1,18 +1,23 @@
+#region
+
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using OStimAnimationTool.Core.Models;
 using static System.String;
+
+#endregion
 
 namespace AnimationDatabaseExplorer.Models
 {
     public class AnimationSet : ObservableCollection<Animation>, IEquatable<AnimationSet>, INotifyPropertyChanged
     {
         private string _animationClass = Empty;
-        private string _animator;
+        private string _animator = Empty;
         private string _description = Empty;
         private bool _isTransition;
         private string _setName;
-        private string _transitionDestination;
+        private string _transitionDestination = Empty;
 
         public AnimationSet(string setName)
         {

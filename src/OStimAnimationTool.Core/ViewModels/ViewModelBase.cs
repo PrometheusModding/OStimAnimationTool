@@ -1,16 +1,20 @@
+#region
+
 using System;
 using Prism;
 using Prism.Mvvm;
 using Prism.Regions;
 
+#endregion
+
 namespace OStimAnimationTool.Core
 {
-    public class TabViewModelBase : BindableBase, INavigationAware, IActiveAware
+    public class ViewModelBase : BindableBase, INavigationAware, IActiveAware
     {
         private bool _isActive;
-        private string _title;
+        private string? _title;
 
-        public string Title
+        public string? Title
         {
             get => _title;
             set => SetProperty(ref _title, value);
@@ -23,7 +27,7 @@ namespace OStimAnimationTool.Core
         }
 
 
-        public event EventHandler IsActiveChanged;
+        public event EventHandler? IsActiveChanged;
 
         public virtual bool IsNavigationTarget(NavigationContext navigationContext)
         {

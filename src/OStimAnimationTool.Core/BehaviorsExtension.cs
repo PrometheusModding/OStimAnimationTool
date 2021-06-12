@@ -1,7 +1,11 @@
+#region
+
 using System.Collections.Generic;
 using System.Windows;
 using Microsoft.Xaml.Behaviors;
 using TriggerBase = Microsoft.Xaml.Behaviors.TriggerBase;
+
+#endregion
 
 namespace OStimAnimationTool.Core
 {
@@ -17,8 +21,8 @@ namespace OStimAnimationTool.Core
                 typeof(InteractivityItems),
                 new PropertyMetadata(default(InteractivityTemplate), OnTemplateChanged));
 
-        private List<Behavior> _behaviors;
-        private List<TriggerBase> _triggers;
+        private List<Behavior>? _behaviors;
+        private List<TriggerBase>? _triggers;
 
         public new List<TriggerBase> Triggers => _triggers ??= new List<TriggerBase>();
 

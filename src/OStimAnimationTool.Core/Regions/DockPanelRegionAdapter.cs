@@ -1,18 +1,22 @@
+#region
+
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using Prism.Regions;
 
+#endregion
+
 namespace OStimAnimationTool.Core.Regions
 {
-    public class StackPanelRegionAdapter : RegionAdapterBase<StackPanel>
+    public class DockPanelRegionAdapter : RegionAdapterBase<DockPanel>
     {
-        public StackPanelRegionAdapter(RegionBehaviorFactory behaviorFactory)
+        public DockPanelRegionAdapter(RegionBehaviorFactory behaviorFactory)
             : base(behaviorFactory)
         {
         }
 
-        protected override void Adapt(IRegion region, StackPanel regionTarget)
+        protected override void Adapt(IRegion region, DockPanel regionTarget)
         {
             region.Views.CollectionChanged += (s, e) =>
             {

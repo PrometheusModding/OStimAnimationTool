@@ -1,4 +1,8 @@
+#region
+
 using System.Collections.ObjectModel;
+
+#endregion
 
 namespace AnimationDatabaseExplorer.ViewModels
 {

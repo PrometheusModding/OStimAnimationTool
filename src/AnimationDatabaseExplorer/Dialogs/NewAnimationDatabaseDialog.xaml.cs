@@ -1,4 +1,8 @@
+#region
+
 using System.Windows.Controls;
+
+#endregion
 
 namespace AnimationDatabaseExplorer.Dialogs
 {

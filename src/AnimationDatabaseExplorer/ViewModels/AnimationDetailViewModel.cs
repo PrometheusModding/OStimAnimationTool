@@ -1,10 +1,14 @@
-using AnimationDatabaseExplorer.Models;
+#region
+
 using OStimAnimationTool.Core;
+using OStimAnimationTool.Core.Models;
 using Prism.Regions;
+
+#endregion
 
 namespace AnimationDatabaseExplorer.ViewModels
 {
-    public class AnimationDetailViewModel : TabViewModelBase
+    public class AnimationDetailViewModel : ViewModelBase
     {
         private Animation _animation = new("");
 

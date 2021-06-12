@@ -1,18 +1,28 @@
+﻿#region
+
 using System.Collections.ObjectModel;
 using AnimationDatabaseExplorer.Models;
 using OStimAnimationTool.Core;
-using OStimAnimationTool.Core.Prism;
+using OStimAnimationTool.Core.Events;
+using OStimAnimationTool.Core.Models;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Regions;
+
+#endregion
 
 namespace AnimationDatabaseExplorer.ViewModels
 {
-    public class AnimationSetDetailViewModel : TabViewModelBase, IRegionManagerAware
+    public class SetWorkspaceViewModel : ViewModelBase
     {
+        private readonly IEventAggregator _eventAggregator;
+        private readonly IRegionManager _regionManager;
         private AnimationSet _animationSet = new("New Animation Set");
 
-        public AnimationSetDetailViewModel()
+        public SetWorkspaceViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
         {
+            _regionManager = regionManager;
+            _eventAggregator = eventAggregator;
             AnimationClassMenuCommand = new DelegateCommand<string>(SetAnimationClass);
             OpenAnimationDetailCommand = new DelegateCommand<Animation>(OpenAnimationDetail);
 
@@ -94,32 +104,22 @@ namespace AnimationDatabaseExplorer.ViewModels
             private set => SetProperty(ref _animationSet, value);
         }
 
-        public IRegionManager? RegionManager { get; set; }
-
         private void OpenAnimationDetail(Animation animation)
         {
-            if (RegionManager is null)
-                return;
-
             var p = new NavigationParameters {{"animation", animation}};
-            RegionManager.RequestNavigate("AnimationDetailRegion", "AnimationDetailView", p);
+            _regionManager.RequestNavigate("AnimationDetailRegion", "AnimationDetailView", p);
         }
 
         private void SetAnimationClass(string animationClass)
         {
             AnimationSet.AnimationClass = animationClass;
+            _eventAggregator.GetEvent<ChangeAnimationClassEvent>().Publish();
         }
+
 
         public override void OnNavigatedTo(NavigationContext navigationContext)
         {
-            if (navigationContext.Parameters.ContainsKey("animationSet"))
-                AnimationSet = navigationContext.Parameters.GetValue<AnimationSet>("animationSet");
-            Title = AnimationSet.SetName;
-        }
-
-        public override bool IsNavigationTarget(NavigationContext navigationContext)
-        {
-            return false;
+            AnimationSet = navigationContext.Parameters.GetValue<AnimationSet>("animationSet");
         }
     }
 }

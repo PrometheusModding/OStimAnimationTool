@@ -1,8 +1,6 @@
-using System.Windows.Controls;
-
 namespace AnimationDatabaseExplorer.Views
 {
-    public partial class AnimationDetailView : UserControl
+    public partial class AnimationDetailView
     {
         public AnimationDetailView()
         {

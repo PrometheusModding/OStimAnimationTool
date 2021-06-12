@@ -1,5 +1,10 @@
+#region
+
 using System.Windows;
 using System.Windows.Controls;
+using Fluent;
+using OStimAnimationTool.Core.Behaviors;
+using OStimAnimationTool.Core.Commands;
 using OStimAnimationTool.Core.Prism;
 using OStimAnimationTool.Core.Regions;
 using OStimConversionTool.Views;
@@ -8,11 +13,10 @@ using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
 
+#endregion
+
 namespace OStimConversionTool
 {
-    /// <summary>
-    ///     Interaction logic for App.xaml
-    /// </summary>
     public partial class App : PrismApplication
     {
         protected override Window CreateShell()
@@ -22,20 +26,22 @@ namespace OStimConversionTool
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.Register<IRegionNavigationContentLoader, ScopedRegionNavigationContentLoader>();
+            containerRegistry.RegisterSingleton<IRegionNavigationContentLoader, ScopedRegionNavigationContentLoader>();
+            containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
         }
 
         protected override void ConfigureRegionAdapterMappings(RegionAdapterMappings regionAdapterMappings)
         {
             base.ConfigureRegionAdapterMappings(regionAdapterMappings);
-            regionAdapterMappings.RegisterMapping(typeof(StackPanel),
-                Container.Resolve<StackPanelRegionAdapter>());
+            regionAdapterMappings.RegisterMapping<DockPanel>(Container.Resolve<DockPanelRegionAdapter>());
+            regionAdapterMappings.RegisterMapping<Ribbon>(Container.Resolve<FluentRibbonRegionAdapter>());
         }
 
         protected override void ConfigureDefaultRegionBehaviors(IRegionBehaviorFactory regionBehaviors)
         {
             base.ConfigureDefaultRegionBehaviors(regionBehaviors);
             regionBehaviors.AddIfMissing(RegionManagerAwareBehavior.BehaviorKey, typeof(RegionManagerAwareBehavior));
+            regionBehaviors.AddIfMissing<DependentViewRegionBehavior>(DependentViewRegionBehavior.BehaviorKey);
         }
 
         protected override IModuleCatalog CreateModuleCatalog()

@@ -1,19 +1,30 @@
+#region
+
 using System;
 using System.ComponentModel;
 
-namespace AnimationDatabaseExplorer.Models
+#endregion
+
+namespace OStimAnimationTool.Core.Models
 {
     public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
     {
         private bool _activeEdit;
         private string _animationName;
         private bool _isTransition;
+        private string _oldPath = string.Empty;
 
         private Animation? _tempAnim;
 
-        public Animation(string animName)
+        public Animation(string animationName)
         {
-            _animationName = animName;
+            _animationName = animationName;
+        }
+
+        public Animation(string animationName, string oldPath)
+        {
+            _animationName = animationName;
+            _oldPath = oldPath;
         }
 
         public string AnimationName
@@ -36,6 +47,17 @@ namespace AnimationDatabaseExplorer.Models
                 if (value == _isTransition) return;
                 _isTransition = value;
                 NotifyPropertyChanged(nameof(IsTransition));
+            }
+        }
+
+        public string OldPath
+        {
+            get => _oldPath;
+            set
+            {
+                if (value == _oldPath) return;
+                _oldPath = value;
+                NotifyPropertyChanged(nameof(OldPath));
             }
         }
 

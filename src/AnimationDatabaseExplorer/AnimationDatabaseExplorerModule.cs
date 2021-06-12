@@ -1,8 +1,12 @@
+#region
+
 using AnimationDatabaseExplorer.Dialogs;
 using AnimationDatabaseExplorer.Views;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
+
+#endregion
 
 namespace AnimationDatabaseExplorer
 {
@@ -17,16 +21,16 @@ namespace AnimationDatabaseExplorer
 
         public void OnInitialized(IContainerProvider containerProvider)
         {
-            _regionManager.RegisterViewWithRegion("RibbonMenuRegion", typeof(RibbonMenuView));
-            _regionManager.RegisterViewWithRegion("MenuRegion", typeof(MenuView));
+            _regionManager.RegisterViewWithRegion("RibbonRegion", typeof(RibbonMenuView));
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterDialog<NewAnimationDatabaseDialog, NewAnimationDatabaseDialogViewModel>();
-            containerRegistry.RegisterForNavigation<AnimationDatabaseView>();
-            containerRegistry.RegisterForNavigation<AnimationSetDetailView>();
+            containerRegistry.RegisterForNavigation<SetDetailView>();
             containerRegistry.RegisterForNavigation<AnimationDetailView>();
+            containerRegistry.RegisterForNavigation<DatabaseTreeView>();
+            containerRegistry.RegisterForNavigation<SetWorkspaceView>();
         }
     }
 }
