@@ -3,12 +3,11 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using OStimAnimationTool.Core.Models;
 using static System.String;
 
 #endregion
 
-namespace AnimationDatabaseExplorer.Models
+namespace OStimAnimationTool.Core.Models
 {
     public class AnimationSet : ObservableCollection<Animation>, IEquatable<AnimationSet>, INotifyPropertyChanged
     {

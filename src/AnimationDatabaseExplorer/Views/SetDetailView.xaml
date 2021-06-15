@@ -15,7 +15,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Expander IsExpanded="True">
+        <Expander Header="Set Properties" IsExpanded="True">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -39,7 +39,8 @@
                 </Menu>
             </Grid>
         </Expander>
-        <Expander prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1" IsExpanded="True" />
+        <Expander Header="Animation Properties" prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1"
+                  IsExpanded="True" />
         <DataGrid Name="AnimationSetDatagrid" ItemsSource="{Binding AnimationSet, UpdateSourceTrigger=PropertyChanged}"
                   Grid.Row="2"
                   AutoGenerateColumns="False">

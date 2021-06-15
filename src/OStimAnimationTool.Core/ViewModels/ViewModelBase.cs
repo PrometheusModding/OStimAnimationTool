@@ -12,13 +12,6 @@ namespace OStimAnimationTool.Core
     public class ViewModelBase : BindableBase, INavigationAware, IActiveAware
     {
         private bool _isActive;
-        private string? _title;
-
-        public string? Title
-        {
-            get => _title;
-            set => SetProperty(ref _title, value);
-        }
 
         public bool IsActive
         {

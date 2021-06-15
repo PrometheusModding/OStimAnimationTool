@@ -3,6 +3,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Fluent;
+using NodeNetwork;
 using OStimAnimationTool.Core.Behaviors;
 using OStimAnimationTool.Core.Commands;
 using OStimAnimationTool.Core.Prism;
@@ -21,6 +22,7 @@ namespace OStimConversionTool
     {
         protected override Window CreateShell()
         {
+            NNViewRegistrar.RegisterSplat();
             return Container.Resolve<MainWindow>();
         }
 

@@ -10,9 +10,10 @@ namespace OStimAnimationTool.Core.Models
     public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
     {
         private bool _activeEdit;
+        private int _actor;
         private string _animationName;
-        private bool _isTransition;
         private string _oldPath = string.Empty;
+        private int _speed;
 
         private Animation? _tempAnim;
 
@@ -38,15 +39,14 @@ namespace OStimAnimationTool.Core.Models
             }
         }
 
-
-        public bool IsTransition
+        public int Actor
         {
-            get => _isTransition;
+            get => _actor;
             set
             {
-                if (value == _isTransition) return;
-                _isTransition = value;
-                NotifyPropertyChanged(nameof(IsTransition));
+                if (value == _actor) return;
+                _actor = value;
+                NotifyPropertyChanged(nameof(Actor));
             }
         }
 
@@ -58,6 +58,17 @@ namespace OStimAnimationTool.Core.Models
                 if (value == _oldPath) return;
                 _oldPath = value;
                 NotifyPropertyChanged(nameof(OldPath));
+            }
+        }
+
+        public int Speed
+        {
+            get => _speed;
+            set
+            {
+                if (value == _speed) return;
+                _speed = value;
+                NotifyPropertyChanged(nameof(Speed));
             }
         }
 

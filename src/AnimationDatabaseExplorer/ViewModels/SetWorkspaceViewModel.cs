@@ -1,7 +1,6 @@
 ﻿#region
 
 using System.Collections.ObjectModel;
-using AnimationDatabaseExplorer.Models;
 using OStimAnimationTool.Core;
 using OStimAnimationTool.Core.Events;
 using OStimAnimationTool.Core.Models;

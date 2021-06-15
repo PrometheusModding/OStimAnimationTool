@@ -1,6 +1,5 @@
 ﻿#region
 
-using AnimationDatabaseExplorer.Models;
 using OStimAnimationTool.Core;
 using OStimAnimationTool.Core.Events;
 using OStimAnimationTool.Core.Models;
@@ -41,7 +40,6 @@ namespace AnimationDatabaseExplorer.ViewModels
                 AnimationDatabase.Name = navigationContext.Parameters.GetValue<string>("name");
 
             _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish(AnimationDatabase);
-            Title = AnimationDatabase.Name;
         }
 
         private void OpenSet(AnimationSet animationSet)
