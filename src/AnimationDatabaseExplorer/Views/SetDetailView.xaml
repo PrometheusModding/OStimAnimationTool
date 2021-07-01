@@ -5,7 +5,7 @@
     xmlns:viewModels="clr-namespace:AnimationDatabaseExplorer.ViewModels"
     xmlns:prism="http://prismlibrary.com/" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models1="clr-namespace:OStimAnimationTool.Core.Models;assembly=OStimAnimationTool.Core"
+    xmlns:models="clr-namespace:OStimAnimationTool.Core.Models;assembly=OStimAnimationTool.Core"
     mc:Ignorable="d"
     x:Class="AnimationDatabaseExplorer.Views.SetDetailView"
     d:DataContext="{d:DesignInstance viewModels:SetWorkspaceViewModel}">
@@ -57,7 +57,7 @@
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Animation Name">
                     <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="models1:Animation">
+                        <DataTemplate DataType="models:Animation">
                             <TextBox Text="{Binding AnimationName}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

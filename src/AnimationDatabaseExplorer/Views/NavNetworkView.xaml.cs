@@ -1,8 +1,8 @@
 ﻿namespace AnimationDatabaseExplorer.Views
 {
-    public partial class NavNodeView
+    public partial class NavNetworkView
     {
-        public NavNodeView()
+        public NavNetworkView()
         {
             InitializeComponent();
         }

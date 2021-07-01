@@ -1,4 +1,4 @@
-﻿<ContentControl x:Class="AnimationDatabaseExplorer.Views.NavNodeView"
+﻿<TabItem x:Class="AnimationDatabaseExplorer.Views.NavNetworkView"
                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -9,14 +9,16 @@
                 xmlns:breadcrumbBar="clr-namespace:NodeNetwork.Toolkit.BreadcrumbBar;assembly=NodeNetworkToolkit"
                 prism:ViewModelLocator.AutoWireViewModel="True"
                 mc:Ignorable="d"
-                d:DataContext="{d:DesignInstance viewModels:NavNetworkViewModel}">
-    <ContentControl.Resources>
+                d:DataContext="{d:DesignInstance viewModels:NavNetworkViewModel}"
+                HeaderTemplate="{DynamicResource CloseButtonHeader}"
+                Header="Nav Network">
+    <TabItem.Resources>
         <ContextMenu x:Key="ContextMenu">
             <MenuItem
                 Command="{Binding Path=OpenGroupCommand}"
                 Header="Open group" />
         </ContextMenu>
-    </ContentControl.Resources>
+    </TabItem.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -25,8 +27,8 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <breadcrumbBar:BreadcrumbBarView ViewModel="{Binding NetworkBreadcrumbBar}" />
-        <Button Command="{Binding OpenGroupCommand}" Grid.Row="3" />
-        <Button Command="{Binding LayoutCommand}" Grid.Row="1" />
+        <Button Content="Open Group" Command="{Binding OpenGroupCommand}" Grid.Row="3" />
+        <Button Content="Layout" Command="{Binding LayoutCommand}" Grid.Row="1" />
         <nodenetwork:NetworkView ViewModel="{Binding NetworkBreadcrumbBar.ActiveItem.Network}" Grid.Row="2">
             <nodenetwork:NetworkView.Resources>
                 <Style TargetType="nodenetwork:NodeView">
@@ -35,4 +37,4 @@
             </nodenetwork:NetworkView.Resources>
         </nodenetwork:NetworkView>
     </Grid>
-</ContentControl>
+</TabItem>

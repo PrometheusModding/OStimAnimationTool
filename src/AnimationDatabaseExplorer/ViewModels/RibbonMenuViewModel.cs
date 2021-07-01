@@ -26,8 +26,8 @@ namespace AnimationDatabaseExplorer.ViewModels
         {
             AddAnimationSetCommand = new DelegateCommand(AddAnimationSet, ActiveDatabase);
             AddSlAnimationSetCommand = new DelegateCommand(AddSlAnimationSet);
-            SaveDatabaseCommand = new DelegateCommand(SaveDatabase);
-            OpenNavNodeViewCommand = new DelegateCommand(OpenNavNodeView);
+            SaveDatabaseCommand = new DelegateCommand(SaveDatabase, WellFormedDatabase);
+            OpenNavNodeViewCommand = new DelegateCommand(OpenNavNetworkView);
 
             _regionManager = regionManager;
 
@@ -41,10 +41,10 @@ namespace AnimationDatabaseExplorer.ViewModels
         public DelegateCommand SaveDatabaseCommand { get; }
         public DelegateCommand OpenNavNodeViewCommand { get; }
 
-        private void OpenNavNodeView()
+        private void OpenNavNetworkView()
         {
             var p = new NavigationParameters {{"animationDatabase", _animationDatabase}};
-            _regionManager.RequestNavigate("WorkspaceRegion", "NavNodeView", p);
+            _regionManager.RequestNavigate("WorkspaceRegion", "NavNetworkView", p);
 
             foreach (var animationSet in _animationDatabase!)
                 if (string.IsNullOrEmpty(animationSet.AnimationClass))
@@ -71,6 +71,7 @@ namespace AnimationDatabaseExplorer.ViewModels
         {
             _animationDatabase = animationDatabase;
 
+            SaveDatabaseCommand.RaiseCanExecuteChanged();
             AddAnimationSetCommand.RaiseCanExecuteChanged();
         }
 

@@ -31,7 +31,7 @@ namespace AnimationDatabaseExplorer.ViewModels
     public class NavNetworkViewModel : ViewModelBase
     {
         private AnimationDatabase _animationDatabase = new("New Animation Database");
-        private SetNodeNetwork _network = new();
+        private NetworkViewModel _network = new();
 
         public NavNetworkViewModel()
         {
@@ -52,7 +52,7 @@ namespace AnimationDatabaseExplorer.ViewModels
 
 
         // Network that Holds the GroupNodes
-        private SetNodeNetwork Network
+        private NetworkViewModel Network
         {
             get => _network;
             set => SetProperty(ref _network, value);
@@ -176,35 +176,32 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         private static SetNodeViewModel SetNodeFinder(HubAnimationSet animationSet, NetworkViewModel subnet)
         {
-            SetNodeViewModel destNode;
-
             foreach (var node in subnet.Nodes.Items)
             {
-                destNode = (SetNodeViewModel) node;
+                if (node is not SetNodeViewModel destNode) continue;
                 if (destNode.AnimationSet.Equals(animationSet)) return destNode;
             }
 
-            destNode = new SetNodeViewModel(animationSet) {Name = animationSet.SetName};
-            subnet.Nodes.Add(destNode);
+            var destinationNode = new SetNodeViewModel(animationSet) {Name = animationSet.SetName};
+            subnet.Nodes.Add(destinationNode);
 
-            return destNode;
+            return destinationNode;
         }
 
         private static TransitionNodeViewModel TransitionNodeFinder(TransitionAnimationSet animationSet,
             NetworkViewModel subnet)
         {
-            TransitionNodeViewModel destNode;
 
             foreach (var node in subnet.Nodes.Items)
             {
-                destNode = (TransitionNodeViewModel) node;
+                if (node is not TransitionNodeViewModel destNode) continue;
                 if (destNode.AnimationSet.Equals(animationSet)) return destNode;
             }
 
-            destNode = new TransitionNodeViewModel(animationSet) {Name = animationSet.SetName};
-            subnet.Nodes.Add(destNode);
+            var destinationNode = new TransitionNodeViewModel(animationSet) {Name = animationSet.SetName};
+            subnet.Nodes.Add(destinationNode);
 
-            return destNode;
+            return destinationNode;
         }
 
         private SetNodeGroupViewModel SetNodeGroupFinder(string positionKey)

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using OStimAnimationTool.Core;
 using OStimAnimationTool.Core.Events;
@@ -49,15 +50,22 @@ namespace AnimationDatabaseExplorer.ViewModels
 
             // Publishes the OpenDatabase Event, Receivers: RibbonMenuViewModel
             _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish(AnimationDatabase);
-
-            // Loading of the default OSex Animations
-            LoadOSexAnimations(
-                @"C:\Users\Admin\Downloads\OSex-17209-2-02SE-Alpha\OSex 2.02S Alpha\Data\meshes\0SA\mod\0Sex\scene\0MF");
+            
+            FolderBrowserDialog folderBrowserDialog = new();
+            {
+                folderBrowserDialog.UseDescriptionForTitle = true;
+                folderBrowserDialog.Description =
+                    @"Choose the following Path in your OSex Animation: Data\meshes\0SA\mod\0Sex\scene\0MF";
+                folderBrowserDialog.ShowDialog();
+                
+                // Loading of the default OSex Animations
+                LoadOSexAnimations(folderBrowserDialog.SelectedPath);
+            }
         }
 
         #region Methods
 
-        // Method for loading OSex Animations into a new Database (Might get added to the constructor later on for now code stays her)
+        // Method for loading OSex Animations into a new Database (Might get added to the constructor later on for now code stays here)
         private void LoadOSexAnimations(string rootDir)
         {
             try
