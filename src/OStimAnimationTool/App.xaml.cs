@@ -9,7 +9,6 @@ using OStimAnimationTool.Core.Commands;
 using OStimAnimationTool.Core.Prism;
 using OStimAnimationTool.Core.Regions;
 using OStimConversionTool.Views;
-using Prism.DryIoc;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
@@ -18,7 +17,7 @@ using Prism.Regions;
 
 namespace OStimConversionTool
 {
-    public partial class App : PrismApplication
+    public partial class App
     {
         protected override Window CreateShell()
         {

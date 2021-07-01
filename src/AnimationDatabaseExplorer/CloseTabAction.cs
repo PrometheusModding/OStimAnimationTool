@@ -33,7 +33,11 @@ namespace AnimationDatabaseExplorer
         private static void RemoveItemFromRegion(object item, IRegion region)
         {
             var navigationContext = new NavigationContext(region.NavigationService, null);
-            if (CanRemove(item, navigationContext)) region.Remove(item);
+            if (CanRemove(item, navigationContext))
+            {
+                region.RegionManager.Regions.Remove("AnimationDetailRegion");
+                region.Remove(item);
+            }
         }
 
         private static bool CanRemove(object item, NavigationContext navigationContext)

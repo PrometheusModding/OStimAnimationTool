@@ -22,8 +22,9 @@ namespace AnimationDatabaseExplorer.ViewModels
         {
             _regionManager = regionManager;
             _eventAggregator = eventAggregator;
-            AnimationClassMenuCommand = new DelegateCommand<string>(SetAnimationClass);
+
             OpenAnimationDetailCommand = new DelegateCommand<Animation>(OpenAnimationDetail);
+            AnimationClassMenuCommand = new DelegateCommand<string>(SetAnimationClass);
 
             AnimationClassMenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
             {
@@ -92,15 +93,20 @@ namespace AnimationDatabaseExplorer.ViewModels
             };
         }
 
-        public DelegateCommand<string> AnimationClassMenuCommand { get; }
-        public DelegateCommand<Animation> OpenAnimationDetailCommand { get; }
-
         public ObservableCollection<AnimationClassMenuItemViewModel> AnimationClassMenuItems { get; }
+
+        public DelegateCommand<Animation> OpenAnimationDetailCommand { get; }
+        public DelegateCommand<string> AnimationClassMenuCommand { get; }
 
         public AnimationSet AnimationSet
         {
             get => _animationSet;
             private set => SetProperty(ref _animationSet, value);
+        }
+
+        public override void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            AnimationSet = navigationContext.Parameters.GetValue<AnimationSet>("animationSet");
         }
 
         private void OpenAnimationDetail(Animation animation)
@@ -113,12 +119,6 @@ namespace AnimationDatabaseExplorer.ViewModels
         {
             AnimationSet.AnimationClass = animationClass;
             _eventAggregator.GetEvent<ChangeAnimationClassEvent>().Publish();
-        }
-
-
-        public override void OnNavigatedTo(NavigationContext navigationContext)
-        {
-            AnimationSet = navigationContext.Parameters.GetValue<AnimationSet>("animationSet");
         }
     }
 }

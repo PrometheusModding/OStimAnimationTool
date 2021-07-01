@@ -15,7 +15,7 @@ namespace OStimAnimationTool.Core.Models
             ModuleKey = Name[..3];
         }
 
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
 
         public string SafePath { get; set; } = string.Empty;
 
@@ -23,14 +23,14 @@ namespace OStimAnimationTool.Core.Models
 
         public bool Contains(Animation animation)
         {
-            return this.Any(animSet => animSet.Contains(animation));
+            return this.Any(animSet => animSet.Animations.Contains(animation));
         }
 
         public void Add(Animation animation)
         {
             foreach (var animSet in this)
                 if (animation.AnimationName.Contains(animSet.SetName))
-                    animSet.Add(animation);
+                    animSet.Animations.Add(animation);
         }
     }
 }

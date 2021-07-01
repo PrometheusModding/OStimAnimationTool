@@ -6,12 +6,13 @@ using System.Collections.ObjectModel;
 
 namespace AnimationDatabaseExplorer.ViewModels
 {
+    // VM for MenuItems used in the AnimationDetail-View AnimationClass Selection Menu
     public class AnimationClassMenuItemViewModel
     {
         public AnimationClassMenuItemViewModel(string header, string classToken)
         {
-            Header = header;
             ClassToken = classToken;
+            Header = header;
         }
 
         public string ClassToken { get; }

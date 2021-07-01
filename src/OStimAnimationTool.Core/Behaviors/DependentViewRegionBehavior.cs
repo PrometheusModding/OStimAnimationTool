@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using OStimAnimationTool.Core.Interfaces;
+using OStimAnimationTool.Core.Prism;
 using Prism.Regions;
 
 #endregion
@@ -78,6 +79,16 @@ namespace OStimAnimationTool.Core.Behaviors
             }
         }
 
+        private static bool CreateRegionManagerScope(object? view)
+        {
+            var createRegionManagerScope = false;
+
+            if (view is ICreateRegionManagerScope viewHasScopedRegions)
+                createRegionManagerScope = viewHasScopedRegions.CreateRegionManagerScope;
+
+            return createRegionManagerScope;
+        }
+
         private static bool ShouldKeepAlive(object oldView)
         {
             var lifetime = GetItemOrContextLifeTime(oldView);
@@ -131,9 +142,9 @@ namespace OStimAnimationTool.Core.Behaviors
             return type.GetCustomAttributes(typeof(T), true).OfType<T>();
         }
 
-        internal class DependentViewInfo
+        private class DependentViewInfo
         {
-            public object? View { get; set; }
+            public object? View { get; init; }
             public string? TargetRegionName { get; init; }
         }
     }

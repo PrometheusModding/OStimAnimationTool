@@ -8,7 +8,6 @@
              mc:Ignorable="d"
              prism:ViewModelLocator.AutoWireViewModel="True"
              d:DataContext="{d:DesignInstance dialogs:NewAnimationDatabaseDialogViewModel}">
-
     <prism:Dialog.WindowStyle>
         <Style TargetType="Window">
             <Setter Property="Height" Value="225" />

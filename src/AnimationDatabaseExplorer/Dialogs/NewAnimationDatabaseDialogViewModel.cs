@@ -9,6 +9,7 @@ using Prism.Services.Dialogs;
 
 namespace AnimationDatabaseExplorer.Dialogs
 {
+    // VM for Dialog shown upon Creation of new AnimationDatabase
     internal class NewAnimationDatabaseDialogViewModel : BindableBase, IDialogAware
     {
         private string _name = string.Empty;

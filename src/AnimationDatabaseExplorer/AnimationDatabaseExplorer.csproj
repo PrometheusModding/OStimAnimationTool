@@ -11,6 +11,7 @@
     <PackageReference Include="NodeNetwork" Version="5.2.0" />
     <PackageReference Include="NodeNetworkToolkit" Version="5.2.0" />
     <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,6 +22,8 @@
     <Compile Update="Dialogs\NewAnimationDatabaseDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Remove="ViewModels\SetNodeGroupEndpointEditorViewModel.cs" />
+    <Compile Remove="ViewModels\SetNodeGroupIOBinding.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +31,13 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
+    <Page Remove="Views\SetNodeView.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <HintPath>..\..\..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Windows.Forms\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

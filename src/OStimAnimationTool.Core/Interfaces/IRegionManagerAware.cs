@@ -4,7 +4,7 @@ using Prism.Regions;
 
 #endregion
 
-namespace OStimAnimationTool.Core.Prism
+namespace OStimAnimationTool.Core.Interfaces
 {
     public interface IRegionManagerAware
     {

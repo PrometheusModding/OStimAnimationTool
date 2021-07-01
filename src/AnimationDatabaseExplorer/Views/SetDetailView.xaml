@@ -20,9 +20,12 @@
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding AnimationSet.AnimationClass, StringFormat='Animation Class: {0}'}" />
-                <Menu ItemsSource="{Binding AnimationClassMenuItems}" Grid.Row="1">
+                <TextBox Text="{Binding AnimationSet.SetName}" Grid.Row="0" />
+                <TextBlock Text="{Binding AnimationSet.AnimationClass, StringFormat='Animation Class: {0}'}"
+                           Grid.Row="1" />
+                <Menu ItemsSource="{Binding AnimationClassMenuItems}" Grid.Row="2">
                     <Menu.ItemContainerStyle>
                         <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                             <Setter Property="Command"
@@ -41,7 +44,8 @@
         </Expander>
         <Expander Header="Animation Properties" prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1"
                   IsExpanded="True" />
-        <DataGrid Name="AnimationSetDatagrid" ItemsSource="{Binding AnimationSet, UpdateSourceTrigger=PropertyChanged}"
+        <DataGrid Name="AnimationSetDatagrid"
+                  ItemsSource="{Binding AnimationSet.Animations, UpdateSourceTrigger=PropertyChanged}"
                   Grid.Row="2"
                   AutoGenerateColumns="False">
             <i:Interaction.Triggers>

@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Windows;
-using OStimAnimationTool.Core.Prism;
+using OStimAnimationTool.Core.Interfaces;
 using Prism.Regions;
 
 #endregion

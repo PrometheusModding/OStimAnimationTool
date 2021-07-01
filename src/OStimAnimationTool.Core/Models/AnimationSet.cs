@@ -1,118 +1,86 @@
-#region
-
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.Text.RegularExpressions;
+using Prism.Mvvm;
 using static System.String;
-
-#endregion
 
 namespace OStimAnimationTool.Core.Models
 {
-    public class AnimationSet : ObservableCollection<Animation>, IEquatable<AnimationSet>, INotifyPropertyChanged
+    public class AnimationSet : BindableBase, IEquatable<AnimationSet>
     {
         private string _animationClass = Empty;
+        private ObservableCollection<Animation> _animations = new();
         private string _animator = Empty;
         private string _description = Empty;
-        private bool _isTransition;
+        private string _moduleName = Empty;
+        private string _positionKey = Empty;
         private string _setName;
-        private string _transitionDestination = Empty;
 
         public AnimationSet(string setName)
         {
             _setName = setName;
         }
 
+        public string SceneID => _moduleName + $"|{_positionKey}" + $"|{_animationClass}" + $"|{_setName}";
+
+        public string ModuleName
+        {
+            get => _moduleName;
+            set => SetProperty(ref _moduleName, value);
+        }
+
+        public string PositionKey
+        {
+            get => _positionKey;
+            set => SetProperty(ref _positionKey, value);
+        }
+
+        public ObservableCollection<Animation> Animations
+        {
+            get => _animations;
+            set => SetProperty(ref _animations, value);
+        }
+
         public string Animator
         {
             get => _animator;
-            set
-            {
-                if (value == _animator) return;
-                _animator = value;
-                NotifyPropertyChanged(nameof(Animator));
-            }
-        }
-
-        public string TransitionDestination
-        {
-            get => _transitionDestination;
-            set
-            {
-                if (value == _transitionDestination) return;
-                _transitionDestination = value;
-                NotifyPropertyChanged(nameof(TransitionDestination));
-            }
-        }
-
-        public bool IsTransition
-        {
-            get => _isTransition;
-            set
-            {
-                if (value == _isTransition) return;
-                _isTransition = value;
-                NotifyPropertyChanged(nameof(IsTransition));
-            }
+            set => SetProperty(ref _animator, value);
         }
 
         public string AnimationClass
         {
             get => _animationClass;
-            set
-            {
-                if (value == _animationClass) return;
-                _animationClass = value;
-                NotifyPropertyChanged(nameof(AnimationClass));
-            }
+            set => SetProperty(ref _animationClass, value);
         }
 
         public string SetName
         {
             get => _setName;
-            set
-            {
-                if (value == _setName) return;
-                _setName = value;
-                NotifyPropertyChanged(nameof(SetName));
-            }
+            set => SetProperty(ref _setName, value);
         }
 
         public string Description
         {
             get => _description;
-            set
-            {
-                if (value == _description) return;
-                _description = value;
-                NotifyPropertyChanged(nameof(Description));
-            }
+            set => SetProperty(ref _description, value);
         }
-
-        public int ActorCount => GetActorCount();
+        public int Actors => GetActorCount();
 
         public bool Equals(AnimationSet? other)
         {
             if (other is null)
                 throw new NullReferenceException();
 
-            return _setName.Equals(other._setName);
+            return SetName.Equals(other.SetName);
         }
-
-        public new event PropertyChangedEventHandler? PropertyChanged;
-
+        
         private int GetActorCount()
         {
-            var actorCount = 0;
-            foreach (var animation in this)
-                if (char.GetNumericValue(animation.AnimationName[^1]) > actorCount)
-                    actorCount = (int) char.GetNumericValue(animation.AnimationName[^1]);
+            var actorCount = 1;
+            foreach (var animation in Animations)
+                if (char.GetNumericValue(animation.AnimationName[^1]) >= actorCount)
+                    actorCount = (int) char.GetNumericValue(animation.AnimationName[^1]) + 1;
             return actorCount;
-        }
-
-        private void NotifyPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

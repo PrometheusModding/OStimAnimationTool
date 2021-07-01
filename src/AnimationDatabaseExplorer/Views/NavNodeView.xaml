@@ -6,15 +6,33 @@
                 xmlns:viewModels="clr-namespace:AnimationDatabaseExplorer.ViewModels"
                 xmlns:prism="http://prismlibrary.com/"
                 xmlns:nodenetwork="clr-namespace:NodeNetwork.Views;assembly=NodeNetwork"
+                xmlns:breadcrumbBar="clr-namespace:NodeNetwork.Toolkit.BreadcrumbBar;assembly=NodeNetworkToolkit"
                 prism:ViewModelLocator.AutoWireViewModel="True"
                 mc:Ignorable="d"
-                d:DataContext="{d:DesignInstance viewModels:NavNodeViewModel}">
+                d:DataContext="{d:DesignInstance viewModels:NavNetworkViewModel}">
+    <ContentControl.Resources>
+        <ContextMenu x:Key="ContextMenu">
+            <MenuItem
+                Command="{Binding Path=OpenGroupCommand}"
+                Header="Open group" />
+        </ContextMenu>
+    </ContentControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Button Command="{Binding LayoutCommand}" />
-        <nodenetwork:NetworkView ViewModel="{Binding Network }" Grid.Row="1" />
+        <breadcrumbBar:BreadcrumbBarView ViewModel="{Binding NetworkBreadcrumbBar}" />
+        <Button Command="{Binding OpenGroupCommand}" Grid.Row="3" />
+        <Button Command="{Binding LayoutCommand}" Grid.Row="1" />
+        <nodenetwork:NetworkView ViewModel="{Binding NetworkBreadcrumbBar.ActiveItem.Network}" Grid.Row="2">
+            <nodenetwork:NetworkView.Resources>
+                <Style TargetType="nodenetwork:NodeView">
+                    <Setter Property="ContextMenu" Value="{StaticResource ContextMenu}" />
+                </Style>
+            </nodenetwork:NetworkView.Resources>
+        </nodenetwork:NetworkView>
     </Grid>
 </ContentControl>

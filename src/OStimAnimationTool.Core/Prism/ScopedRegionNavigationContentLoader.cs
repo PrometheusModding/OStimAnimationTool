@@ -9,11 +9,8 @@ namespace OStimAnimationTool.Core.Prism
 {
     public class ScopedRegionNavigationContentLoader : RegionNavigationContentLoader
     {
-        private readonly IContainerExtension _container;
-
         public ScopedRegionNavigationContentLoader(IContainerExtension container) : base(container)
         {
-            _container = container;
         }
 
         protected override void AddViewToRegion(IRegion region, object view)

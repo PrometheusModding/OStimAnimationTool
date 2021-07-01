@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using OStimAnimationTool.Core;
@@ -25,7 +26,7 @@ namespace AnimationDatabaseExplorer.ViewModels
         {
             AddAnimationSetCommand = new DelegateCommand(AddAnimationSet, ActiveDatabase);
             AddSlAnimationSetCommand = new DelegateCommand(AddSlAnimationSet);
-            SaveDatabaseCommand = new DelegateCommand(SaveDatabase, WellFormedDatabase);
+            SaveDatabaseCommand = new DelegateCommand(SaveDatabase);
             OpenNavNodeViewCommand = new DelegateCommand(OpenNavNodeView);
 
             _regionManager = regionManager;
@@ -42,7 +43,12 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         private void OpenNavNodeView()
         {
-            _regionManager.RequestNavigate("WorkspaceRegion", "NavNodeView");
+            var p = new NavigationParameters {{"animationDatabase", _animationDatabase}};
+            _regionManager.RequestNavigate("WorkspaceRegion", "NavNodeView", p);
+
+            foreach (var animationSet in _animationDatabase!)
+                if (string.IsNullOrEmpty(animationSet.AnimationClass))
+                    Console.WriteLine(animationSet.SetName);
         }
 
         private void ChangeAnimationClass()
@@ -57,13 +63,8 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         private bool WellFormedDatabase()
         {
-            if (_animationDatabase is null)
-                return false;
-            foreach (var animationSet in _animationDatabase)
-                if (string.IsNullOrEmpty(animationSet.AnimationClass))
-                    return false;
-
-            return true;
+            return _animationDatabase is not null &&
+                   _animationDatabase.All(animationSet => !string.IsNullOrEmpty(animationSet.AnimationClass));
         }
 
         private void SetDataContext(AnimationDatabase animationDatabase)
@@ -153,29 +154,11 @@ namespace AnimationDatabaseExplorer.ViewModels
                     _animationDatabase.SafePath = folderBrowserDialog.SelectedPath;
                 }
             }
-
-            foreach (var animationSet in _animationDatabase!)
-            {
-                var animationClass = animationSet.AnimationClass;
-                var setName = animationSet.SetName;
-                var setDir = Path.Combine(_animationDatabase.SafePath, @"meshes\0SA\mod\0Sex\anim\",
-                    _animationDatabase.ModuleKey, animationClass, setName);
-
-                if (!Directory.Exists(setDir))
-                    Directory.CreateDirectory(setDir);
-
-                foreach (var animation in animationSet)
-                {
-                    var fileName =
-                        $"0Sx{_animationDatabase.ModuleKey}_{animationSet.AnimationClass}-{animationSet.SetName}_S{animation.Speed.ToString()}_{animation.Actor.ToString()}.hkx";
-                    File.Copy(animation.OldPath, Path.Combine(setDir, fileName));
-                }
-
-                DatabaseScriber databaseScriber = new(_animationDatabase, animationSet);
-                databaseScriber.XmlScriber();
-                databaseScriber.FnisScriber();
-                databaseScriber.DatabaseFileScriber(_animationDatabase.SafePath);
-            }
+            
+            DatabaseScriber databaseScriber = new(_animationDatabase);
+            databaseScriber.XmlScriber();
+            databaseScriber.FnisScriber();
+            databaseScriber.DatabaseFileScriber();
         }
     }
 }

@@ -35,13 +35,11 @@ namespace OStimConversionTool.ViewModels
         {
             _dialogService.ShowDialog("NewAnimationDatabaseDialog", result =>
             {
-                if (result.Result == ButtonResult.OK)
-                {
-                    NavigationParameters p = new()
-                        {{"name", result.Parameters.GetValue<string>("name")}};
+                if (result.Result != ButtonResult.OK) return;
+                NavigationParameters p = new()
+                    {{"name", result.Parameters.GetValue<string>("name")}};
 
-                    _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView", p);
-                }
+                _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView", p);
             });
         }
 
