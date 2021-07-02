@@ -20,7 +20,7 @@ namespace OStimAnimationTool.Core
             _animationDatabase = animationDatabase;
             _safePath = animationDatabase.SafePath;
 
-            foreach (var animationSet in _animationDatabase!)
+            foreach (var animationSet in _animationDatabase.AnimationSets)
             {
                 var setName = animationSet.SetName;
                 var animationClass = animationSet.AnimationClass;
@@ -52,7 +52,7 @@ namespace OStimAnimationTool.Core
         public void XmlScriber()
         {
             var xmlPath = Path.Combine(_safePath, @"meshes\0SA\mod\0Sex\scene");
-            foreach (var animationSet in _animationDatabase)
+            foreach (var animationSet in _animationDatabase.AnimationSets)
             {
                 var setName = animationSet.SetName;
                 var moduleKey = animationSet.ModuleName;
@@ -253,7 +253,7 @@ namespace OStimAnimationTool.Core
 
         public void FnisScriber()
         {
-            foreach (var animationSet in _animationDatabase)
+            foreach (var animationSet in _animationDatabase.AnimationSets)
             {
                 var moduleKey = animationSet.ModuleName;
                 var fnisDir = Path.Combine(_safePath, @$"meshes\actors\character\animations\0Sex_{moduleKey}_A");
@@ -286,7 +286,7 @@ namespace OStimAnimationTool.Core
             writer.WriteStartElement("database");
             writer.WriteAttributeString("name", databaseName);
 
-            foreach (var animationSet in _animationDatabase)
+            foreach (var animationSet in _animationDatabase.AnimationSets)
             {
                 writer.WriteStartElement("animationset");
                 writer.WriteAttributeString("name", animationSet.SetName);

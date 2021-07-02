@@ -23,9 +23,7 @@ namespace AnimationDatabaseExplorer.ViewModels
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IRegionManager _regionManager;
-
-        private AnimationDatabase _animationDatabase = new("New Animation Database");
-
+        
         public DatabaseTreeViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
         {
             _regionManager = regionManager;
@@ -33,23 +31,17 @@ namespace AnimationDatabaseExplorer.ViewModels
 
             OpenSetTabCommand = new DelegateCommand<AnimationSet>(OpenSet);
         }
-
-        public AnimationDatabase AnimationDatabase
-        {
-            get => _animationDatabase;
-            private set => SetProperty(ref _animationDatabase, value);
-        }
-
+        
         public DelegateCommand<AnimationSet> OpenSetTabCommand { get; }
 
         public override void OnNavigatedTo(NavigationContext navigationContext)
         {
             // Gets the name from the NewAnimationDatabaseDialog
             if (!string.IsNullOrEmpty(navigationContext.Parameters.GetValue<string>("name")))
-                AnimationDatabase.Name = navigationContext.Parameters.GetValue<string>("name");
+                AnimationDatabase.Instance.Name = navigationContext.Parameters.GetValue<string>("name");
 
             // Publishes the OpenDatabase Event, Receivers: RibbonMenuViewModel
-            _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish(AnimationDatabase);
+            _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish();
             
             FolderBrowserDialog folderBrowserDialog = new();
             {
@@ -175,9 +167,9 @@ namespace AnimationDatabaseExplorer.ViewModels
             }
         }
 
-        private AnimationSet SetFinder(string sceneID)
+        private static AnimationSet SetFinder(string sceneID)
         {
-            foreach (var animSet in AnimationDatabase)
+            foreach (var animSet in AnimationDatabase.Instance.AnimationSets)
                 if (animSet.SceneID.Equals(sceneID))
                     return animSet;
 
@@ -195,7 +187,7 @@ namespace AnimationDatabaseExplorer.ViewModels
             animationSet.PositionKey = positionKey;
             animationSet.AnimationClass = animationClass;
 
-            AnimationDatabase.Add(animationSet);
+            AnimationDatabase.Instance.AnimationSets.Add(animationSet);
             return animationSet;
         }
 

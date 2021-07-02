@@ -30,7 +30,7 @@ namespace AnimationDatabaseExplorer.ViewModels
     // VM for the NodeView in the WorkspaceRegion
     public class NavNetworkViewModel : ViewModelBase
     {
-        private AnimationDatabase _animationDatabase = new("New Animation Database");
+        private AnimationDatabase _animationDatabase = AnimationDatabase.Instance;
         private NetworkViewModel _network = new();
 
         public NavNetworkViewModel()
@@ -83,7 +83,7 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         private void NavFinder()
         {
-            foreach (var animationSet in AnimationDatabase)
+            foreach (var animationSet in AnimationDatabase.AnimationSets)
             {
                 var groupNode = SetNodeGroupFinder(animationSet.PositionKey);
                 switch (animationSet)

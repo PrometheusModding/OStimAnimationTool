@@ -5,7 +5,7 @@
                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                 xmlns:viewModels="clr-namespace:AnimationDatabaseExplorer.ViewModels"
                 xmlns:prism="http://prismlibrary.com/"
-                xmlns:models1="clr-namespace:OStimAnimationTool.Core.Models;assembly=OStimAnimationTool.Core"
+                xmlns:models="clr-namespace:OStimAnimationTool.Core.Models;assembly=OStimAnimationTool.Core"
                 prism:ViewModelLocator.AutoWireViewModel="True"
                 mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:DatabaseTreeViewModel}">
     <TreeView>
@@ -18,14 +18,15 @@
                           Command="{Binding Path=DataContext.OpenSetTabCommand , RelativeSource={RelativeSource AncestorType=TreeView}}"
                           CommandParameter="{Binding }" />
             </ContextMenu>
-            <HierarchicalDataTemplate DataType="{x:Type models1:AnimationSet}" ItemsSource="{Binding }">
+            <HierarchicalDataTemplate DataType="{x:Type models:AnimationSet}" ItemsSource="{Binding }">
                 <TextBlock Text="{Binding Path=SetName}" Style="{StaticResource ContextMenuStyle}" />
             </HierarchicalDataTemplate>
-            <DataTemplate DataType="{x:Type models1:Animation}">
+            <DataTemplate DataType="{x:Type models:Animation}">
                 <TextBlock Text="{Binding AnimationName}" />
             </DataTemplate>
         </TreeView.Resources>
-        <TreeViewItem ItemsSource="{Binding AnimationDatabase, UpdateSourceTrigger=PropertyChanged}"
-                      Header="{Binding AnimationDatabase.Name}" />
+        <TreeViewItem
+            ItemsSource="{Binding AnimationSets, Source={x:Static models:AnimationDatabase.Instance} , UpdateSourceTrigger=PropertyChanged}"
+            Header="{Binding Name, Source={x:Static models:AnimationDatabase.Instance}, UpdateSourceTrigger=PropertyChanged}" />
     </TreeView>
 </ContentControl>

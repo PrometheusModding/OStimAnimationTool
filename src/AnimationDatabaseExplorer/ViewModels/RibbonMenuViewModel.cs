@@ -20,14 +20,13 @@ namespace AnimationDatabaseExplorer.ViewModels
     public class RibbonMenuViewModel : ViewModelBase
     {
         private readonly IRegionManager _regionManager;
-        private AnimationDatabase? _animationDatabase;
 
         public RibbonMenuViewModel(IEventAggregator eventAggregator, IRegionManager regionManager)
         {
             AddAnimationSetCommand = new DelegateCommand(AddAnimationSet, ActiveDatabase);
-            AddSlAnimationSetCommand = new DelegateCommand(AddSlAnimationSet);
+            AddSlAnimationSetCommand = new DelegateCommand(AddSlAnimationSet, ActiveDatabase);
             SaveDatabaseCommand = new DelegateCommand(SaveDatabase, WellFormedDatabase);
-            OpenNavNodeViewCommand = new DelegateCommand(OpenNavNetworkView);
+            OpenNavNodeViewCommand = new DelegateCommand(OpenNavNetworkView, ActiveDatabase);
 
             _regionManager = regionManager;
 
@@ -43,10 +42,10 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         private void OpenNavNetworkView()
         {
-            var p = new NavigationParameters {{"animationDatabase", _animationDatabase}};
+            var p = new NavigationParameters {{"animationDatabase", AnimationDatabase.Instance}};
             _regionManager.RequestNavigate("WorkspaceRegion", "NavNetworkView", p);
 
-            foreach (var animationSet in _animationDatabase!)
+            foreach (var animationSet in AnimationDatabase.Instance.AnimationSets)
                 if (string.IsNullOrEmpty(animationSet.AnimationClass))
                     Console.WriteLine(animationSet.SetName);
         }
@@ -56,23 +55,21 @@ namespace AnimationDatabaseExplorer.ViewModels
             SaveDatabaseCommand.RaiseCanExecuteChanged();
         }
 
-        private bool ActiveDatabase()
+        private static bool ActiveDatabase()
         {
-            return _animationDatabase != null;
+            return AnimationDatabase.IsValueCreated;
         }
 
-        private bool WellFormedDatabase()
+        private static bool WellFormedDatabase()
         {
-            return _animationDatabase is not null &&
-                   _animationDatabase.All(animationSet => !string.IsNullOrEmpty(animationSet.AnimationClass));
+            return AnimationDatabase.IsValueCreated && AnimationDatabase.Instance.AnimationSets.All(animationSet => !string.IsNullOrEmpty(animationSet.AnimationClass));
         }
 
-        private void SetDataContext(AnimationDatabase animationDatabase)
+        private void SetDataContext()
         {
-            _animationDatabase = animationDatabase;
-
             SaveDatabaseCommand.RaiseCanExecuteChanged();
             AddAnimationSetCommand.RaiseCanExecuteChanged();
+            AddSlAnimationSetCommand.RaiseCanExecuteChanged();
         }
 
         private void AddAnimationSet()
@@ -106,11 +103,11 @@ namespace AnimationDatabaseExplorer.ViewModels
 
                 var animationSet = new AnimationSet(setName);
 
-                if (!_animationDatabase!.Contains(animationSet))
-                    _animationDatabase.Add(animationSet);
+                if (!AnimationDatabase.Instance.AnimationSets.Contains(animationSet))
+                    AnimationDatabase.Instance.AnimationSets.Add(animationSet);
 
-                if (!_animationDatabase.Contains(animation))
-                    _animationDatabase.Add(animation);
+                if (!AnimationDatabase.Instance.Contains(animation))
+                    AnimationDatabase.Instance.Add(animation);
             }
 
             SaveDatabaseCommand.RaiseCanExecuteChanged();
@@ -135,28 +132,28 @@ namespace AnimationDatabaseExplorer.ViewModels
                 animation.Actor = (int) char.GetNumericValue(Path.GetFileName(filename)[^8]);
                 animation.Speed = (int) char.GetNumericValue(Path.GetFileName(filename)[^5]);
 
-                if (!_animationDatabase!.Contains(animationSet))
-                    _animationDatabase.Add(animationSet);
+                if (!AnimationDatabase.Instance!.AnimationSets.Contains(animationSet))
+                    AnimationDatabase.Instance.AnimationSets.Add(animationSet);
 
-                if (!_animationDatabase.Contains(animation))
-                    _animationDatabase.Add(animation);
+                if (!AnimationDatabase.Instance.Contains(animation))
+                    AnimationDatabase.Instance.Add(animation);
             }
 
             SaveDatabaseCommand.RaiseCanExecuteChanged();
         }
 
-        private void SaveDatabase()
+        private static void SaveDatabase()
         {
-            if (string.IsNullOrEmpty(_animationDatabase!.SafePath))
+            if (string.IsNullOrEmpty(AnimationDatabase.Instance.SafePath))
             {
                 FolderBrowserDialog folderBrowserDialog = new();
                 {
                     folderBrowserDialog.ShowDialog();
-                    _animationDatabase.SafePath = folderBrowserDialog.SelectedPath;
+                    AnimationDatabase.Instance.SafePath = folderBrowserDialog.SelectedPath;
                 }
             }
-            
-            DatabaseScriber databaseScriber = new(_animationDatabase);
+
+            DatabaseScriber databaseScriber = new(AnimationDatabase.Instance);
             databaseScriber.XmlScriber();
             databaseScriber.FnisScriber();
             databaseScriber.DatabaseFileScriber();
