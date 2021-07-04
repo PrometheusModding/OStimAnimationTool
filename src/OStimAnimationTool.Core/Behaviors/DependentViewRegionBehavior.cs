@@ -79,16 +79,6 @@ namespace OStimAnimationTool.Core.Behaviors
             }
         }
 
-        private static bool CreateRegionManagerScope(object? view)
-        {
-            var createRegionManagerScope = false;
-
-            if (view is ICreateRegionManagerScope viewHasScopedRegions)
-                createRegionManagerScope = viewHasScopedRegions.CreateRegionManagerScope;
-
-            return createRegionManagerScope;
-        }
-
         private static bool ShouldKeepAlive(object oldView)
         {
             var lifetime = GetItemOrContextLifeTime(oldView);

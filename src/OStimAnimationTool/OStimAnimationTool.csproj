@@ -13,6 +13,10 @@
 		<EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
 	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+	  <Optimize>false</Optimize>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Fluent.Ribbon" Version="9.0.0-alpha0148" />
 		<PackageReference Include="MaterialDesignThemes" Version="4.1.0" />

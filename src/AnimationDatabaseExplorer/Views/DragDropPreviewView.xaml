@@ -1,0 +1,16 @@
+﻿<core1:DragDropPreviewBase x:Class="AnimationDatabaseExplorer.Views.DragDropPreviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:prism="http://prismlibrary.com/"
+             xmlns:models="clr-namespace:OStimAnimationTool.Core.Models;assembly=OStimAnimationTool.Core"
+             xmlns:core1="clr-namespace:OStimAnimationTool.Core;assembly=OStimAnimationTool.Core"
+             d:DesignHeight="300" d:DesignWidth="300"
+             prism:ViewModelLocator.AutoWireViewModel="False"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance models:AnimationSet}">
+    <Grid>
+        <TextBlock Text="{Binding SetName}"/>
+    </Grid>
+</core1:DragDropPreviewBase>
+

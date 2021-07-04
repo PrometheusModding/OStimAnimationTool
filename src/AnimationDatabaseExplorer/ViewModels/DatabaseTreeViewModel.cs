@@ -23,16 +23,23 @@ namespace AnimationDatabaseExplorer.ViewModels
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IRegionManager _regionManager;
-        
+
         public DatabaseTreeViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
         {
             _regionManager = regionManager;
             _eventAggregator = eventAggregator;
 
             OpenSetTabCommand = new DelegateCommand<AnimationSet>(OpenSet);
+            AddDestinationCommand = new DelegateCommand<AnimationSet>(AddDestination);
         }
-        
+
         public DelegateCommand<AnimationSet> OpenSetTabCommand { get; }
+        public DelegateCommand<AnimationSet> AddDestinationCommand { get; }
+
+        private void AddDestination(AnimationSet animationSet)
+        {
+            _eventAggregator.GetEvent<AddDestinationEvent>().Publish(animationSet);
+        }
 
         public override void OnNavigatedTo(NavigationContext navigationContext)
         {
@@ -42,14 +49,14 @@ namespace AnimationDatabaseExplorer.ViewModels
 
             // Publishes the OpenDatabase Event, Receivers: RibbonMenuViewModel
             _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish();
-            
+
             FolderBrowserDialog folderBrowserDialog = new();
             {
                 folderBrowserDialog.UseDescriptionForTitle = true;
                 folderBrowserDialog.Description =
                     @"Choose the following Path in your OSex Animation: Data\meshes\0SA\mod\0Sex\scene\0MF";
                 folderBrowserDialog.ShowDialog();
-                
+
                 // Loading of the default OSex Animations
                 LoadOSexAnimations(folderBrowserDialog.SelectedPath);
             }
@@ -86,9 +93,9 @@ namespace AnimationDatabaseExplorer.ViewModels
                     var animationSet = SetFinder(sceneID);
                     animationSet.Description = setDescription;
                     animationSet.Animator = animator;
-                    List<string> animations = new(){animationID};
+                    List<string> animations = new() {animationID};
                     string name = animationSet.SetName;
-                    
+
                     switch (animationSet)
                     {
                         //different parsing for different .xml types
@@ -97,7 +104,7 @@ namespace AnimationDatabaseExplorer.ViewModels
                                 .Element("anim")?
                                 .Attribute("dest")?
                                 .Value ?? string.Empty;
-                             dest = dest.StartsWith('^')
+                            dest = dest.StartsWith('^')
                                 ? sceneID + dest[1..]
                                 : dest;
                             transitionAnimationSet.Destination = SetFinder(dest);
@@ -140,7 +147,7 @@ namespace AnimationDatabaseExplorer.ViewModels
                             break;
                         }
                     }
-                    
+
                     foreach (var anim in animations)
                         for (var i = 0; i < int.Parse(actorCount); i++)
                         {

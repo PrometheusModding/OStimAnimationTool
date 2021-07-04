@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using DynamicData;
@@ -47,7 +48,7 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         public void Initialize()
         {
-            Input?.Values.CountChanged.Subscribe(_ => AnimationSet.Destinations = Input.Values.Items.ToList());
+            Input?.Values.CountChanged.Subscribe(_ => AnimationSet.Destinations = new ObservableCollection<AnimationSet>(Input.Values.Items));
         }
     }
 }

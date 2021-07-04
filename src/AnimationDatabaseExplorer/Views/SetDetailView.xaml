@@ -9,6 +9,42 @@
     mc:Ignorable="d"
     x:Class="AnimationDatabaseExplorer.Views.SetDetailView"
     d:DataContext="{d:DesignInstance viewModels:SetWorkspaceViewModel}">
+    <ContentControl.Resources>
+        <DataTemplate DataType="{x:Type models:HubAnimationSet}">
+            <DataGrid Name="DestinationsDatagrid"
+                      ItemsSource="{Binding Destinations, UpdateSourceTrigger=PropertyChanged}"
+                      AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Set Name">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding SetName}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Remove">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button
+                                    Command="{Binding DataContext.RemoveDestinationCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=ContentControl, AncestorLevel=3}}"
+                                    CommandParameter="{Binding SelectedItem, ElementName=DestinationsDatagrid}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type models:TransitionAnimationSet}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding ParentSet}" />
+                <TextBox Text="{Binding Destination.SetName}" Grid.Row="1" />
+            </Grid>
+        </DataTemplate>
+    </ContentControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -21,11 +57,21 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
-                <TextBox Text="{Binding AnimationSet.SetName}" Grid.Row="0" />
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding AnimationSet.SetName}" Grid.Row="0" Grid.ColumnSpan="2" />
+                <TextBox Text="{Binding AnimationSet.Animator}" Grid.Row="1" Grid.Column="0" />
+                <TextBlock Text="{Binding AnimationSet.Actors, Mode=OneWay}" Grid.Row="1" Grid.Column="1" />
+                <TextBox Text="{Binding AnimationSet.Description}" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" />
                 <TextBlock Text="{Binding AnimationSet.AnimationClass, StringFormat='Animation Class: {0}'}"
-                           Grid.Row="1" />
-                <Menu ItemsSource="{Binding AnimationClassMenuItems}" Grid.Row="2">
+                           Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" />
+                <Menu ItemsSource="{Binding AnimationClassMenuItems}" Grid.Row="4" Grid.Column="0">
                     <Menu.ItemContainerStyle>
                         <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                             <Setter Property="Command"
@@ -40,6 +86,7 @@
                         </HierarchicalDataTemplate>
                     </Menu.ItemTemplate>
                 </Menu>
+                <ContentControl Content="{Binding AnimationSet}" Grid.Row="5" Grid.ColumnSpan="2" Grid.Column="0" />
             </Grid>
         </Expander>
         <Expander Header="Animation Properties" prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1"

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Prism.Mvvm;
 using static System.String;
@@ -65,7 +66,7 @@ namespace OStimAnimationTool.Core.Models
             set => SetProperty(ref _description, value);
         }
         public int Actors => GetActorCount();
-
+        
         public bool Equals(AnimationSet? other)
         {
             if (other is null)
@@ -76,11 +77,7 @@ namespace OStimAnimationTool.Core.Models
         
         private int GetActorCount()
         {
-            var actorCount = 1;
-            foreach (var animation in Animations)
-                if (char.GetNumericValue(animation.AnimationName[^1]) >= actorCount)
-                    actorCount = (int) char.GetNumericValue(animation.AnimationName[^1]) + 1;
-            return actorCount;
+            return Animations.Select(animation => animation.Actor).Prepend(1).Max() + 1;
         }
     }
 }

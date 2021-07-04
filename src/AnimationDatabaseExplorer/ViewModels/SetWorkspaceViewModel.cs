@@ -23,8 +23,11 @@ namespace AnimationDatabaseExplorer.ViewModels
             _regionManager = regionManager;
             _eventAggregator = eventAggregator;
 
+            eventAggregator.GetEvent<AddDestinationEvent>().Subscribe(AddDestination);
+
             OpenAnimationDetailCommand = new DelegateCommand<Animation>(OpenAnimationDetail);
             AnimationClassMenuCommand = new DelegateCommand<string>(SetAnimationClass);
+            RemoveDestinationCommand = new DelegateCommand<AnimationSet>(RemoveDestination);
 
             AnimationClassMenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
             {
@@ -97,11 +100,25 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         public DelegateCommand<Animation> OpenAnimationDetailCommand { get; }
         public DelegateCommand<string> AnimationClassMenuCommand { get; }
+        public DelegateCommand<AnimationSet> RemoveDestinationCommand { get; }
 
         public AnimationSet AnimationSet
         {
             get => _animationSet;
             private set => SetProperty(ref _animationSet, value);
+        }
+
+        private void RemoveDestination(AnimationSet animationSet)
+        {
+            if (AnimationSet is HubAnimationSet hubAnimationSet)
+                hubAnimationSet.Destinations.Remove(animationSet);
+        }
+
+        private void AddDestination(AnimationSet animationSet)
+        {
+            if (AnimationSet is not HubAnimationSet hubAnimationSet) return;
+            if (!hubAnimationSet.Destinations.Contains(animationSet))
+                hubAnimationSet.Destinations.Add(animationSet);
         }
 
         public override void OnNavigatedTo(NavigationContext navigationContext)

@@ -8,7 +8,7 @@ using Prism.Regions;
 
 #endregion
 
-namespace AnimationDatabaseExplorer
+namespace OStimConversionTool
 {
     internal class CloseTabAction : TriggerAction<Button>
     {
