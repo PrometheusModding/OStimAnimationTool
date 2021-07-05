@@ -1,10 +1,6 @@
-#region
-
 using OStimAnimationTool.Core.Models;
 using OStimAnimationTool.Core.ViewModels;
 using Prism.Regions;
-
-#endregion
 
 namespace AnimationDatabaseExplorer.ViewModels
 {

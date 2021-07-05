@@ -22,7 +22,7 @@
         </Grid.ColumnDefinitions>
         <DockPanel>
             <Label Content="Name"/>
-            <TextBox Text="{Binding Animation.AnimationName, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}" Margin="5,-10,5,0"/>
+            <TextBlock Text="{Binding Animation.AnimationName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,-5,5,0"/>
         </DockPanel>
         <DockPanel Grid.Column="1">
             <Label Content="Actor"/>

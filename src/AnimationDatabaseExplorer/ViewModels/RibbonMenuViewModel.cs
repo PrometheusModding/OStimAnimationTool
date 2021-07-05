@@ -1,5 +1,3 @@
-#region
-
 using System;
 using System.IO;
 using System.Linq;
@@ -13,8 +11,6 @@ using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
-
-#endregion
 
 namespace AnimationDatabaseExplorer.ViewModels
 {
@@ -69,7 +65,6 @@ namespace AnimationDatabaseExplorer.ViewModels
         private void SetDataContext()
         {
             SaveDatabaseCommand.RaiseCanExecuteChanged();
-            AddAnimationSetCommand.RaiseCanExecuteChanged();
             AddSlAnimationSetCommand.RaiseCanExecuteChanged();
         }
 
@@ -126,10 +121,10 @@ namespace AnimationDatabaseExplorer.ViewModels
 
             foreach (var filename in openFileDialog.FileNames)
             {
-                var animationSet = new AnimationSet(Path.GetFileName(filename[..^10]));
+                var animationSet = new HubAnimationSet(Path.GetFileName(filename[..^10]));
                 var animation = new Animation(filename, animationSet)
                 {
-                    Actor = (int) char.GetNumericValue(Path.GetFileName(filename)[^8]),
+                    Actor = (int) char.GetNumericValue(Path.GetFileName(filename)[^8]) == 1 ? 1 : 0,
                     Speed = (int) char.GetNumericValue(Path.GetFileName(filename)[^5])
                 };
 
@@ -155,7 +150,7 @@ namespace AnimationDatabaseExplorer.ViewModels
                 }
             }
 
-            DatabaseScriber databaseScriber = new(AnimationDatabase.Instance);
+            DatabaseScriber databaseScriber = new();
             databaseScriber.XmlScriber();
             databaseScriber.FnisScriber();
             databaseScriber.DatabaseFileScriber();

@@ -1,7 +1,6 @@
 ﻿#region
 
 using System.Collections.ObjectModel;
-using OStimAnimationTool.Core;
 using OStimAnimationTool.Core.Events;
 using OStimAnimationTool.Core.Models;
 using OStimAnimationTool.Core.ViewModels;
@@ -17,7 +16,7 @@ namespace AnimationDatabaseExplorer.ViewModels
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IRegionManager _regionManager;
-        private AnimationSet _animationSet = new("New Animation Set");
+        private AnimationSet? _animationSet;
 
         public SetWorkspaceViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
         {
@@ -103,7 +102,7 @@ namespace AnimationDatabaseExplorer.ViewModels
         public DelegateCommand<string> AnimationClassMenuCommand { get; }
         public DelegateCommand<AnimationSet> RemoveDestinationCommand { get; }
 
-        public AnimationSet AnimationSet
+        public AnimationSet? AnimationSet
         {
             get => _animationSet;
             private set => SetProperty(ref _animationSet, value);
@@ -117,6 +116,7 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         private void AddDestination(AnimationSet animationSet)
         {
+            if (!IsActive) return;
             if (AnimationSet is not HubAnimationSet hubAnimationSet) return;
             if (!hubAnimationSet.Destinations.Contains(animationSet))
                 hubAnimationSet.Destinations.Add(animationSet);
@@ -135,7 +135,8 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         private void SetAnimationClass(string animationClass)
         {
-            AnimationSet.AnimationClass = animationClass;
+            if (AnimationSet != null)
+                AnimationSet.AnimationClass = animationClass;
             _eventAggregator.GetEvent<ChangeAnimationClassEvent>().Publish();
         }
     }

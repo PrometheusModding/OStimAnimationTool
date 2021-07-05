@@ -1,50 +1,47 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Xml;
 using OStimAnimationTool.Core.Models;
 
-#endregion
-
 namespace OStimAnimationTool.Core
 {
+    // Class responsible for Saving Database related Files
     public class DatabaseScriber
     {
-        private readonly AnimationDatabase _animationDatabase;
-        private readonly string _safePath;
+        // Getting Initial Values from the Animation Database Instance
+        private readonly AnimationDatabase _animationDatabase = AnimationDatabase.Instance;
+        private readonly string _safePath = AnimationDatabase.Instance.SafePath;
 
-        public DatabaseScriber(AnimationDatabase animationDatabase)
+        // Method responsible for arranging .hkx files in correct Folder Structure 
+        public DatabaseScriber()
         {
-            _animationDatabase = animationDatabase;
-            _safePath = animationDatabase.SafePath;
-
             foreach (var animationSet in _animationDatabase.AnimationSets)
             {
-                var setName = animationSet.SetName;
-                var animationClass = animationSet.AnimationClass;
-                var moduleKey = animationSet.ModuleName;
-
+                // Base Path for all Animation Sets
                 string setDir = Path.Combine(_animationDatabase.SafePath, @"meshes\0SA\mod\0Sex\anim\",
-                    moduleKey, animationSet.PositionKey.Replace("!", ""), animationClass);
+                    animationSet.ModuleName, animationSet.PositionKey.Replace("!", ""), animationSet.AnimationClass);
 
+                // Specifying Path depending on type of Animation Set
                 setDir = animationSet is TransitionAnimationSet transitionAnimationSet
-                    ? Path.Combine(setDir,
-                        transitionAnimationSet.ParentSet)
-                    : Path.Combine(setDir, setName);
+                    ? Path.Combine(setDir, transitionAnimationSet.ParentSet)
+                    : Path.Combine(setDir, animationSet.SetName);
 
+                // Adding Set Folder if missing
                 if (!Directory.Exists(setDir))
                     Directory.CreateDirectory(setDir);
 
                 foreach (var animation in animationSet.Animations)
                 {
-                    if (!File.Exists(Path.Combine(setDir, animation.AnimationName)))
+                    var newPath = Path.Combine(setDir, animation.AnimationName + ".hkx");
+                    if (!File.Exists(newPath))
                         File.Copy(animation.OldPath, Path.Combine(setDir, animation.AnimationName + ".hkx"));
+                    animation.OldPath = newPath;  // Updating Animation Location
                 }
             }
         }
 
+        // Method responsible for 0SA .xml Files
         public void XmlScriber()
         {
             var xmlPath = Path.Combine(_safePath, @"meshes\0SA\mod\0Sex\scene");

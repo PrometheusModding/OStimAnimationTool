@@ -17,10 +17,6 @@ namespace OStimAnimationTool.Core.Models
         private int _speed;
         private readonly AnimationSet? _animationSet;
 
-        public Animation()
-        {
-        }
-
         public Animation(string oldPath, AnimationSet animationSet)
         {
             _oldPath = oldPath;

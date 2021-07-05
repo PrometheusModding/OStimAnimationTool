@@ -140,7 +140,7 @@
         <Expander Header="Animation Properties" prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1"
                   IsExpanded="True" />
         <DataGrid Name="AnimationSetDatagrid"
-                  ItemsSource="{Binding AnimationSet.Animations,Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                  ItemsSource="{Binding AnimationSet.Animations, UpdateSourceTrigger=PropertyChanged}"
                   Grid.Row="2" CanUserAddRows="False"
                   AutoGenerateColumns="False">
             <i:Interaction.Triggers>
@@ -153,7 +153,7 @@
                 <DataGridTemplateColumn Header="Animation Name">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="models:Animation">
-                            <TextBlock Text="{Binding AnimationName}" />
+                            <TextBlock Text="{Binding AnimationName, UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
