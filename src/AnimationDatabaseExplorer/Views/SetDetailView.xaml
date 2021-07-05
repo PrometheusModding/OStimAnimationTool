@@ -88,7 +88,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
-                    <ColumnDefinition/>
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <DockPanel Grid.ColumnSpan="3">
                     <Label Content="Set Name" />
@@ -140,8 +140,8 @@
         <Expander Header="Animation Properties" prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1"
                   IsExpanded="True" />
         <DataGrid Name="AnimationSetDatagrid"
-                  ItemsSource="{Binding AnimationSet.Animations, UpdateSourceTrigger=PropertyChanged}"
-                  Grid.Row="2"
+                  ItemsSource="{Binding AnimationSet.Animations,Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                  Grid.Row="2" CanUserAddRows="False"
                   AutoGenerateColumns="False">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">

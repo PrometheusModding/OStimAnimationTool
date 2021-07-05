@@ -13,14 +13,16 @@ namespace OStimAnimationTool.Core.Models
     public class Animation :  BindableBase, IEquatable<Animation>
     {
         private int _actor;
-        private string _animationName;
         private string _oldPath = string.Empty;
         private int _speed;
-        private AnimationSet? _animationSet;
+        private readonly AnimationSet? _animationSet;
 
-        public Animation(string animationName, string oldPath, AnimationSet animationSet)
+        public Animation()
         {
-            _animationName = animationName;
+        }
+
+        public Animation(string oldPath, AnimationSet animationSet)
+        {
             _oldPath = oldPath;
             _animationSet = animationSet;
         }
@@ -62,7 +64,7 @@ namespace OStimAnimationTool.Core.Models
             if (other is null)
                 throw new NullReferenceException();
 
-            return _animationName.Equals(other._animationName);
+            return AnimationName.Equals(other.AnimationName);
         }
     }
 }

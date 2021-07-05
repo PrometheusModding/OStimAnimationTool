@@ -40,7 +40,7 @@ namespace OStimAnimationTool.Core
                 foreach (var animation in animationSet.Animations)
                 {
                     if (!File.Exists(Path.Combine(setDir, animation.AnimationName)))
-                        File.Copy(animation.OldPath, Path.Combine(setDir, animation.AnimationName));
+                        File.Copy(animation.OldPath, Path.Combine(setDir, animation.AnimationName + ".hkx"));
                 }
             }
         }

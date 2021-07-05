@@ -156,7 +156,7 @@ namespace AnimationDatabaseExplorer.ViewModels
                                 @"C:\Users\Admin\Downloads\OSex-17209-2-02SE-Alpha\OSex 2.02S Alpha\Data\meshes\0SA\mod\0Sex\anim\",
                                 animationSet.ModuleName, animationSet.PositionKey.Replace("!", ""),
                                 animationSet.AnimationClass, name, anim + $"_{i}.hkx");
-                            var animation = new Animation(anim + $"_{i}", oldPath, animationSet)
+                            var animation = new Animation(oldPath, animationSet)
                             {
                                 Speed = (int) char.GetNumericValue(anim[^1]),
                                 Actor = i

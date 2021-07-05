@@ -1,6 +1,5 @@
 #region
 
-using OStimAnimationTool.Core;
 using OStimAnimationTool.Core.Models;
 using OStimAnimationTool.Core.ViewModels;
 using Prism.Regions;

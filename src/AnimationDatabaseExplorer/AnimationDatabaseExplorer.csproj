@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OStimAnimationTool.Core\OStimAnimationTool.Core.csproj" />
     <ProjectReference Include="..\OStimAnimationTool\OStimAnimationTool.csproj" />
   </ItemGroup>
 

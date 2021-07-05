@@ -22,15 +22,15 @@
         </Grid.ColumnDefinitions>
         <DockPanel>
             <Label Content="Name"/>
-            <TextBox Text="{Binding Animation.AnimationName}" Margin="5,-10,5,0"/>
+            <TextBox Text="{Binding Animation.AnimationName, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}" Margin="5,-10,5,0"/>
         </DockPanel>
         <DockPanel Grid.Column="1">
             <Label Content="Actor"/>
-            <TextBox Text="{Binding Animation.Actor}" Margin="5,-10,5,0"/>
+            <TextBox Text="{Binding Animation.Actor, UpdateSourceTrigger=PropertyChanged}" Margin="5,-10,5,0"/>
         </DockPanel>
         <DockPanel Grid.Column="2">
             <Label Content="Speed"/>
-            <TextBox Text="{Binding Animation.Speed}" Margin="5,-10,5,0"/>
+            <TextBox Text="{Binding Animation.Speed, UpdateSourceTrigger=PropertyChanged}" Margin="5,-10,5,0"/>
         </DockPanel>
     </Grid>
 </ContentControl>

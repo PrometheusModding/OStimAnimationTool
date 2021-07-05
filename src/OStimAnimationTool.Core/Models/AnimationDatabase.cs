@@ -12,7 +12,7 @@ namespace OStimAnimationTool.Core.Models
     public sealed class AnimationDatabase : BindableBase
     {
         private static readonly Lazy<AnimationDatabase> Lazy = new(() => new AnimationDatabase());
-        private string _name = "New AnimationDatabase";
+        private string _name = "New Animation Database";
         private ObservableCollection<AnimationSet> _animationSets = new();
 
         private AnimationDatabase()

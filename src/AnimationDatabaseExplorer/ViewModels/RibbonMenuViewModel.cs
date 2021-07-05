@@ -88,7 +88,7 @@ namespace AnimationDatabaseExplorer.ViewModels
             {
                 var setName = Path.GetFileName(filename[..^4]);
                 var animationSet = new AnimationSet(setName);
-                var animation = new Animation(Path.GetFileName(filename[..^4]), filename, animationSet);
+                var animation = new Animation(filename, animationSet);
 
                 var actorMatch = Regex.Match(setName, @"A(\d)");
                 if (actorMatch.Success)
@@ -127,7 +127,7 @@ namespace AnimationDatabaseExplorer.ViewModels
             foreach (var filename in openFileDialog.FileNames)
             {
                 var animationSet = new AnimationSet(Path.GetFileName(filename[..^10]));
-                var animation = new Animation(Path.GetFileName(filename[..^4]), filename, animationSet)
+                var animation = new Animation(filename, animationSet)
                 {
                     Actor = (int) char.GetNumericValue(Path.GetFileName(filename)[^8]),
                     Speed = (int) char.GetNumericValue(Path.GetFileName(filename)[^5])
