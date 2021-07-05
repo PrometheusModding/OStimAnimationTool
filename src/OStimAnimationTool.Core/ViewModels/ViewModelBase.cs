@@ -7,7 +7,7 @@ using Prism.Regions;
 
 #endregion
 
-namespace OStimAnimationTool.Core
+namespace OStimAnimationTool.Core.ViewModels
 {
     public class ViewModelBase : BindableBase, INavigationAware, IActiveAware
     {
@@ -18,7 +18,6 @@ namespace OStimAnimationTool.Core
             get => _isActive;
             set => SetProperty(ref _isActive, value);
         }
-
 
         public event EventHandler? IsActiveChanged;
 

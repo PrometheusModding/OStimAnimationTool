@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using OStimAnimationTool.Core;
 using OStimAnimationTool.Core.Events;
 using OStimAnimationTool.Core.Models;
+using OStimAnimationTool.Core.ViewModels;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
@@ -151,12 +152,12 @@ namespace AnimationDatabaseExplorer.ViewModels
                     foreach (var anim in animations)
                         for (var i = 0; i < int.Parse(actorCount); i++)
                         {
-                            var animation = new Animation(anim + $"_{i}")
+                            var oldPath = Path.Combine(
+                                @"C:\Users\Admin\Downloads\OSex-17209-2-02SE-Alpha\OSex 2.02S Alpha\Data\meshes\0SA\mod\0Sex\anim\",
+                                animationSet.ModuleName, animationSet.PositionKey.Replace("!", ""),
+                                animationSet.AnimationClass, name, anim + $"_{i}.hkx");
+                            var animation = new Animation(anim + $"_{i}", oldPath, animationSet)
                             {
-                                OldPath = Path.Combine(
-                                    @"C:\Users\Admin\Downloads\OSex-17209-2-02SE-Alpha\OSex 2.02S Alpha\Data\meshes\0SA\mod\0Sex\anim\",
-                                    animationSet.ModuleName, animationSet.PositionKey.Replace("!", ""),
-                                    animationSet.AnimationClass, name, anim + $"_{i}.hkx"),
                                 Speed = (int) char.GetNumericValue(anim[^1]),
                                 Actor = i
                             };

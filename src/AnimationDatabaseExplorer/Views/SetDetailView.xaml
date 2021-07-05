@@ -10,38 +10,62 @@
     x:Class="AnimationDatabaseExplorer.Views.SetDetailView"
     d:DataContext="{d:DesignInstance viewModels:SetWorkspaceViewModel}">
     <ContentControl.Resources>
+        <Style TargetType="Label">
+            <Setter Property="DockPanel.Dock" Value="Top" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
         <DataTemplate DataType="{x:Type models:HubAnimationSet}">
-            <DataGrid Name="DestinationsDatagrid"
-                      ItemsSource="{Binding Destinations, UpdateSourceTrigger=PropertyChanged}"
-                      AutoGenerateColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="Set Name">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding SetName}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Remove">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button
-                                    Command="{Binding DataContext.RemoveDestinationCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=ContentControl, AncestorLevel=3}}"
-                                    CommandParameter="{Binding SelectedItem, ElementName=DestinationsDatagrid}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Label Content="Hub Animation Set" FontSize="15" Opacity="0.7" />
+                <DockPanel Grid.Row="1">
+                    <Label Content="Destinations" FontSize="14" />
+                    <DataGrid Name="DestinationsDatagrid"
+                              ItemsSource="{Binding Destinations, UpdateSourceTrigger=PropertyChanged}"
+                              AutoGenerateColumns="False"
+                              Margin="5,-5,5,0">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Set Name">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding SetName}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Remove">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button
+                                            Command="{Binding DataContext.RemoveDestinationCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=ContentControl, AncestorLevel=3}}"
+                                            CommandParameter="{Binding SelectedItem, ElementName=DestinationsDatagrid}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Grid>
         </DataTemplate>
         <DataTemplate DataType="{x:Type models:TransitionAnimationSet}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding ParentSet}" />
-                <TextBox Text="{Binding Destination.SetName}" Grid.Row="1" />
+                <Label Content="Transition Animation Set" FontSize="15" Opacity="0.7" />
+                <DockPanel Grid.Row="1">
+                    <Label Content="Parent Set" />
+                    <TextBlock Text="{Binding ParentSet}" Margin="5,-5,5,0" />
+                </DockPanel>
+                <DockPanel Grid.Row="2">
+                    <Label Content="Destination" />
+                    <TextBlock Text="{Binding Destination.SetName}" Margin="5,-5,5,0" />
+                </DockPanel>
             </Grid>
         </DataTemplate>
     </ContentControl.Resources>
@@ -64,14 +88,37 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <TextBox Text="{Binding AnimationSet.SetName}" Grid.Row="0" Grid.ColumnSpan="2" />
-                <TextBox Text="{Binding AnimationSet.Animator}" Grid.Row="1" Grid.Column="0" />
-                <TextBlock Text="{Binding AnimationSet.Actors, Mode=OneWay}" Grid.Row="1" Grid.Column="1" />
-                <TextBox Text="{Binding AnimationSet.Description}" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" />
-                <TextBlock Text="{Binding AnimationSet.AnimationClass, StringFormat='Animation Class: {0}'}"
-                           Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" />
-                <Menu ItemsSource="{Binding AnimationClassMenuItems}" Grid.Row="4" Grid.Column="0">
+                <DockPanel Grid.ColumnSpan="3">
+                    <Label Content="Set Name" />
+                    <TextBox Text="{Binding AnimationSet.SetName}" Margin="5,-10,5,0" />
+                </DockPanel>
+                <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                    <Label Content="Animator" />
+                    <TextBox Text="{Binding AnimationSet.Animator}" Margin="5,-10,5,0" />
+                </DockPanel>
+                <DockPanel Grid.Row="1" Grid.Column="1">
+                    <Label Content="Actors" />
+                    <TextBlock Text="{Binding AnimationSet.Actors}" Margin="5,-5,5,0" />
+                </DockPanel>
+                <DockPanel Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0">
+                    <Label Content="Description" />
+                    <TextBox Text="{Binding AnimationSet.Description}" Margin="5,-10,5,0" />
+                </DockPanel>
+                <DockPanel Grid.Row="3" Grid.Column="0">
+                    <Label Content="Module" />
+                    <TextBox Text="{Binding AnimationSet.ModuleName}" Margin="5,-10,5,0" />
+                </DockPanel>
+                <DockPanel Grid.Row="3" Grid.Column="1">
+                    <Label Content="Position Key" />
+                    <TextBox Text="{Binding AnimationSet.PositionKey}" Margin="5,-10,5,0" />
+                </DockPanel>
+                <DockPanel Grid.Row="3" Grid.Column="2">
+                    <Label Content="Animation Class" />
+                    <TextBlock Text="{Binding AnimationSet.AnimationClass}" Margin="5,-5,5,0" />
+                </DockPanel>
+                <Menu ItemsSource="{Binding AnimationClassMenuItems}" Grid.Row="4" Grid.Column="0" Margin="5">
                     <Menu.ItemContainerStyle>
                         <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                             <Setter Property="Command"
@@ -86,7 +133,8 @@
                         </HierarchicalDataTemplate>
                     </Menu.ItemTemplate>
                 </Menu>
-                <ContentControl Content="{Binding AnimationSet}" Grid.Row="5" Grid.ColumnSpan="2" Grid.Column="0" />
+                <ContentControl Content="{Binding AnimationSet}" Grid.Row="5" Grid.ColumnSpan="3"
+                                Grid.Column="0" Margin="5" />
             </Grid>
         </Expander>
         <Expander Header="Animation Properties" prism:RegionManager.RegionName="AnimationDetailRegion" Grid.Row="1"
@@ -105,7 +153,7 @@
                 <DataGridTemplateColumn Header="Animation Name">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="models:Animation">
-                            <TextBox Text="{Binding AnimationName}" />
+                            <TextBlock Text="{Binding AnimationName}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

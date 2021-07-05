@@ -2,99 +2,61 @@
 
 using System;
 using System.ComponentModel;
+using System.Configuration;
+using System.Runtime.CompilerServices;
+using Prism.Mvvm;
 
 #endregion
 
 namespace OStimAnimationTool.Core.Models
 {
-    public class Animation : IEquatable<Animation>, IEditableObject, INotifyPropertyChanged
+    public class Animation :  BindableBase, IEquatable<Animation>
     {
-        private bool _activeEdit;
         private int _actor;
         private string _animationName;
         private string _oldPath = string.Empty;
         private int _speed;
+        private AnimationSet? _animationSet;
 
-        private Animation? _tempAnim;
-
-        public Animation(string animationName)
-        {
-            _animationName = animationName;
-        }
-
-        public Animation(string animationName, string oldPath)
+        public Animation(string animationName, string oldPath, AnimationSet animationSet)
         {
             _animationName = animationName;
             _oldPath = oldPath;
+            _animationSet = animationSet;
         }
 
         public string AnimationName
         {
-            get => _animationName;
-            set
+            get
             {
-                if (value == _animationName) return;
-                _animationName = value;
-                NotifyPropertyChanged(nameof(AnimationName));
+                return _animationSet switch
+                {
+                    HubAnimationSet => "0Sx" + _animationSet.ModuleName + $"_{_animationSet.AnimationClass}" +
+                                       $"-{_animationSet.SetName}" + $"_S{_speed.ToString()}" + $"_{_actor.ToString()}",
+                    TransitionAnimationSet => "0Sx" + _animationSet.ModuleName + $"_{_animationSet.AnimationClass}" +
+                                              $"-{_animationSet.SetName}" + $"_{_actor.ToString()}",
+                    _ => string.Empty
+                };
             }
         }
 
         public int Actor
         {
             get => _actor;
-            set
-            {
-                if (value == _actor) return;
-                _actor = value;
-                NotifyPropertyChanged(nameof(Actor));
-            }
+            set => SetProperty(ref _actor, value);
         }
 
         public string OldPath
         {
             get => _oldPath;
-            set
-            {
-                if (value == _oldPath) return;
-                _oldPath = value;
-                NotifyPropertyChanged(nameof(OldPath));
-            }
+            set => SetProperty(ref _oldPath, value);
         }
 
         public int Speed
         {
             get => _speed;
-            set
-            {
-                if (value == _speed) return;
-                _speed = value;
-                NotifyPropertyChanged(nameof(Speed));
-            }
+            set => SetProperty(ref _speed, value);
         }
-
-        public void BeginEdit()
-        {
-            if (_activeEdit) return;
-            _tempAnim = MemberwiseClone() as Animation;
-            _activeEdit = true;
-        }
-
-        public void CancelEdit()
-        {
-            if (_activeEdit != true) return;
-            if (_tempAnim is null)
-                throw new NullReferenceException();
-
-            _animationName = _tempAnim._animationName;
-            _activeEdit = false;
-        }
-
-        public void EndEdit()
-        {
-            if (_activeEdit != true) return;
-            _activeEdit = false;
-        }
-
         public bool Equals(Animation? other)
         {
             if (other is null)
@@ -102,19 +64,5 @@ namespace OStimAnimationTool.Core.Models
 
             return _animationName.Equals(other._animationName);
         }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        private void NotifyPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        /*public int GetSetSize(AnimationDatabase animationDatabase)
-        {
-            var count = animationDatabase.Count(anim => anim.SetName.Equals(_setName));
-
-            return count / 2;
-        }*/
     }
 }

@@ -1,4 +1,4 @@
-<local:ExtendedRibbonWindow
+<core:ExtendedRibbonWindow
     x:Class="OStimConversionTool.Views.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:prism="http://prismlibrary.com/"
@@ -9,6 +9,7 @@
     xmlns:viewModels="clr-namespace:OStimConversionTool.ViewModels"
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:OStimConversionTool"
+    xmlns:core="clr-namespace:OStimAnimationTool.Core;assembly=OStimAnimationTool.Core"
     mc:Ignorable="d"
     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
     Background="{DynamicResource MaterialDesignPaper}"
@@ -20,7 +21,8 @@
     WindowStartupLocation="CenterScreen"
     prism:ViewModelLocator.AutoWireViewModel="True"
     d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
-    OverlayCanvas="{Binding ElementName=OverlayCanvas}">
+    OverlayCanvas="{Binding ElementName=MainOverlayCanvas}"
+    DropTarget="{Binding ElementName=ContentControl}">
     <Window.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="CloseButtonHeader">
@@ -44,7 +46,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <Canvas Name="OverlayCanvas" ZIndex="5"/>
+        <Canvas Name="MainOverlayCanvas" ZIndex="5"/>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -81,7 +83,7 @@
             </DockPanel>
             <TabControl prism:RegionManager.RegionName="WorkspaceRegion" Grid.Row="1" Grid.Column="3" />
             <GridSplitter Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" />
-            <ContentControl prism:RegionManager.RegionName="DetailRegion" Grid.Row="1" Grid.Column="5" />
+            <ContentControl Name="ContentControl" prism:RegionManager.RegionName="DetailRegion" Grid.Row="1" Grid.Column="5" />
         </Grid>
     </Grid>
-</local:ExtendedRibbonWindow>
+</core:ExtendedRibbonWindow>

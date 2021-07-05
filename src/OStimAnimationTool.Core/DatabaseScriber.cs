@@ -39,12 +39,8 @@ namespace OStimAnimationTool.Core
 
                 foreach (var animation in animationSet.Animations)
                 {
-                    var fileName = animationSet is TransitionAnimationSet
-                        ? $"0Sx{moduleKey}_{animationClass}-{setName}_{animation.Actor.ToString()}.hkx"
-                        : $"0Sx{moduleKey}_{animationClass}-{setName}_S{animation.Speed.ToString()}_{animation.Actor.ToString()}.hkx";
-
-                    if (!File.Exists(Path.Combine(setDir, fileName)))
-                        File.Copy(animation.OldPath, Path.Combine(setDir, fileName));
+                    if (!File.Exists(Path.Combine(setDir, animation.AnimationName)))
+                        File.Copy(animation.OldPath, Path.Combine(setDir, animation.AnimationName));
                 }
             }
         }

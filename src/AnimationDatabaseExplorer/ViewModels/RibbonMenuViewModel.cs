@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using OStimAnimationTool.Core;
 using OStimAnimationTool.Core.Events;
 using OStimAnimationTool.Core.Models;
+using OStimAnimationTool.Core.ViewModels;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
@@ -85,8 +86,9 @@ namespace AnimationDatabaseExplorer.ViewModels
 
             foreach (var filename in openFileDialog.FileNames)
             {
-                var animation = new Animation(Path.GetFileName(filename[..^4]), filename);
                 var setName = Path.GetFileName(filename[..^4]);
+                var animationSet = new AnimationSet(setName);
+                var animation = new Animation(Path.GetFileName(filename[..^4]), filename, animationSet);
 
                 var actorMatch = Regex.Match(setName, @"A(\d)");
                 if (actorMatch.Success)
@@ -100,8 +102,6 @@ namespace AnimationDatabaseExplorer.ViewModels
                     setName = actorMatch.Groups[1].Index < speedMatch.Groups[1].Index
                         ? setName[..(actorMatch.Groups[1].Index - 1)]
                         : setName[..(speedMatch.Groups[1].Index - 1)];
-
-                var animationSet = new AnimationSet(setName);
 
                 if (!AnimationDatabase.Instance.AnimationSets.Contains(animationSet))
                     AnimationDatabase.Instance.AnimationSets.Add(animationSet);
@@ -126,13 +126,15 @@ namespace AnimationDatabaseExplorer.ViewModels
 
             foreach (var filename in openFileDialog.FileNames)
             {
-                var animation = new Animation(Path.GetFileName(filename[..^4]), filename);
                 var animationSet = new AnimationSet(Path.GetFileName(filename[..^10]));
+                var animation = new Animation(Path.GetFileName(filename[..^4]), filename, animationSet)
+                {
+                    Actor = (int) char.GetNumericValue(Path.GetFileName(filename)[^8]),
+                    Speed = (int) char.GetNumericValue(Path.GetFileName(filename)[^5])
+                };
 
-                animation.Actor = (int) char.GetNumericValue(Path.GetFileName(filename)[^8]);
-                animation.Speed = (int) char.GetNumericValue(Path.GetFileName(filename)[^5]);
 
-                if (!AnimationDatabase.Instance!.AnimationSets.Contains(animationSet))
+                if (!AnimationDatabase.Instance.AnimationSets.Contains(animationSet))
                     AnimationDatabase.Instance.AnimationSets.Add(animationSet);
 
                 if (!AnimationDatabase.Instance.Contains(animation))

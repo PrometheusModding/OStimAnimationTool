@@ -7,6 +7,7 @@ using NodeNetwork.Toolkit.Layout.ForceDirected;
 using NodeNetwork.ViewModels;
 using OStimAnimationTool.Core;
 using OStimAnimationTool.Core.Models;
+using OStimAnimationTool.Core.ViewModels;
 using Prism.Commands;
 using Prism.Regions;
 using ReactiveUI;

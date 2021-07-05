@@ -2,6 +2,7 @@
 
 using OStimAnimationTool.Core;
 using OStimAnimationTool.Core.Models;
+using OStimAnimationTool.Core.ViewModels;
 using Prism.Regions;
 
 #endregion
@@ -11,9 +12,9 @@ namespace AnimationDatabaseExplorer.ViewModels
     // VM for the AnimationDetailView, located in the AnimationProperties Section of the SetWorkspaceView
     public class AnimationDetailViewModel : ViewModelBase
     {
-        private Animation _animation = new("");
+        private Animation? _animation;
 
-        public Animation Animation
+        public Animation? Animation
         {
             get => _animation;
             private set => SetProperty(ref _animation, value);

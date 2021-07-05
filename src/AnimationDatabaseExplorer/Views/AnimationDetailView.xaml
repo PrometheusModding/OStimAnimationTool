@@ -7,12 +7,30 @@
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
                 prism:ViewModelLocator.AutoWireViewModel="True"
                 d:DataContext="{d:DesignInstance viewModels:AnimationDetailViewModel}">
+    <ContentControl.Resources>
+        <Style TargetType="Label">
+            <Setter Property="DockPanel.Dock" Value="Top" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+    </ContentControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <TextBox Text="{Binding Animation.AnimationName, UpdateSourceTrigger=PropertyChanged}"
-                 VerticalAlignment="Center" />
+        <DockPanel>
+            <Label Content="Name"/>
+            <TextBox Text="{Binding Animation.AnimationName}" Margin="5,-10,5,0"/>
+        </DockPanel>
+        <DockPanel Grid.Column="1">
+            <Label Content="Actor"/>
+            <TextBox Text="{Binding Animation.Actor}" Margin="5,-10,5,0"/>
+        </DockPanel>
+        <DockPanel Grid.Column="2">
+            <Label Content="Speed"/>
+            <TextBox Text="{Binding Animation.Speed}" Margin="5,-10,5,0"/>
+        </DockPanel>
     </Grid>
 </ContentControl>

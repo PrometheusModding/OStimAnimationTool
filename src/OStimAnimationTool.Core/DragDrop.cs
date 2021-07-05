@@ -101,18 +101,18 @@ namespace OStimAnimationTool.Core
 
         #region ItemDroppedProperty
 
-        public static readonly DependencyProperty ItemDropped = DependencyProperty.RegisterAttached(
-            nameof(ItemDropped), typeof(ICommand), typeof(DragDrop),
+        public static readonly DependencyProperty ItemDroppedProperty = DependencyProperty.RegisterAttached(
+            "ItemDropped", typeof(ICommand), typeof(DragDrop),
             new PropertyMetadata(AttachOrRemoveItemDroppedEvent));
 
         public static ICommand GetItemDropped(DependencyObject element)
         {
-            return (ICommand) element.GetValue(ItemDropped);
+            return (ICommand) element.GetValue(ItemDroppedProperty);
         }
 
         public static void SetItemDropped(DependencyObject element, ICommand value)
         {
-            element.SetValue(ItemDropped, value);
+            element.SetValue(ItemDroppedProperty, value);
         }
 
         private static void AttachOrRemoveItemDroppedEvent(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -123,90 +123,90 @@ namespace OStimAnimationTool.Core
 
         #region DragDropContainerProperty
 
-        public static readonly DependencyProperty DragDropContainer =
-            DependencyProperty.RegisterAttached(nameof(DragDropContainer), typeof(Panel), typeof(DragDrop),
+        public static readonly DependencyProperty DragDropContainerProperty =
+            DependencyProperty.RegisterAttached("DragDropContainer", typeof(Panel), typeof(DragDrop),
                 new PropertyMetadata(default(UIElement)));
 
         public static Panel GetDragDropContainer(DependencyObject element)
         {
-            return (Panel) element.GetValue(DragDropContainer);
+            return (Panel) element.GetValue(DragDropContainerProperty);
         }
 
         public static void SetDragDropContainer(DependencyObject element, Panel value)
         {
-            element.SetValue(DragDropContainer, value);
+            element.SetValue(DragDropContainerProperty, value);
         }
 
         #endregion
 
         #region DragDropPreviewControlProperty
 
-        public static readonly DependencyProperty DragDropPreviewControl =
-            DependencyProperty.RegisterAttached(nameof(DragDropPreviewControl), typeof(DragDropPreviewBase),
+        public static readonly DependencyProperty DragDropPreviewControlProperty =
+            DependencyProperty.RegisterAttached("DragDropPreviewControl", typeof(DragDropPreviewBase),
                 typeof(DragDrop), new PropertyMetadata(default(UIElement)));
 
         public static DragDropPreviewBase GetDragDropPreviewControl(DependencyObject element)
         {
-            return (DragDropPreviewBase) element.GetValue(DragDropPreviewControl);
+            return (DragDropPreviewBase) element.GetValue(DragDropPreviewControlProperty);
         }
 
         public static void SetDragDropPreviewControl(DependencyObject element, DragDropPreviewBase value)
         {
-            element.SetValue(DragDropPreviewControl, value);
+            element.SetValue(DragDropPreviewControlProperty, value);
         }
 
         #endregion
 
         #region DragDropPreviewControlDataContextProperty
 
-        public static readonly DependencyProperty DragDropPreviewControlDataContext =
-            DependencyProperty.RegisterAttached(nameof(DragDropPreviewControlDataContext), typeof(object),
+        public static readonly DependencyProperty DragDropPreviewControlDataContextProperty =
+            DependencyProperty.RegisterAttached("DragDropPreviewControlDataContext", typeof(object),
                 typeof(DragDrop), new PropertyMetadata(default(object)));
 
         public static object GetDragDropPreviewControlDataContext(DependencyObject element)
         {
-            return element.GetValue(DragDropPreviewControlDataContext);
+            return element.GetValue(DragDropPreviewControlDataContextProperty);
         }
 
         public static void SetDragDropPreviewControlDataContext(DependencyObject element, object value)
         {
-            element.SetValue(DragDropPreviewControlDataContext, value);
+            element.SetValue(DragDropPreviewControlDataContextProperty, value);
         }
 
         #endregion
 
         #region DropTargetProperty
 
-        public static readonly DependencyProperty DropTarget =
-            DependencyProperty.RegisterAttached(nameof(DropTarget), typeof(UIElement), typeof(DragDrop),
+        public static readonly DependencyProperty DropTargetProperty =
+            DependencyProperty.RegisterAttached("DropTarget", typeof(UIElement), typeof(DragDrop),
                 new PropertyMetadata(default(string)));
 
         public static UIElement GetDropTarget(DependencyObject element)
         {
-            return (UIElement) element.GetValue(DropTarget);
+            return (UIElement) element.GetValue(DropTargetProperty);
         }
 
         public static void SetDropTarget(DependencyObject element, UIElement value)
         {
-            element.SetValue(DropTarget, value);
+            element.SetValue(DropTargetProperty, value);
         }
 
         #endregion
 
         #region IsDragSourceProperty
 
-        public static readonly DependencyProperty IsDragSource =
-            DependencyProperty.RegisterAttached(nameof(IsDragSource), typeof(bool), typeof(DragDrop),
+        public static readonly DependencyProperty IsDragSourceProperty =
+            DependencyProperty.RegisterAttached("IsDragSource", typeof(bool), typeof(DragDrop),
                 new PropertyMetadata(false, IsDragSourceChanged));
 
         public static bool GetIsDragSource(DependencyObject element)
         {
-            return (bool) element.GetValue(IsDragSource);
+            return (bool) element.GetValue(IsDragSourceProperty);
         }
 
         public static void SetIsDragSource(DependencyObject element, bool value)
         {
-            element.SetValue(IsDragSource, value);
+            element.SetValue(IsDragSourceProperty, value);
         }
 
         private static void IsDragSourceChanged(DependencyObject element, DependencyPropertyChangedEventArgs e)
@@ -304,6 +304,8 @@ namespace OStimAnimationTool.Core
             Canvas.SetLeft(_dragDropPreviewControl, target.X);
             Canvas.SetTop(_dragDropPreviewControl, target.Y);
             
+            _dragDropPreviewControl.DropState = DropState.CannotDrop;
+            
             if (_dropTarget is null)
             {
                 AnimateDropState();
@@ -322,6 +324,8 @@ namespace OStimAnimationTool.Core
 
             if (_itemDroppedCommand?.CanExecute(_dragDropPreviewControlDataContext) is false)
                 _dragDropPreviewControl.DropState = DropState.CannotDrop;
+            
+            AnimateDropState();
         }
 
         private void AnimateDropState()
