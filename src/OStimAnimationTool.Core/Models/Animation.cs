@@ -1,22 +1,19 @@
 #region
 
 using System;
-using System.ComponentModel;
-using System.Configuration;
-using System.Runtime.CompilerServices;
 using Prism.Mvvm;
 
 #endregion
 
 namespace OStimAnimationTool.Core.Models
 {
-    public class Animation :  BindableBase, IEquatable<Animation>
+    public class Animation : BindableBase, IEquatable<Animation>
     {
         private int _actor;
-        private string _oldPath = string.Empty;
+        private AnimationSet _animationSet;
+        private string _oldPath;
         private int _speed;
-        private readonly AnimationSet? _animationSet;
-
+        
         public Animation(string oldPath, AnimationSet animationSet)
         {
             _oldPath = oldPath;
@@ -27,7 +24,7 @@ namespace OStimAnimationTool.Core.Models
         {
             get
             {
-                return _animationSet switch
+                return AnimationSet switch
                 {
                     HubAnimationSet => "0Sx" + _animationSet.ModuleName + $"_{_animationSet.AnimationClass}" +
                                        $"-{_animationSet.SetName}" + $"_S{_speed.ToString()}" + $"_{_actor.ToString()}",
@@ -38,10 +35,15 @@ namespace OStimAnimationTool.Core.Models
             }
         }
 
+        public void NameChanged()
+        {
+            RaisePropertyChanged(nameof(AnimationName));
+        }
+
         public int Actor
         {
             get => _actor;
-            set => SetProperty(ref _actor, value);
+            set => SetProperty(ref _actor, value, NameChanged);
         }
 
         public string OldPath
@@ -53,8 +55,15 @@ namespace OStimAnimationTool.Core.Models
         public int Speed
         {
             get => _speed;
-            set => SetProperty(ref _speed, value);
+            set => SetProperty(ref _speed, value, NameChanged);
         }
+
+        public AnimationSet AnimationSet
+        {
+            get => _animationSet;
+            set => SetProperty(ref _animationSet, value);
+        }
+
         public bool Equals(Animation? other)
         {
             if (other is null)

@@ -153,7 +153,7 @@
                 <DataGridTemplateColumn Header="Animation Name">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="models:Animation">
-                            <TextBlock Text="{Binding AnimationName, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock Text="{Binding AnimationName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

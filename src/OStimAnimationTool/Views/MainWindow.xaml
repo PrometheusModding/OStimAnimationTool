@@ -65,8 +65,12 @@
                     <fluent:Backstage>
                         <fluent:BackstageTabControl>
                             <fluent:Button Header="New Animation Database"
-                                           Command="{Binding DataContext.NewAnimationDatabaseCommand, RelativeSource={RelativeSource AncestorType=fluent:Backstage}}"
+                                           Command="{Binding DataContext.NewDatabaseCommand, RelativeSource={RelativeSource AncestorType=fluent:Backstage}}"
                                            VerticalAlignment="Top" />
+                            <fluent:Button Header="Load Animation Database"
+                                           Command="{Binding DataContext.LoadDatabaseCommand, RelativeSource={RelativeSource AncestorType=fluent:Backstage}}"/>
+                            <fluent:Button Header="Save Animation Database"
+                                           Command="{Binding DataContext.SaveDatabaseCommand, RelativeSource={RelativeSource AncestorType=fluent:Backstage}}"/>
                         </fluent:BackstageTabControl>
                     </fluent:Backstage>
                 </fluent:Ribbon.Menu>

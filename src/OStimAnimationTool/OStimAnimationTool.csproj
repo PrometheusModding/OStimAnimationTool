@@ -18,18 +18,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Fluent.Ribbon" Version="9.0.0-alpha0148" />
-		<PackageReference Include="MaterialDesignThemes" Version="4.1.0" />
-		<PackageReference Include="NodeNetwork" Version="5.2.0" />
-		<PackageReference Include="NodeNetworkToolkit" Version="5.2.0" />
-		<PackageReference Include="Prism.DryIoc" Version="8.1.97" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Folder Include="ViewModels\" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\OStimAnimationTool.Core\OStimAnimationTool.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="MaterialDesignThemes" Version="4.2.0-ci2603" />
 	</ItemGroup>
 </Project>

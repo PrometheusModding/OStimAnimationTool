@@ -15,7 +15,6 @@
             <fluent:Gallery>
                 <fluent:MenuItem Header="Open Animation Set" Command="{Binding AddAnimationSetCommand}" />
                 <fluent:MenuItem Header="Open SL Animation Set" Command="{Binding AddSlAnimationSetCommand}" />
-                <fluent:MenuItem Header="Save Database" Command="{Binding SaveDatabaseCommand}" />
                 <fluent:MenuItem Header="Open Node View" Command="{Binding OpenNavNodeViewCommand}" />
             </fluent:Gallery>
         </fluent:SplitButton>

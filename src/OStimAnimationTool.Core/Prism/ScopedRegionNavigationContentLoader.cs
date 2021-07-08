@@ -1,5 +1,6 @@
 #region
 
+using OStimAnimationTool.Core.Interfaces;
 using Prism.Ioc;
 using Prism.Regions;
 

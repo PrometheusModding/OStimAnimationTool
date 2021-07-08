@@ -1,15 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using OStimAnimationTool.Core;
+using DynamicData;
 using OStimAnimationTool.Core.Events;
 using OStimAnimationTool.Core.Models;
 using OStimAnimationTool.Core.ViewModels;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
+using ReactiveUI;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace AnimationDatabaseExplorer.ViewModels
@@ -18,23 +19,19 @@ namespace AnimationDatabaseExplorer.ViewModels
     {
         private readonly IRegionManager _regionManager;
 
-        public RibbonMenuViewModel(IEventAggregator eventAggregator, IRegionManager regionManager)
+        public RibbonMenuViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
         {
+            _regionManager = regionManager;
+            
             AddAnimationSetCommand = new DelegateCommand(AddAnimationSet, ActiveDatabase);
             AddSlAnimationSetCommand = new DelegateCommand(AddSlAnimationSet, ActiveDatabase);
-            SaveDatabaseCommand = new DelegateCommand(SaveDatabase, WellFormedDatabase);
             OpenNavNodeViewCommand = new DelegateCommand(OpenNavNetworkView, ActiveDatabase);
 
-            _regionManager = regionManager;
-
-            eventAggregator.GetEvent<OpenDatabaseEvent>().Subscribe(SetDataContext);
-            eventAggregator.GetEvent<SaveDatabaseEvent>().Subscribe(SaveDatabase);
-            eventAggregator.GetEvent<ChangeAnimationClassEvent>().Subscribe(ChangeAnimationClass);
+            eventAggregator.GetEvent<OpenDatabaseEvent>().Subscribe(() => AddSlAnimationSetCommand.RaiseCanExecuteChanged());
         }
 
         public DelegateCommand AddAnimationSetCommand { get; }
         public DelegateCommand AddSlAnimationSetCommand { get; }
-        public DelegateCommand SaveDatabaseCommand { get; }
         public DelegateCommand OpenNavNodeViewCommand { get; }
 
         private void OpenNavNetworkView()
@@ -46,29 +43,13 @@ namespace AnimationDatabaseExplorer.ViewModels
                 if (string.IsNullOrEmpty(animationSet.AnimationClass))
                     Console.WriteLine(animationSet.SetName);
         }
-
-        private void ChangeAnimationClass()
-        {
-            SaveDatabaseCommand.RaiseCanExecuteChanged();
-        }
-
+        
         private static bool ActiveDatabase()
         {
             return AnimationDatabase.IsValueCreated;
         }
 
-        private static bool WellFormedDatabase()
-        {
-            return AnimationDatabase.IsValueCreated && AnimationDatabase.Instance.AnimationSets.All(animationSet => !string.IsNullOrEmpty(animationSet.AnimationClass));
-        }
-
-        private void SetDataContext()
-        {
-            SaveDatabaseCommand.RaiseCanExecuteChanged();
-            AddSlAnimationSetCommand.RaiseCanExecuteChanged();
-        }
-
-        private void AddAnimationSet()
+        private static void AddAnimationSet()
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -97,63 +78,54 @@ namespace AnimationDatabaseExplorer.ViewModels
                     setName = actorMatch.Groups[1].Index < speedMatch.Groups[1].Index
                         ? setName[..(actorMatch.Groups[1].Index - 1)]
                         : setName[..(speedMatch.Groups[1].Index - 1)];
-
-                if (!AnimationDatabase.Instance.AnimationSets.Contains(animationSet))
-                    AnimationDatabase.Instance.AnimationSets.Add(animationSet);
-
-                if (!AnimationDatabase.Instance.Contains(animation))
-                    AnimationDatabase.Instance.Add(animation);
             }
-
-            SaveDatabaseCommand.RaiseCanExecuteChanged();
         }
 
-        private void AddSlAnimationSet()
+        private static void AddSlAnimationSet()
         {
-            var openFileDialog = new OpenFileDialog
+            var fileDialog = new OpenFileDialog
             {
                 Multiselect = true,
                 Filter = "Havok Animation files (*.hkx)|*hkx|All files (*.*)|*.*",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             };
 
-            if (openFileDialog.ShowDialog() != true) return;
+            if (fileDialog.ShowDialog() != true) return;
 
-            foreach (var filename in openFileDialog.FileNames)
+            string setName = string.Empty;
+            AnimationSet animationSet = new(string.Empty);
+
+            foreach (var filename in fileDialog.FileNames)
             {
-                var animationSet = new HubAnimationSet(Path.GetFileName(filename[..^10]));
+                if (!setName.Equals(Path.GetFileName(filename[..^10])))
+                {
+                    animationSet = SetFinder(Path.GetFileName(filename[..^10])); 
+                }
+
+                if (animationSet == null) continue;
                 var animation = new Animation(filename, animationSet)
                 {
                     Actor = (int) char.GetNumericValue(Path.GetFileName(filename)[^8]) == 1 ? 1 : 0,
-                    Speed = (int) char.GetNumericValue(Path.GetFileName(filename)[^5])
+                    Speed = (int) char.GetNumericValue(Path.GetFileName(filename)[^5]) - 1
                 };
-
-
+                
                 if (!AnimationDatabase.Instance.AnimationSets.Contains(animationSet))
                     AnimationDatabase.Instance.AnimationSets.Add(animationSet);
-
-                if (!AnimationDatabase.Instance.Contains(animation))
-                    AnimationDatabase.Instance.Add(animation);
+                    
+                if(!animationSet.Animations.Contains(animation))
+                    animationSet.Animations.Add(animation);
             }
-
-            SaveDatabaseCommand.RaiseCanExecuteChanged();
         }
 
-        private static void SaveDatabase()
+        private static AnimationSet SetFinder(string setName)
         {
-            if (string.IsNullOrEmpty(AnimationDatabase.Instance.SafePath))
+            foreach (var animationSet in AnimationDatabase.Instance.AnimationSets)
             {
-                FolderBrowserDialog folderBrowserDialog = new();
-                {
-                    folderBrowserDialog.ShowDialog();
-                    AnimationDatabase.Instance.SafePath = folderBrowserDialog.SelectedPath;
-                }
+                if (setName.Equals(animationSet.SetName))
+                    return animationSet;
             }
 
-            DatabaseScriber databaseScriber = new();
-            databaseScriber.XmlScriber();
-            databaseScriber.FnisScriber();
-            databaseScriber.DatabaseFileScriber();
+            return new HubAnimationSet(setName);
         }
     }
 }

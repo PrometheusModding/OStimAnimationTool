@@ -1,9 +1,4 @@
-#region
-
-using OStimAnimationTool.Core.Models;
-using Prism.Events;
-
-#endregion
+﻿using Prism.Events;
 
 namespace OStimAnimationTool.Core.Events
 {

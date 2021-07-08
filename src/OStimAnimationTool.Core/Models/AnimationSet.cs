@@ -1,7 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Prism.Mvvm;
 using static System.String;
 
@@ -27,13 +26,28 @@ namespace OStimAnimationTool.Core.Models
         public string ModuleName
         {
             get => _moduleName;
-            set => SetProperty(ref _moduleName, value);
+            set { SetProperty(ref _moduleName, value, () =>
+            {
+                RaisePropertyChanged(nameof(SceneID));
+                foreach (var animation in Animations)
+                {
+                    animation.NameChanged();
+                }
+            });
+            }
         }
 
         public string PositionKey
         {
             get => _positionKey;
-            set => SetProperty(ref _positionKey, value);
+            set => SetProperty(ref _positionKey, value, () =>
+            {
+                RaisePropertyChanged(nameof(SceneID));
+                foreach (var animation in Animations)
+                {
+                    animation.NameChanged();
+                }
+            });
         }
 
         public ObservableCollection<Animation> Animations
@@ -51,13 +65,27 @@ namespace OStimAnimationTool.Core.Models
         public string AnimationClass
         {
             get => _animationClass;
-            set => SetProperty(ref _animationClass, value);
+            set => SetProperty(ref _animationClass, value, () =>
+            {
+                RaisePropertyChanged(nameof(SceneID));
+                foreach (var animation in Animations)
+                {
+                    animation.NameChanged();
+                }
+            });
         }
 
         public string SetName
         {
             get => _setName;
-            set => SetProperty(ref _setName, value);
+            set => SetProperty(ref _setName, value, () =>
+            {
+                RaisePropertyChanged(nameof(SceneID));
+                foreach (var animation in Animations)
+                {
+                    animation.NameChanged();
+                }
+            });
         }
 
         public string Description
@@ -65,8 +93,9 @@ namespace OStimAnimationTool.Core.Models
             get => _description;
             set => SetProperty(ref _description, value);
         }
+
         public int Actors => GetActorCount();
-        
+
         public bool Equals(AnimationSet? other)
         {
             if (other is null)
@@ -74,7 +103,7 @@ namespace OStimAnimationTool.Core.Models
 
             return SetName.Equals(other.SetName);
         }
-        
+
         private int GetActorCount()
         {
             return Animations.Select(animation => animation.Actor).Prepend(1).Max() + 1;
