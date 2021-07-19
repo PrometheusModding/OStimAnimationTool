@@ -13,33 +13,33 @@ namespace AnimationDatabaseExplorer.ViewModels
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IRegionManager _regionManager;
-        private ObservableCollection<AnimationSet> _animationSets;
+        private ObservableCollection<Module> _modules;
 
         public DatabaseTreeViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
         {
-            _animationSets = AnimationDatabase.Instance.AnimationSets;
+            _modules = AnimationDatabase.Instance.Modules;
 
             _regionManager = regionManager;
             _eventAggregator = eventAggregator;
 
             OpenSetTabCommand = new DelegateCommand<AnimationSet>(OpenSet);
             AddDestinationCommand = new DelegateCommand<AnimationSet>(AddDestination);
-            SearchTreeViewCommand = new DelegateCommand<string>(SearchTreeView);
+            //SearchTreeViewCommand = new DelegateCommand<string>(SearchTreeView);
         }
 
-        public ObservableCollection<AnimationSet> AnimationSets
+        public ObservableCollection<Module> Modules
         {
-            get => _animationSets;
-            private set => SetProperty(ref _animationSets, value);
+            get => _modules;
+            private set => SetProperty(ref _modules, value);
         }
 
 
         public DelegateCommand<AnimationSet> OpenSetTabCommand { get; }
         public DelegateCommand<AnimationSet> AddDestinationCommand { get; }
-        public DelegateCommand<string> SearchTreeViewCommand { get; }
+        //public DelegateCommand<string> SearchTreeViewCommand { get; }
 
 
-        private void SearchTreeView(string searchFilter)
+        /*private void SearchTreeView(string searchFilter)
         {
             if (string.IsNullOrEmpty(searchFilter))
             {
@@ -52,7 +52,7 @@ namespace AnimationDatabaseExplorer.ViewModels
                     if (n.SetName.ToLower().StartsWith(searchFilter.Trim().ToLower()))
                         AnimationSets.Add(n);
             }
-        }
+        }*/
 
         private void AddDestination(AnimationSet animationSet)
         {

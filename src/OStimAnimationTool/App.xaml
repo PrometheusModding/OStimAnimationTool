@@ -8,13 +8,13 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="LightBlue" SecondaryColor="Indigo" />
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Blue" SecondaryColor="DeepOrange" />
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Fluent;Component/Themes/Generic.xaml" />
                 <ResourceDictionary
-                    Source="pack://application:,,,/Fluent;component/Themes/Themes/light.cyan.colorful.xaml" />
-            </ResourceDictionary.MergedDictionaries>
+                    Source="pack://application:,,,/Fluent;component/Themes/Themes/light.blue.xaml" />
+        </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </prism:PrismApplication>

@@ -45,10 +45,11 @@ namespace OStimConversionTool.ViewModels
         private static bool WellFormedDatabase()
         {
             return AnimationDatabase.IsValueCreated &&
-                   AnimationDatabase.Instance.AnimationSets.All(animationSet =>
-                       !string.IsNullOrEmpty(animationSet.AnimationClass) &&
-                       !string.IsNullOrEmpty(animationSet.PositionKey) &&
-                       !string.IsNullOrEmpty(animationSet.ModuleName));
+                   AnimationDatabase.Instance.Modules.All(module => module.AnimationSets.All(animationSet =>
+                                                                        !string.IsNullOrEmpty(animationSet
+                                                                            .AnimationClass) &&
+                                                                        !string.IsNullOrEmpty(animationSet
+                                                                            .PositionKey)));
         }
 
         private void NewAnimationDatabase()
@@ -72,11 +73,15 @@ namespace OStimConversionTool.ViewModels
                     LoadOSexAnimations(oSexXmlDirectory);
                 }
 
-                AnimationDatabase.Instance.AnimationSets.ToObservableChangeSet().AutoRefresh(x => x.SceneID)
-                    .Subscribe(_ => SaveDatabaseCommand.RaiseCanExecuteChanged());
+                foreach (var module in AnimationDatabase.Instance.Modules)
+                {
+                    module.AnimationSets.ToObservableChangeSet().AutoRefresh(x => x.SceneID)
+                        .Subscribe(_ => SaveDatabaseCommand.RaiseCanExecuteChanged());
+                }
 
                 _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");
                 _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish();
+                
             });
         }
 
@@ -167,7 +172,7 @@ namespace OStimConversionTool.ViewModels
                         foreach (var anim in animations)
                             for (var i = 0; i < int.Parse(actorCount); i++)
                             {
-                                var oldPath = Path.Combine(_oSexDirectory, animationSet.ModuleName,
+                                var oldPath = Path.Combine(_oSexDirectory, animationSet.Module.Name,
                                     animationSet.PositionKey.Replace("!", ""),
                                     animationSet.AnimationClass, name, anim + $"_{i}.hkx");
                                 var animation = new Animation(oldPath, animationSet)
@@ -232,11 +237,14 @@ namespace OStimConversionTool.ViewModels
                 }
             }
 
-            AnimationDatabase.Instance.AnimationSets.ToObservableChangeSet().AutoRefresh(x => x.SceneID)
-                .Subscribe(_ => SaveDatabaseCommand.RaiseCanExecuteChanged());
+            foreach (var module in AnimationDatabase.Instance.Modules)
+            {
+                module.AnimationSets.ToObservableChangeSet().AutoRefresh(x => x.SceneID)
+                    .Subscribe(_ => SaveDatabaseCommand.RaiseCanExecuteChanged());
 
-            _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");
-            _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish();
+                _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");
+                _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish();
+            }
         }
 
         private static void SaveDatabase()
@@ -258,13 +266,16 @@ namespace OStimConversionTool.ViewModels
 
         private static AnimationSet SetFinder(string sceneID)
         {
-            foreach (var animSet in AnimationDatabase.Instance.AnimationSets)
+            var idMatches = Regex.Matches(sceneID, @"[^\|]+");
+            if (idMatches.Count != 4) return new AnimationSet("");
+            
+            var moduleName = idMatches[0].ToString();
+            var module = ModuleFinder(moduleName);
+            
+            foreach (var animSet in module.AnimationSets)
                 if (animSet.SceneID.Equals(sceneID))
                     return animSet;
 
-            var idMatches = Regex.Matches(sceneID, @"[^\|]+");
-            if (idMatches.Count != 4) return new AnimationSet("");
-            var moduleName = idMatches[0].ToString();
             var positionKey = idMatches[1].ToString();
             var animationClass = idMatches[2].ToString();
             var setName = idMatches[3].ToString();
@@ -273,12 +284,25 @@ namespace OStimConversionTool.ViewModels
                 ? new TransitionAnimationSet(setName)
                 : new HubAnimationSet(setName);
 
-            animationSet.ModuleName = moduleName;
+            animationSet.Module = module;
             animationSet.PositionKey = positionKey;
             animationSet.AnimationClass = animationClass;
 
-            AnimationDatabase.Instance.AnimationSets.Add(animationSet);
+            module.AnimationSets.Add(animationSet);
             return animationSet;
+        }
+
+        private static Module ModuleFinder(string name)
+        {
+            foreach (var module in AnimationDatabase.Instance.Modules)
+            {
+                if (module.Name == name)
+                    return module;
+            }
+
+            var newModule = new Module(name);
+            AnimationDatabase.Instance.Modules.Add(newModule);
+            return newModule;
         }
     }
 }

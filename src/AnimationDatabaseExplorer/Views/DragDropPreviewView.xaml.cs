@@ -1,6 +1,4 @@
-﻿using System.Windows;
-
-namespace AnimationDatabaseExplorer.Views
+﻿namespace AnimationDatabaseExplorer.Views
 {
     public partial class DragDropPreviewView
     {
@@ -10,4 +8,3 @@ namespace AnimationDatabaseExplorer.Views
         }
     }
 }
-

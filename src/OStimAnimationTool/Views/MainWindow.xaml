@@ -7,9 +7,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:fluent="urn:fluent-ribbon"
     xmlns:viewModels="clr-namespace:OStimConversionTool.ViewModels"
-    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:local="clr-namespace:OStimConversionTool"
     xmlns:core="clr-namespace:OStimAnimationTool.Core;assembly=OStimAnimationTool.Core"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:OStimConversionTool"
+    xmlns:controls="clr-namespace:OStimAnimationTool.Core.Controls;assembly=OStimAnimationTool.Core"
     mc:Ignorable="d"
     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
     Background="{DynamicResource MaterialDesignPaper}"
@@ -25,6 +27,7 @@
     DropTarget="{Binding ElementName=ContentControl}">
     <Window.Resources>
         <ResourceDictionary>
+            <!-- ReSharper disable Xaml.RedundantResource -->
             <DataTemplate x:Key="CloseButtonHeader">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -35,18 +38,155 @@
                                     Margin="0 0 5 0" />
                     <Button Grid.Column="1" Content="x" Width="25" Height="25" FontSize="16" VerticalAlignment="Bottom"
                             HorizontalAlignment="Right" Margin="5 2 -3 2" Padding="0 0 1 6" Background="Red">
-                        <b:Interaction.Triggers>
-                            <b:EventTrigger EventName="Click">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Click">
                                 <local:CloseTabAction />
-                            </b:EventTrigger>
-                        </b:Interaction.Triggers>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                     </Button>
                 </Grid>
             </DataTemplate>
+            <ControlTemplate x:Key="Fluent.Ribbon.Templates.BackstageTabControl.Button"
+                             TargetType="{x:Type fluent:Button}">
+                <Grid Background="Transparent">
+                    <Border x:Name="border"
+                            Visibility="Collapsed"
+                            Background="{TemplateBinding fluent:RibbonProperties.MouseOverBackground}" />
+                    <StackPanel Orientation="Vertical"
+                                VerticalAlignment="Center">
+                        <fluent:IconPresenter IconSize="Custom" CustomSize="64, 64"
+                                              LargeIcon="{Binding LargeIcon, RelativeSource={RelativeSource TemplatedParent}}" />
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="25,0,15,0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center">
+                            <fluent:IconPresenter x:Name="iconImage"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Margin="0 0 8 0"
+                                                  IconSize="{Binding (fluent:RibbonProperties.IconSize), RelativeSource={RelativeSource TemplatedParent}}"
+                                                  SmallIcon="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <ContentControl x:Name="controlLabel"
+                                            Focusable="False"
+                                            Content="{TemplateBinding Header}"
+                                            VerticalAlignment="Center"
+                                            Margin="8 0 0 0">
+                                <ContentControl.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextWrapping"
+                                                Value="NoWrap" />
+                                        <Setter Property="TextTrimming"
+                                                Value="CharacterEllipsis" />
+                                    </Style>
+                                </ContentControl.Resources>
+                            </ContentControl>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <MultiTrigger>
+                        <MultiTrigger.Conditions>
+                            <Condition Property="IsMouseOver"
+                                       Value="True" />
+                            <Condition Property="IsEnabled"
+                                       Value="True" />
+                        </MultiTrigger.Conditions>
+                        <Setter Property="Visibility"
+                                TargetName="border"
+                                Value="Visible" />
+                    </MultiTrigger>
+                    <MultiTrigger>
+                        <MultiTrigger.Conditions>
+                            <Condition Property="IsKeyboardFocused"
+                                       Value="True" />
+                            <Condition Property="IsEnabled"
+                                       Value="True" />
+                        </MultiTrigger.Conditions>
+                        <Setter Property="Visibility"
+                                TargetName="border"
+                                Value="Visible" />
+                    </MultiTrigger>
+                    <Trigger Property="IsEnabled"
+                             Value="False">
+                        <Setter Property="Opacity"
+                                TargetName="controlLabel"
+                                Value="0.5" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+            <ControlTemplate x:Key="StartScreenTabControlTemplate"
+                             TargetType="{x:Type fluent:StartScreenTabControl}">
+                <ControlTemplate.Resources>
+                    <ResourceDictionary>
+                        <Style x:Key="{x:Type ScrollBar}"
+                               TargetType="{x:Type ScrollBar}"
+                               BasedOn="{StaticResource ScrollBarWhite}" />
+                        <Style x:Key="{x:Type fluent:Button}"
+                               TargetType="{x:Type fluent:Button}"
+                               BasedOn="{StaticResource Fluent.Ribbon.Styles.BackstageTabControl.Button}">
+                            <Setter Property="Height" Value="142.22" />
+                        </Style>
+                        <Style x:Key="{x:Type fluent:DropDownButton}"
+                               TargetType="{x:Type fluent:DropDownButton}"
+                               BasedOn="{StaticResource Fluent.Ribbon.Styles.Backstage.DropDownButton}" />
+                        <Style x:Key="{x:Type fluent:ComboBox}"
+                               TargetType="{x:Type fluent:ComboBox}"
+                               BasedOn="{StaticResource Fluent.Ribbon.Styles.Backstage.ComboBox}" />
+                    </ResourceDictionary>
+                </ControlTemplate.Resources>
+                <Grid x:Name="grid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="142.22" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid x:Name="PART_LeftContentGrid"
+                          VerticalAlignment="Stretch"
+                          Background="{TemplateBinding ItemsPanelBackground}"
+                          Margin="{TemplateBinding LeftContentMargin}">
+                        <Border Padding="0,25">
+                            <ContentPresenter HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch"
+                                              Height="Auto"
+                                              Content="{TemplateBinding LeftContent}" />
+                        </Border>
+
+                        <fluent:WindowSteeringHelperControl
+                            Height="{Binding SelectedContentMargin.Top, RelativeSource={RelativeSource TemplatedParent}}"
+                            VerticalAlignment="Top"
+                            IsEnabled="{TemplateBinding IsWindowSteeringHelperEnabled}" />
+                    </Grid>
+
+                    <Grid x:Name="PART_SelectedContentGrid"
+                          Height="Auto"
+                          Grid.Column="1"
+                          Background="{DynamicResource WhiteBrush}"
+                          Margin="{TemplateBinding SelectedContentMargin}">
+                        <Border Padding="33,16"
+                                Background="{DynamicResource WhiteBrush}">
+                            <ContentPresenter x:Name="PART_SelectedContentHost"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch"
+                                              Height="Auto"
+                                              Content="{TemplateBinding RightContent}" />
+                        </Border>
+                    </Grid>
+                </Grid>
+            </ControlTemplate>
+            <Style x:Key="StartScreenTabControlStyle"
+                   TargetType="{x:Type fluent:StartScreenTabControl}"
+                   BasedOn="{StaticResource {x:Type fluent:BackstageTabControl}}">
+                <Setter Property="Template"
+                        Value="{DynamicResource StartScreenTabControlTemplate}" />
+                <Setter Property="Background"
+                        Value="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type fluent:StartScreen}}, FallbackValue=Red}" />
+                <Setter Property="Margin"
+                        Value="0" />
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <Canvas Name="MainOverlayCanvas" ZIndex="5"/>
+        <Canvas Name="MainOverlayCanvas" ZIndex="5" />
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -61,16 +201,41 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <fluent:Ribbon prism:RegionManager.RegionName="RibbonRegion" Grid.ColumnSpan="6">
+                <fluent:Ribbon.StartScreen>
+                    <controls:StartScreen2 IsOpen="True">
+                        <fluent:StartScreenTabControl>
+                            <fluent:StartScreenTabControl.LeftContent>
+                                <StackPanel Orientation="Vertical">
+                                    <fluent:Button Header="New"
+                                                   Command="{Binding DataContext.NewDatabaseCommand, RelativeSource={RelativeSource AncestorType=fluent:Backstage}}"
+                                                   LargeIcon="{materialDesign:PackIcon Kind=FileOutline, Size=64}" />
+                                    <fluent:Button Header="Load"
+                                                   Command="{Binding DataContext.LoadDatabaseCommand, RelativeSource={RelativeSource AncestorType=fluent:Backstage}}"
+                                                   LargeIcon="{materialDesign:PackIcon Kind=FolderOpenOutline, Size=64}" />
+                                </StackPanel>
+                            </fluent:StartScreenTabControl.LeftContent>
+                            <fluent:StartScreenTabControl.RightContent>
+                                <StackPanel Orientation="Vertical">
+                                </StackPanel>
+                            </fluent:StartScreenTabControl.RightContent>
+                        </fluent:StartScreenTabControl>
+                    </controls:StartScreen2>
+                </fluent:Ribbon.StartScreen>
                 <fluent:Ribbon.Menu>
                     <fluent:Backstage>
                         <fluent:BackstageTabControl>
-                            <fluent:Button Header="New Animation Database"
+                            <fluent:Button Header="New"
+                                           VerticalAlignment="Top"
                                            Command="{Binding DataContext.NewDatabaseCommand, RelativeSource={RelativeSource AncestorType=fluent:Backstage}}"
-                                           VerticalAlignment="Top" />
-                            <fluent:Button Header="Load Animation Database"
-                                           Command="{Binding DataContext.LoadDatabaseCommand, RelativeSource={RelativeSource AncestorType=fluent:Backstage}}"/>
-                            <fluent:Button Header="Save Animation Database"
-                                           Command="{Binding DataContext.SaveDatabaseCommand, RelativeSource={RelativeSource AncestorType=fluent:Backstage}}"/>
+                                           Icon="{materialDesign:PackIcon Kind=FileOutline}" />
+                            <fluent:Button Header="Load"
+                                           VerticalAlignment="Top"
+                                           Command="{Binding DataContext.LoadDatabaseCommand, RelativeSource={RelativeSource AncestorType=fluent:Backstage}}"
+                                           Icon="{materialDesign:PackIcon Kind=FolderOpenOutline}" />
+                            <fluent:Button Header="Save"
+                                           VerticalAlignment="Top"
+                                           Command="{Binding DataContext.SaveDatabaseCommand, RelativeSource={RelativeSource AncestorType=fluent:Backstage}}"
+                                           Icon="{materialDesign:PackIcon Kind=ContentSaveOutline}" />
                         </fluent:BackstageTabControl>
                     </fluent:Backstage>
                 </fluent:Ribbon.Menu>
@@ -87,7 +252,8 @@
             </DockPanel>
             <TabControl prism:RegionManager.RegionName="WorkspaceRegion" Grid.Row="1" Grid.Column="3" />
             <GridSplitter Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" />
-            <ContentControl Name="ContentControl" prism:RegionManager.RegionName="DetailRegion" Grid.Row="1" Grid.Column="5" />
+            <ContentControl Name="ContentControl" prism:RegionManager.RegionName="DetailRegion" Grid.Row="1"
+                            Grid.Column="5" />
         </Grid>
     </Grid>
 </core:ExtendedRibbonWindow>

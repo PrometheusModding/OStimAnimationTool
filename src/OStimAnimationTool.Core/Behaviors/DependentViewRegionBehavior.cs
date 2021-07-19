@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using OStimAnimationTool.Core.Interfaces;
-using OStimAnimationTool.Core.Prism;
 using Prism.Regions;
 
 #endregion

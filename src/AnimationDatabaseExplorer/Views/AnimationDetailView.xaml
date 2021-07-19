@@ -19,16 +19,16 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <DockPanel>
-            <Label Content="Name"/>
-            <TextBlock Text="{Binding Animation.AnimationName, UpdateSourceTrigger=PropertyChanged}" Margin="5,-5,5,0"/>
+            <Label Content="Name" />
+            <TextBlock Text="{Binding Animation.AnimationName, UpdateSourceTrigger=PropertyChanged}" Margin="5,-5,5,0" />
         </DockPanel>
         <DockPanel Grid.Column="1">
-            <Label Content="Actor"/>
-            <TextBox Text="{Binding Animation.Actor}" Margin="5,-10,5,0"/>
+            <Label Content="Actor" />
+            <TextBox Text="{Binding Animation.Actor}" Margin="5,-10,5,0" />
         </DockPanel>
         <DockPanel Grid.Column="2">
-            <Label Content="Speed"/>
-            <TextBox Text="{Binding Animation.Speed}" Margin="5,-10,5,0"/>
+            <Label Content="Speed" />
+            <TextBox Text="{Binding Animation.Speed}" Margin="5,-10,5,0" />
         </DockPanel>
     </Grid>
 </ContentControl>

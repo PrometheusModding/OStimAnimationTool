@@ -5,7 +5,6 @@ using DynamicData;
 using NodeNetwork.Toolkit.BreadcrumbBar;
 using NodeNetwork.Toolkit.Layout.ForceDirected;
 using NodeNetwork.ViewModels;
-using OStimAnimationTool.Core;
 using OStimAnimationTool.Core.Models;
 using OStimAnimationTool.Core.ViewModels;
 using Prism.Commands;
@@ -192,7 +191,6 @@ namespace AnimationDatabaseExplorer.ViewModels
         private static TransitionNodeViewModel TransitionNodeFinder(TransitionAnimationSet animationSet,
             NetworkViewModel subnet)
         {
-
             foreach (var node in subnet.Nodes.Items)
             {
                 if (node is not TransitionNodeViewModel destNode) continue;

@@ -16,6 +16,8 @@
     </Compile>
     <Compile Remove="ViewModels\SetNodeGroupEndpointEditorViewModel.cs" />
     <Compile Remove="ViewModels\SetNodeGroupIOBinding.cs" />
+    <Compile Remove="ViewModels\NavNetworkViewModel.cs" />
+    <Compile Remove="Views\NavNetworkView.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +26,7 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Remove="Views\SetNodeView.xaml" />
+    <Page Remove="Views\NavNetworkView.xaml" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,17 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
-using DynamicData;
+using Microsoft.Win32;
 using OStimAnimationTool.Core.Events;
 using OStimAnimationTool.Core.Models;
 using OStimAnimationTool.Core.ViewModels;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
-using ReactiveUI;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace AnimationDatabaseExplorer.ViewModels
 {
@@ -22,12 +18,13 @@ namespace AnimationDatabaseExplorer.ViewModels
         public RibbonMenuViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
         {
             _regionManager = regionManager;
-            
+
             AddAnimationSetCommand = new DelegateCommand(AddAnimationSet, ActiveDatabase);
             AddSlAnimationSetCommand = new DelegateCommand(AddSlAnimationSet, ActiveDatabase);
             OpenNavNodeViewCommand = new DelegateCommand(OpenNavNetworkView, ActiveDatabase);
 
-            eventAggregator.GetEvent<OpenDatabaseEvent>().Subscribe(() => AddSlAnimationSetCommand.RaiseCanExecuteChanged());
+            eventAggregator.GetEvent<OpenDatabaseEvent>()
+                .Subscribe(() => AddSlAnimationSetCommand.RaiseCanExecuteChanged());
         }
 
         public DelegateCommand AddAnimationSetCommand { get; }
@@ -39,11 +36,11 @@ namespace AnimationDatabaseExplorer.ViewModels
             var p = new NavigationParameters {{"animationDatabase", AnimationDatabase.Instance}};
             _regionManager.RequestNavigate("WorkspaceRegion", "NavNetworkView", p);
 
-            foreach (var animationSet in AnimationDatabase.Instance.AnimationSets)
+            /*foreach (var animationSet in AnimationDatabase.Instance.AnimationSets)
                 if (string.IsNullOrEmpty(animationSet.AnimationClass))
-                    Console.WriteLine(animationSet.SetName);
+                    Console.WriteLine(animationSet.SetName);*/
         }
-        
+
         private static bool ActiveDatabase()
         {
             return AnimationDatabase.IsValueCreated;
@@ -98,9 +95,7 @@ namespace AnimationDatabaseExplorer.ViewModels
             foreach (var filename in fileDialog.FileNames)
             {
                 if (!setName.Equals(Path.GetFileName(filename[..^10])))
-                {
-                    animationSet = SetFinder(Path.GetFileName(filename[..^10])); 
-                }
+                    animationSet = SetFinder(Path.GetFileName(filename[..^10]));
 
                 if (animationSet == null) continue;
                 var animation = new Animation(filename, animationSet)
@@ -108,22 +103,21 @@ namespace AnimationDatabaseExplorer.ViewModels
                     Actor = (int) char.GetNumericValue(Path.GetFileName(filename)[^8]) == 1 ? 1 : 0,
                     Speed = (int) char.GetNumericValue(Path.GetFileName(filename)[^5]) - 1
                 };
-                
-                if (!AnimationDatabase.Instance.AnimationSets.Contains(animationSet))
-                    AnimationDatabase.Instance.AnimationSets.Add(animationSet);
-                    
-                if(!animationSet.Animations.Contains(animation))
+
+                if (!AnimationDatabase.Instance.Contains(animationSet))
+                    AnimationDatabase.Instance.Add(animationSet);
+
+                if (!animationSet.Animations.Contains(animation))
                     animationSet.Animations.Add(animation);
             }
         }
 
         private static AnimationSet SetFinder(string setName)
         {
-            foreach (var animationSet in AnimationDatabase.Instance.AnimationSets)
-            {
+            foreach (var module in AnimationDatabase.Instance.Modules)
+            foreach (var animationSet in module.AnimationSets)
                 if (setName.Equals(animationSet.SetName))
                     return animationSet;
-            }
 
             return new HubAnimationSet(setName);
         }

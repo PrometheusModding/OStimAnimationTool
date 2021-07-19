@@ -272,11 +272,8 @@ namespace OStimAnimationTool.Core
             _dragDropPreviewControl.DataContext = _dragDropPreviewControlDataContext;
             _dragDropPreviewControl.Opacity = 0.7;
 
-            if (_dragDropContainer is null)
-            {
-                return;
-            }
-            
+            if (_dragDropContainer is null) return;
+
             _dragDropContainer.Children.Add(_dragDropPreviewControl);
             _mouseCaptured = Mouse.Capture(_dragDropPreviewControl);
 
@@ -303,9 +300,9 @@ namespace OStimAnimationTool.Core
             if (_dragDropPreviewControl is null) return;
             Canvas.SetLeft(_dragDropPreviewControl, target.X);
             Canvas.SetTop(_dragDropPreviewControl, target.Y);
-            
+
             _dragDropPreviewControl.DropState = DropState.CannotDrop;
-            
+
             if (_dropTarget is null)
             {
                 AnimateDropState();
@@ -315,7 +312,7 @@ namespace OStimAnimationTool.Core
             var transform = _dropTarget.TransformToVisual(_dragDropContainer);
             var dropBoundingBox =
                 transform.TransformBounds(new Rect(0, 0, _dropTarget.RenderSize.Width, _dropTarget.RenderSize.Height));
-            
+
             if (e.GetPosition(_dragDropContainer).X > dropBoundingBox.Left &&
                 e.GetPosition(_dragDropContainer).X < dropBoundingBox.Right &&
                 e.GetPosition(_dragDropContainer).Y > dropBoundingBox.Top &&
@@ -324,7 +321,7 @@ namespace OStimAnimationTool.Core
 
             if (_itemDroppedCommand?.CanExecute(_dragDropPreviewControlDataContext) is false)
                 _dragDropPreviewControl.DropState = DropState.CannotDrop;
-            
+
             AnimateDropState();
         }
 
@@ -336,23 +333,19 @@ namespace OStimAnimationTool.Core
                 case DropState.CanDrop:
 
                     if (_dragDropPreviewControl.Resources.Contains("canDropChanged"))
-                    {
                         ((Storyboard) _dragDropPreviewControl.Resources["canDropChanged"]).Begin(
                             _dragDropPreviewControl);
-                    }
 
                     break;
                 case DropState.CannotDrop:
                     if (_dragDropPreviewControl.Resources.Contains("cannotDropChanged"))
-                    {
                         ((Storyboard) _dragDropPreviewControl.Resources["cannotDropChanged"]).Begin(
                             _dragDropPreviewControl);
-                    }
 
                     break;
             }
         }
-        
+
         private static DoubleAnimation CreateDoubleAnimation(double to)
         {
             var anim = new DoubleAnimation

@@ -13,7 +13,7 @@ namespace OStimAnimationTool.Core.Models
         private AnimationSet _animationSet;
         private string _oldPath;
         private int _speed;
-        
+
         public Animation(string oldPath, AnimationSet animationSet)
         {
             _oldPath = oldPath;
@@ -26,18 +26,13 @@ namespace OStimAnimationTool.Core.Models
             {
                 return AnimationSet switch
                 {
-                    HubAnimationSet => "0Sx" + _animationSet.ModuleName + $"_{_animationSet.AnimationClass}" +
+                    HubAnimationSet => "0Sx" + _animationSet.Module.Name + $"_{_animationSet.AnimationClass}" +
                                        $"-{_animationSet.SetName}" + $"_S{_speed.ToString()}" + $"_{_actor.ToString()}",
-                    TransitionAnimationSet => "0Sx" + _animationSet.ModuleName + $"_{_animationSet.AnimationClass}" +
+                    TransitionAnimationSet => "0Sx" + _animationSet.Module.Name + $"_{_animationSet.AnimationClass}" +
                                               $"-{_animationSet.SetName}" + $"_{_actor.ToString()}",
                     _ => string.Empty
                 };
             }
-        }
-
-        public void NameChanged()
-        {
-            RaisePropertyChanged(nameof(AnimationName));
         }
 
         public int Actor
@@ -70,6 +65,11 @@ namespace OStimAnimationTool.Core.Models
                 throw new NullReferenceException();
 
             return AnimationName.Equals(other.AnimationName);
+        }
+
+        public void NameChanged()
+        {
+            RaisePropertyChanged(nameof(AnimationName));
         }
     }
 }

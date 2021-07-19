@@ -31,7 +31,6 @@ namespace AnimationDatabaseExplorer
             containerRegistry.RegisterForNavigation<AnimationDetailView>();
             containerRegistry.RegisterForNavigation<DatabaseTreeView>();
             containerRegistry.RegisterForNavigation<SetWorkspaceView>();
-            containerRegistry.RegisterForNavigation<NavNetworkView>();
         }
     }
 }

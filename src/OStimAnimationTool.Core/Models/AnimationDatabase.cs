@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Prism.Mvvm;
 
 namespace OStimAnimationTool.Core.Models
@@ -7,7 +8,7 @@ namespace OStimAnimationTool.Core.Models
     public sealed class AnimationDatabase : BindableBase
     {
         private static readonly Lazy<AnimationDatabase> Lazy = new(() => new AnimationDatabase());
-        private ObservableCollection<AnimationSet> _animationSets = new();
+        private ObservableCollection<Module> _modules = new();
         private string _name = "New Animation Database";
 
         private AnimationDatabase()
@@ -17,10 +18,10 @@ namespace OStimAnimationTool.Core.Models
         public static AnimationDatabase Instance => Lazy.Value;
         public static bool IsValueCreated => Lazy.IsValueCreated;
 
-        public ObservableCollection<AnimationSet> AnimationSets
+        public ObservableCollection<Module> Modules
         {
-            get => _animationSets;
-            set => SetProperty(ref _animationSets, value);
+            get => _modules;
+            set => SetProperty(ref _modules, value);
         }
 
         public string Name
@@ -30,5 +31,19 @@ namespace OStimAnimationTool.Core.Models
         }
 
         public string SafePath { get; set; } = string.Empty;
+
+        public bool Contains(AnimationSet animationSet)
+        {
+            return Modules.Any(module => module.AnimationSets.Contains(animationSet));
+        }
+
+        public void Add(AnimationSet animationSet)
+        {
+            foreach (var module in Modules)
+            {
+                if(module.Name == "0MF")
+                    module.AnimationSets.Add(animationSet);
+            }
+        }
     }
 }
