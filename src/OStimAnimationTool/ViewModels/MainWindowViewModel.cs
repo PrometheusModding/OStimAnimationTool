@@ -235,6 +235,8 @@ namespace OStimConversionTool.ViewModels
                             hubAnimationSet.Destinations.Add(SetFinder(destination));
                         break;
                 }
+
+                animationSet.ChangedThisSession = false;
             }
 
             foreach (var module in AnimationDatabase.Instance.Modules)
