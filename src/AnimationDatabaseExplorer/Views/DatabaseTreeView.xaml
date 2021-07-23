@@ -9,10 +9,12 @@
                 xmlns:views="clr-namespace:AnimationDatabaseExplorer.Views"
                 xmlns:core="clr-namespace:OStimAnimationTool.Core;assembly=OStimAnimationTool.Core"
                 xmlns:prism="http://prismlibrary.com/"
+                xmlns:animationDatabaseExplorer="clr-namespace:AnimationDatabaseExplorer"
                 mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:DatabaseTreeViewModel}">
     <ContentControl.Resources>
         <ResourceDictionary>
             <views:DragDropPreviewView x:Key="DragPreviewControl" />
+            <animationDatabaseExplorer:DragDropConverter x:Key="DragDropConverter" />
         </ResourceDictionary>
     </ContentControl.Resources>
     <Grid>
@@ -28,7 +30,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
-        <TreeView Grid.Row="1">
+        <TreeView Name="TreeView" Grid.Row="1">
             <TreeView.Resources>
                 <Style x:Key="ContextMenuStyle" TargetType="TextBlock">
                     <Setter Property="ContextMenu" Value="{DynamicResource TreeViewContextMenu}" />
@@ -38,18 +40,26 @@
                               Command="{Binding DataContext.OpenSetTabCommand, RelativeSource={RelativeSource AncestorType=TreeView}}"
                               CommandParameter="{Binding }" />
                 </ContextMenu>
-                <HierarchicalDataTemplate DataType="{x:Type models:Module}" ItemsSource="{Binding AnimationSets}">
+                <HierarchicalDataTemplate DataType="{x:Type models:Module}"
+                                          ItemsSource="{Binding AnimationSets, UpdateSourceTrigger=PropertyChanged}">
                     <TextBlock Text="{Binding Name}" />
                 </HierarchicalDataTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type models:AnimationSet}" ItemsSource="{Binding }">
+                <DataTemplate DataType="{x:Type models:AnimationSet}">
                     <TextBlock Text="{Binding Path=SetName}" Style="{StaticResource ContextMenuStyle}"
                                core:DragDrop.IsDragSource="True"
                                core:DragDrop.DragDropContainer="{Binding OverlayCanvas, RelativeSource={RelativeSource AncestorType=core:ExtendedRibbonWindow}}"
                                core:DragDrop.DragDropPreviewControl="{StaticResource DragPreviewControl}"
                                core:DragDrop.DragDropPreviewControlDataContext="{Binding }"
-                               core:DragDrop.DropTarget="{Binding DropTarget, RelativeSource={RelativeSource AncestorType=core:ExtendedRibbonWindow}}"
-                               core:DragDrop.ItemDropped="{Binding DataContext.AddDestinationCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" />
-                </HierarchicalDataTemplate>
+                               core:DragDrop.ItemDropped="{Binding DataContext.DragDropCommand, RelativeSource={RelativeSource AncestorType=TreeView}}">
+                        <core:DragDrop.DropTarget>
+                            <MultiBinding Converter="{StaticResource DragDropConverter}">
+                                <Binding Path="DropTarget"
+                                         RelativeSource="{RelativeSource AncestorType=core:ExtendedRibbonWindow}" />
+                                <Binding Path="Items" ElementName="TreeView" />
+                            </MultiBinding>
+                        </core:DragDrop.DropTarget>
+                    </TextBlock>
+                </DataTemplate>
             </TreeView.Resources>
             <TreeViewItem
                 ItemsSource="{Binding Modules, UpdateSourceTrigger=PropertyChanged}"

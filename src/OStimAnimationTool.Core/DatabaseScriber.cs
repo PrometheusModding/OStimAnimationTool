@@ -18,31 +18,29 @@ namespace OStimAnimationTool.Core
         public DatabaseScriber()
         {
             foreach (var module in _animationDatabase.Modules)
+            foreach (var animationSet in module.AnimationSets)
             {
-                foreach (var animationSet in module.AnimationSets)
+                if (!animationSet.ChangedThisSession) continue;
+                // Base Path for all Animation Sets
+                string setDir = Path.Combine(_animationDatabase.SafePath, @"meshes\0SA\mod\0Sex\anim\",
+                    animationSet.Module.Name, animationSet.PositionKey.Replace("!", ""),
+                    animationSet.AnimationClass);
+
+                // Specifying Path depending on type of Animation Set
+                setDir = animationSet is TransitionAnimationSet transitionAnimationSet
+                    ? Path.Combine(setDir, transitionAnimationSet.ParentSet)
+                    : Path.Combine(setDir, animationSet.SetName);
+
+                // Adding Set Folder if missing
+                if (!Directory.Exists(setDir))
+                    Directory.CreateDirectory(setDir);
+
+                foreach (var animation in animationSet.Animations)
                 {
-                    if (!animationSet.ChangedThisSession) continue;
-                    // Base Path for all Animation Sets
-                    string setDir = Path.Combine(_animationDatabase.SafePath, @"meshes\0SA\mod\0Sex\anim\",
-                        animationSet.Module.Name, animationSet.PositionKey.Replace("!", ""),
-                        animationSet.AnimationClass);
-
-                    // Specifying Path depending on type of Animation Set
-                    setDir = animationSet is TransitionAnimationSet transitionAnimationSet
-                        ? Path.Combine(setDir, transitionAnimationSet.ParentSet)
-                        : Path.Combine(setDir, animationSet.SetName);
-
-                    // Adding Set Folder if missing
-                    if (!Directory.Exists(setDir))
-                        Directory.CreateDirectory(setDir);
-
-                    foreach (var animation in animationSet.Animations)
-                    {
-                        var newPath = Path.Combine(setDir, animation.AnimationName + ".hkx");
-                        if (!File.Exists(newPath))
-                            File.Copy(animation.OldPath, Path.Combine(setDir, animation.AnimationName + ".hkx"));
-                        animation.OldPath = newPath; // Updating Animation Location
-                    }
+                    var newPath = Path.Combine(setDir, animation.AnimationName + ".hkx");
+                    if (!File.Exists(newPath))
+                        File.Copy(animation.OldPath, Path.Combine(setDir, animation.AnimationName + ".hkx"));
+                    animation.OldPath = newPath; // Updating Animation Location
                 }
             }
         }
@@ -93,7 +91,7 @@ namespace OStimAnimationTool.Core
                     switch (animationSet)
                     {
                         case TransitionAnimationSet transitionAnimationSet:
-                            writer.WriteAttributeString("dest", transitionAnimationSet.Destination.SceneID);
+                            writer.WriteAttributeString("dest", transitionAnimationSet.Destination.SceneId);
 
                             writer.WriteStartElement("dfx");
                             writer.WriteAttributeString("a", "0");
@@ -213,7 +211,7 @@ namespace OStimAnimationTool.Core
                                 writer.WriteStartElement("option");
                                 writer.WriteAttributeString("halo", "hgentle");
                                 writer.WriteAttributeString("icon", "");
-                                writer.WriteAttributeString("go", destination.SceneID);
+                                writer.WriteAttributeString("go", destination.SceneId);
                                 writer.WriteAttributeString("text", "test");
 
                                 writer.WriteStartElement("enhance");
@@ -261,24 +259,24 @@ namespace OStimAnimationTool.Core
                 var moduleKey = module.Name;
                 var fnisDir = Path.Combine(_safePath,
                     @$"meshes\actors\character\animations\0Sex_{moduleKey}_A");
-                File.WriteAllText(Path.Combine(fnisDir, $"FNIS_0Sex_{moduleKey}_A_List.txt"), Empty);
+
+                if (!Directory.Exists(fnisDir))
+                    Directory.CreateDirectory(fnisDir);
+                if (module.Creatures != null)
+                    foreach (var creature in module.Creatures)
+                        File.WriteAllText(Path.Combine(fnisDir, $"FNIS_0Sex_{moduleKey}_A{creature}_List.txt"), Empty);
+
                 foreach (var animationSet in module.AnimationSets)
+                foreach (var animation in animationSet.Animations)
                 {
-                    
-
-                    if (!Directory.Exists(fnisDir))
-                        Directory.CreateDirectory(fnisDir);
-
-                    foreach (var animation in animationSet.Animations)
-                    {
-                        var animationName = animation.AnimationName;
-                        var setFolder = animationSet is TransitionAnimationSet transitionAnimationSet
-                            ? transitionAnimationSet.ParentSet
-                            : animationSet.SetName;
-                        var contents =
-                            @$"b -Tn {animationName} ..\..\..\..\{Path.Combine(@"0SA\mod\0Sex\anim\", moduleKey, animationSet.PositionKey.Replace("!", ""), animationSet.AnimationClass, setFolder, animationName + ".hkx")} {Environment.NewLine}";
-                        File.AppendAllText(Path.Combine(fnisDir, $"FNIS_0Sex_{moduleKey}_A_List.txt"), contents);
-                    }
+                    var animationName = animation.AnimationName;
+                    var setFolder = animationSet is TransitionAnimationSet transitionAnimationSet
+                        ? transitionAnimationSet.ParentSet
+                        : animationSet.SetName;
+                    var contents =
+                        @$"b -Tn{animation.FnisArgs[0]} {animationName} ..\..\..\..\{Path.Combine(@"0SA\mod\0Sex\anim\", moduleKey, animationSet.PositionKey.Replace("!", ""), animationSet.AnimationClass, setFolder, animationName + ".hkx")} {animation.FnisArgs[1]} {Environment.NewLine}";
+                    File.AppendAllText(Path.Combine(fnisDir, $"FNIS_0Sex_{moduleKey}_A{animation.Creature}_List.txt"),
+                        contents);
                 }
             }
         }
@@ -298,59 +296,57 @@ namespace OStimAnimationTool.Core
             writer.WriteAttributeString("Name", databaseName);
 
             foreach (var module in AnimationDatabase.Instance.Modules)
-            {
-                foreach (var animationSet in module.AnimationSets)
-                    switch (animationSet)
+            foreach (var animationSet in module.AnimationSets)
+                switch (animationSet)
+                {
+                    case HubAnimationSet hubAnimationSet:
                     {
-                        case HubAnimationSet hubAnimationSet:
+                        writer.WriteStartElement("Hub");
+                        writer.WriteAttributeString("SceneID", animationSet.SceneId);
+                        writer.WriteAttributeString("Animator", animationSet.Animator);
+                        writer.WriteAttributeString("Description", animationSet.Description);
+
+                        foreach (var animation in animationSet.Animations)
                         {
-                            writer.WriteStartElement("HubAnimationSet");
-                            writer.WriteAttributeString("SceneID", animationSet.SceneID);
-                            writer.WriteAttributeString("Animator", animationSet.Animator);
-                            writer.WriteAttributeString("Description", animationSet.Description);
-
-                            foreach (var animation in animationSet.Animations)
-                            {
-                                writer.WriteStartElement("Animation");
-                                writer.WriteAttributeString("Name", animation.AnimationName);
-                                writer.WriteAttributeString("Actor", animation.Actor.ToString());
-                                writer.WriteAttributeString("Speed", animation.Speed.ToString());
-                                writer.WriteEndElement();
-                            }
-
-                            foreach (var destination in hubAnimationSet.Destinations)
-                            {
-                                writer.WriteStartElement("Destinations");
-                                writer.WriteAttributeString("Destination", destination.SceneID);
-                                writer.WriteEndElement();
-                            }
-
+                            writer.WriteStartElement("Animation");
+                            writer.WriteAttributeString("Name", animation.AnimationName);
+                            writer.WriteAttributeString("Actor", animation.Actor.ToString());
+                            writer.WriteAttributeString("Speed", animation.Speed.ToString());
                             writer.WriteEndElement();
-                            break;
                         }
-                        case TransitionAnimationSet transitionAnimationSet:
-                            writer.WriteStartElement("TransitionAnimationSet");
-                            writer.WriteAttributeString("Destination", transitionAnimationSet.Destination.SceneID);
-                            writer.WriteAttributeString("SceneID", animationSet.SceneID);
-                            writer.WriteAttributeString("Animator", animationSet.Animator);
-                            writer.WriteAttributeString("Description", animationSet.Description);
 
-                            foreach (var animation in animationSet.Animations)
-                            {
-                                writer.WriteStartElement("Animation");
-                                writer.WriteAttributeString("Name", animation.AnimationName);
-                                writer.WriteAttributeString("Actor", animation.Actor.ToString());
-                                writer.WriteAttributeString("Speed", animation.Speed.ToString());
-                                writer.WriteEndElement();
-                            }
-
+                        foreach (var destination in hubAnimationSet.Destinations)
+                        {
+                            writer.WriteStartElement("Destinations");
+                            writer.WriteAttributeString("Destination", destination.SceneId);
                             writer.WriteEndElement();
-                            break;
-                    }
+                        }
 
-                writer.WriteEndElement();
-                writer.Close();
-            }
+                        writer.WriteEndElement();
+                        break;
+                    }
+                    case TransitionAnimationSet transitionAnimationSet:
+                        writer.WriteStartElement("Transition");
+                        writer.WriteAttributeString("Destination", transitionAnimationSet.Destination.SceneId);
+                        writer.WriteAttributeString("SceneID", animationSet.SceneId);
+                        writer.WriteAttributeString("Animator", animationSet.Animator);
+                        writer.WriteAttributeString("Description", animationSet.Description);
+
+                        foreach (var animation in animationSet.Animations)
+                        {
+                            writer.WriteStartElement("Animation");
+                            writer.WriteAttributeString("Name", animation.AnimationName);
+                            writer.WriteAttributeString("Actor", animation.Actor.ToString());
+                            writer.WriteAttributeString("Speed", animation.Speed.ToString());
+                            writer.WriteEndElement();
+                        }
+
+                        writer.WriteEndElement();
+                        break;
+                }
+
+            writer.WriteEndElement();
+            writer.Close();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Controls;
 using OStimAnimationTool.Core.Events;
 using OStimAnimationTool.Core.Models;
 using OStimAnimationTool.Core.ViewModels;
@@ -23,7 +24,7 @@ namespace AnimationDatabaseExplorer.ViewModels
             _eventAggregator = eventAggregator;
 
             OpenSetTabCommand = new DelegateCommand<AnimationSet>(OpenSet);
-            AddDestinationCommand = new DelegateCommand<AnimationSet>(AddDestination);
+            DragDropCommand = new DelegateCommand<object[]>(DragDropAction);
             //SearchTreeViewCommand = new DelegateCommand<string>(SearchTreeView);
         }
 
@@ -35,7 +36,8 @@ namespace AnimationDatabaseExplorer.ViewModels
 
 
         public DelegateCommand<AnimationSet> OpenSetTabCommand { get; }
-        public DelegateCommand<AnimationSet> AddDestinationCommand { get; }
+
+        public DelegateCommand<object[]> DragDropCommand { get; }
         //public DelegateCommand<string> SearchTreeViewCommand { get; }
 
 
@@ -54,9 +56,19 @@ namespace AnimationDatabaseExplorer.ViewModels
             }
         }*/
 
-        private void AddDestination(AnimationSet animationSet)
+        private void DragDropAction(object[] dataContext)
         {
-            _eventAggregator.GetEvent<AddDestinationEvent>().Publish(animationSet);
+            if (dataContext[0] is not AnimationSet animationSet) return;
+            if (dataContext[1] is TreeViewItem {DataContext: Module module})
+            {
+                animationSet.Module.AnimationSets.Remove(animationSet);
+                module.AnimationSets.Add(animationSet);
+                animationSet.Module = module;
+            }
+            else
+            {
+                _eventAggregator.GetEvent<AddDestinationEvent>().Publish(animationSet);
+            }
         }
 
         //Logic for Opening a new AnimationSet Tab

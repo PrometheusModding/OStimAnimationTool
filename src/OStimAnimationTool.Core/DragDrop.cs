@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -75,6 +76,7 @@ namespace OStimAnimationTool.Core
         private DragDropPreviewBase? _dragDropPreviewControl;
         private object? _dragDropPreviewControlDataContext;
         private UIElement? _dropTarget;
+        private List<UIElement>? _dropTargets;
         private Point _initialPosition;
         private ICommand? _itemDroppedCommand;
         private bool _mouseCaptured;
@@ -178,12 +180,12 @@ namespace OStimAnimationTool.Core
         #region DropTargetProperty
 
         public static readonly DependencyProperty DropTargetProperty =
-            DependencyProperty.RegisterAttached("DropTarget", typeof(UIElement), typeof(DragDrop),
+            DependencyProperty.RegisterAttached("DropTarget", typeof(List<UIElement>), typeof(DragDrop),
                 new PropertyMetadata(default(string)));
 
-        public static UIElement GetDropTarget(DependencyObject element)
+        public static List<UIElement> GetDropTarget(DependencyObject element)
         {
-            return (UIElement) element.GetValue(DropTargetProperty);
+            return (List<UIElement>) element.GetValue(DropTargetProperty);
         }
 
         public static void SetDropTarget(DependencyObject element, UIElement value)
@@ -241,8 +243,7 @@ namespace OStimAnimationTool.Core
                 _dragDropContainer = GetDragDropContainer((DependencyObject) sender) as Canvas ??
                                      FindParent<Canvas>(visual);
 
-                _dropTarget =
-                    GetDropTarget(sender as DependencyObject ?? throw new InvalidOperationException());
+                _dropTargets = GetDropTarget(sender as DependencyObject ?? throw new Exception());
 
                 _dragDropPreviewControlDataContext =
                     GetDragDropPreviewControlDataContext((DependencyObject) sender);
@@ -303,26 +304,32 @@ namespace OStimAnimationTool.Core
 
             _dragDropPreviewControl.DropState = DropState.CannotDrop;
 
-            if (_dropTarget is null)
+            if (_dropTargets is null)
             {
                 AnimateDropState();
                 return;
             }
 
-            var transform = _dropTarget.TransformToVisual(_dragDropContainer);
-            var dropBoundingBox =
-                transform.TransformBounds(new Rect(0, 0, _dropTarget.RenderSize.Width, _dropTarget.RenderSize.Height));
+            foreach (var dropTarget in _dropTargets)
+            {
+                var transform = dropTarget.TransformToVisual(_dragDropContainer);
+                var dropBoundingBox = transform.TransformBounds(new Rect(0, 0, dropTarget.RenderSize.Width,
+                    dropTarget.RenderSize.Height));
 
-            if (e.GetPosition(_dragDropContainer).X > dropBoundingBox.Left &&
-                e.GetPosition(_dragDropContainer).X < dropBoundingBox.Right &&
-                e.GetPosition(_dragDropContainer).Y > dropBoundingBox.Top &&
-                e.GetPosition(_dragDropContainer).Y < dropBoundingBox.Bottom)
-                _dragDropPreviewControl.DropState = DropState.CanDrop;
+                if (e.GetPosition(_dragDropContainer).X > dropBoundingBox.Left &&
+                    e.GetPosition(_dragDropContainer).X < dropBoundingBox.Right &&
+                    e.GetPosition(_dragDropContainer).Y > dropBoundingBox.Top &&
+                    e.GetPosition(_dragDropContainer).Y < dropBoundingBox.Bottom)
+                {
+                    _dragDropPreviewControl.DropState = DropState.CanDrop;
+                    _dropTarget = dropTarget;
+                }
 
-            if (_itemDroppedCommand?.CanExecute(_dragDropPreviewControlDataContext) is false)
-                _dragDropPreviewControl.DropState = DropState.CannotDrop;
+                //if (_itemDroppedCommand?.CanExecute() is false)
+                //    _dragDropPreviewControl.DropState = DropState.CannotDrop;
 
-            AnimateDropState();
+                AnimateDropState();
+            }
         }
 
         private void AnimateDropState()
@@ -385,7 +392,8 @@ namespace OStimAnimationTool.Core
 
                             canDropSb.Begin(_dragDropPreviewControl);
 
-                            _itemDroppedCommand?.Execute(_dragDropPreviewControlDataContext);
+                            object?[] dataContext = {_dragDropPreviewControlDataContext, _dropTarget};
+                            _itemDroppedCommand?.Execute(dataContext);
                         }
                         catch (Exception exception)
                         {

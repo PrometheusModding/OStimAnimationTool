@@ -215,8 +215,7 @@
                                 </StackPanel>
                             </fluent:StartScreenTabControl.LeftContent>
                             <fluent:StartScreenTabControl.RightContent>
-                                <StackPanel Orientation="Vertical">
-                                </StackPanel>
+                                <StackPanel Orientation="Vertical" />
                             </fluent:StartScreenTabControl.RightContent>
                         </fluent:StartScreenTabControl>
                     </controls:StartScreen2>

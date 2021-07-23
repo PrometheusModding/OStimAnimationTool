@@ -1,13 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using Microsoft.Win32;
+using System.Windows.Forms;
+using DynamicData;
 using OStimAnimationTool.Core.Events;
 using OStimAnimationTool.Core.Models;
 using OStimAnimationTool.Core.ViewModels;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace AnimationDatabaseExplorer.ViewModels
 {
@@ -21,25 +24,19 @@ namespace AnimationDatabaseExplorer.ViewModels
 
             AddAnimationSetCommand = new DelegateCommand(AddAnimationSet, ActiveDatabase);
             AddSlAnimationSetCommand = new DelegateCommand(AddSlAnimationSet, ActiveDatabase);
-            OpenNavNodeViewCommand = new DelegateCommand(OpenNavNetworkView, ActiveDatabase);
+            AddSlFolderCommand = new DelegateCommand(AddSlFolder, ActiveDatabase);
 
             eventAggregator.GetEvent<OpenDatabaseEvent>()
-                .Subscribe(() => AddSlAnimationSetCommand.RaiseCanExecuteChanged());
+                .Subscribe(() =>
+                {
+                    AddSlAnimationSetCommand.RaiseCanExecuteChanged();
+                    AddSlFolderCommand.RaiseCanExecuteChanged();
+                });
         }
 
         public DelegateCommand AddAnimationSetCommand { get; }
         public DelegateCommand AddSlAnimationSetCommand { get; }
-        public DelegateCommand OpenNavNodeViewCommand { get; }
-
-        private void OpenNavNetworkView()
-        {
-            var p = new NavigationParameters {{"animationDatabase", AnimationDatabase.Instance}};
-            _regionManager.RequestNavigate("WorkspaceRegion", "NavNetworkView", p);
-
-            /*foreach (var animationSet in AnimationDatabase.Instance.AnimationSets)
-                if (string.IsNullOrEmpty(animationSet.AnimationClass))
-                    Console.WriteLine(animationSet.SetName);*/
-        }
+        public DelegateCommand AddSlFolderCommand { get; }
 
         private static bool ActiveDatabase()
         {
@@ -95,7 +92,7 @@ namespace AnimationDatabaseExplorer.ViewModels
             foreach (var filename in fileDialog.FileNames)
             {
                 if (!setName.Equals(Path.GetFileName(filename[..^10])))
-                    animationSet = SetFinder(Path.GetFileName(filename[..^10]));
+                    animationSet = SetFinder(Path.GetFileName(filename[..^10]), new Module(""));
 
                 if (animationSet == null) continue;
                 var animation = new Animation(filename, animationSet)
@@ -112,14 +109,109 @@ namespace AnimationDatabaseExplorer.ViewModels
             }
         }
 
-        private static AnimationSet SetFinder(string setName)
+        private static void AddSlFolder()
         {
-            foreach (var module in AnimationDatabase.Instance.Modules)
-            foreach (var animationSet in module.AnimationSets)
-                if (setName.Equals(animationSet.SetName))
-                    return animationSet;
+            string sLFolderPath;
 
-            return new HubAnimationSet(setName);
+            FolderBrowserDialog folderDialog = new();
+            {
+                folderDialog.ShowDialog();
+                sLFolderPath = folderDialog.SelectedPath;
+            }
+
+            Test(sLFolderPath);
+        }
+
+        private static void Test(string directory)
+        {
+            var module = new Module(Path.GetFileName(directory)[..3]);
+            AnimationDatabase.Instance.Modules.Add(module);
+            foreach (var direc in Directory.GetDirectories(directory))
+                switch (Path.GetFileName(direc).ToLowerInvariant())
+                {
+                    case "meshes":
+                    {
+                        foreach (var dir in Directory.GetDirectories(direc))
+                            switch (Path.GetFileName(dir).ToLowerInvariant())
+                            {
+                                case "actors":
+                                    foreach (var d in Directory.GetDirectories(dir)) FnisFinder(d, module);
+                                    break;
+                                case "animobjects":
+                                    AnimationDatabase.Instance.Misc.Add(direc);
+                                    break;
+                            }
+
+                        break;
+                    }
+                    case "textures":
+                        AnimationDatabase.Instance.Misc.Add(direc);
+                        break;
+                }
+
+            foreach (var file in Directory.GetFiles(directory))
+                if (Path.GetExtension(file) == ".esp")
+                    AnimationDatabase.Instance.Misc.Add(file);
+        }
+
+        private static void FnisFinder(string actorsDir, Module module)
+        {
+            var animationsDir = Path.Combine(actorsDir, "animations");
+            if (!Directory.Exists(animationsDir)) return;
+            foreach (var dir in Directory.GetDirectories(animationsDir))
+            foreach (var file in Directory.GetFiles(dir))
+            {
+                var fileArgs = Path.GetFileName(file).Split('_');
+                if (fileArgs[0].ToLowerInvariant() != "fnis") continue;
+                var creature = Path.GetFileName(actorsDir).ToLowerInvariant() != "character"
+                    ? $"_{fileArgs[^2]}"
+                    : string.Empty;
+
+                if (module.Creatures != null && !module.Creatures.Contains(creature))
+                    module.Creatures.Add(creature);
+
+                foreach (var line in File.ReadAllLines(file))
+                {
+                    if (string.IsNullOrEmpty(line) || line[0] != 's' && line[0] != '+' && line[0] != 'b') continue;
+                    var fnisArgs = line.Split(' ');
+                    var setIndex = fnisArgs[1][0] == '-' ? 2 : 1;
+
+                    var animationSet = SetFinder(fnisArgs[setIndex][..^6], module);
+
+                    List<string> animationFnisArgs = new() {string.Empty};
+                    if (setIndex == 2)
+                    {
+                        animationFnisArgs.Replace(string.Empty, $",{fnisArgs[1][1..]}");
+                        animationFnisArgs.AddRange(fnisArgs[4..]);
+                    }
+                    else
+                    {
+                        animationFnisArgs.AddRange(fnisArgs[3..]);
+                    }
+
+                    var animation = new Animation(Path.Combine(dir, fnisArgs[setIndex + 1]), animationSet,
+                        (int) char.GetNumericValue(fnisArgs[setIndex + 1][^5]) - 1,
+                        (int) char.GetNumericValue(fnisArgs[setIndex + 1][^8]) == 1 ? 1 : 0,
+                        animationFnisArgs, creature);
+
+                    animationSet.Animations.Add(animation);
+
+                    if (!module.AnimationSets.Contains(animationSet)) module.AnimationSets.Add(animationSet);
+                }
+            }
+        }
+
+        private static AnimationSet SetFinder(string setName, Module module)
+        {
+            foreach (var _ in AnimationDatabase.Instance.Modules)
+            foreach (var animSet in module.AnimationSets)
+                if (setName.Equals(animSet.SetName))
+                    return animSet;
+
+            HubAnimationSet animationSet = new(setName);
+            module.AnimationSets.Add(animationSet);
+            animationSet.Module = module;
+            return animationSet;
         }
     }
 }

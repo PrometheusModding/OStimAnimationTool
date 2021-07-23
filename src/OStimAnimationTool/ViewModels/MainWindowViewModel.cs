@@ -46,10 +46,10 @@ namespace OStimConversionTool.ViewModels
         {
             return AnimationDatabase.IsValueCreated &&
                    AnimationDatabase.Instance.Modules.All(module => module.AnimationSets.All(animationSet =>
-                                                                        !string.IsNullOrEmpty(animationSet
-                                                                            .AnimationClass) &&
-                                                                        !string.IsNullOrEmpty(animationSet
-                                                                            .PositionKey)));
+                       !string.IsNullOrEmpty(animationSet
+                           .AnimationClass) &&
+                       !string.IsNullOrEmpty(animationSet
+                           .PositionKey)));
         }
 
         private void NewAnimationDatabase()
@@ -73,15 +73,16 @@ namespace OStimConversionTool.ViewModels
                     LoadOSexAnimations(oSexXmlDirectory);
                 }
 
-                foreach (var module in AnimationDatabase.Instance.Modules)
-                {
-                    module.AnimationSets.ToObservableChangeSet().AutoRefresh(x => x.SceneID)
-                        .Subscribe(_ => SaveDatabaseCommand.RaiseCanExecuteChanged());
-                }
+                AnimationDatabase.Instance.Modules.ToObservableChangeSet().AutoRefresh(x => x.AnimationSets).Subscribe(
+                    _ =>
+                    {
+                        foreach (var module in AnimationDatabase.Instance.Modules)
+                            module.AnimationSets.ToObservableChangeSet().AutoRefresh(x => x.SceneId)
+                                .Subscribe(_ => SaveDatabaseCommand.RaiseCanExecuteChanged());
+                    });
 
                 _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");
                 _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish();
-                
             });
         }
 
@@ -207,8 +208,8 @@ namespace OStimConversionTool.ViewModels
             AnimationDatabase.Instance.SafePath = Path.GetDirectoryName(fileDialog.FileName)!;
             XElement doc = XElement.Load(fileDialog.FileName);
             AnimationDatabase.Instance.Name = doc.Attribute("Name")?.Value ?? string.Empty;
-            var elements = doc.Elements("HubAnimationSet").ToList();
-            elements.AddRange(doc.Elements("TransitionAnimationSet"));
+            var elements = doc.Elements("Hub").ToList();
+            elements.AddRange(doc.Elements("Transition"));
             foreach (var set in elements)
             {
                 var animationSet = SetFinder(set.Attribute("SceneID")?.Value ?? string.Empty);
@@ -241,7 +242,7 @@ namespace OStimConversionTool.ViewModels
 
             foreach (var module in AnimationDatabase.Instance.Modules)
             {
-                module.AnimationSets.ToObservableChangeSet().AutoRefresh(x => x.SceneID)
+                module.AnimationSets.ToObservableChangeSet().AutoRefresh(x => x.SceneId)
                     .Subscribe(_ => SaveDatabaseCommand.RaiseCanExecuteChanged());
 
                 _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");
@@ -270,12 +271,12 @@ namespace OStimConversionTool.ViewModels
         {
             var idMatches = Regex.Matches(sceneID, @"[^\|]+");
             if (idMatches.Count != 4) return new AnimationSet("");
-            
+
             var moduleName = idMatches[0].ToString();
             var module = ModuleFinder(moduleName);
-            
+
             foreach (var animSet in module.AnimationSets)
-                if (animSet.SceneID.Equals(sceneID))
+                if (animSet.SceneId.Equals(sceneID))
                     return animSet;
 
             var positionKey = idMatches[1].ToString();
@@ -297,10 +298,8 @@ namespace OStimConversionTool.ViewModels
         private static Module ModuleFinder(string name)
         {
             foreach (var module in AnimationDatabase.Instance.Modules)
-            {
                 if (module.Name == name)
                     return module;
-            }
 
             var newModule = new Module(name);
             AnimationDatabase.Instance.Modules.Add(newModule);

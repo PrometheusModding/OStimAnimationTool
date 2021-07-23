@@ -14,7 +14,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Fluent;Component/Themes/Generic.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/Fluent;component/Themes/Themes/light.blue.xaml" />
-        </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </prism:PrismApplication>

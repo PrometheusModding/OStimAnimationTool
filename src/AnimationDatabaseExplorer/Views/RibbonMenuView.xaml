@@ -15,7 +15,7 @@
             <fluent:Gallery>
                 <fluent:MenuItem Header="Open Animation Set" Command="{Binding AddAnimationSetCommand}" />
                 <fluent:MenuItem Header="Open SL Animation Set" Command="{Binding AddSlAnimationSetCommand}" />
-                <fluent:MenuItem Header="Open Node View" Command="{Binding OpenNavNodeViewCommand}" />
+                <fluent:MenuItem Header="Open SL Folder" Command="{Binding AddSlFolderCommand}" />
             </fluent:Gallery>
         </fluent:SplitButton>
     </fluent:RibbonGroupBox>

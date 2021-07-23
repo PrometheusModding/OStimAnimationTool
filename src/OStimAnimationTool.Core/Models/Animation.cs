@@ -1,16 +1,26 @@
 #region
 
 using System;
+using System.Collections.Generic;
 using Prism.Mvvm;
 
 #endregion
 
 namespace OStimAnimationTool.Core.Models
 {
+    public enum AnimationType
+    {
+        Human,
+        Creature,
+        AnimObject
+    }
+
     public class Animation : BindableBase, IEquatable<Animation>
     {
         private int _actor;
         private AnimationSet _animationSet;
+        private string _creature = string.Empty;
+        private List<string> _fnisArgs = new();
         private string _oldPath;
         private int _speed;
 
@@ -18,6 +28,17 @@ namespace OStimAnimationTool.Core.Models
         {
             _oldPath = oldPath;
             _animationSet = animationSet;
+        }
+
+        public Animation(string oldPath, AnimationSet animationSet, int speed, int actor, List<string> fnisArgs,
+            string creature)
+        {
+            _oldPath = oldPath;
+            _animationSet = animationSet;
+            _speed = speed;
+            _actor = actor;
+            _fnisArgs = fnisArgs;
+            _creature = creature;
         }
 
         public string AnimationName
@@ -35,6 +56,18 @@ namespace OStimAnimationTool.Core.Models
             }
         }
 
+        public AnimationSet AnimationSet
+        {
+            get => _animationSet;
+            set => SetProperty(ref _animationSet, value);
+        }
+
+        public int Speed
+        {
+            get => _speed;
+            set => SetProperty(ref _speed, value, NameChanged);
+        }
+
         public int Actor
         {
             get => _actor;
@@ -47,24 +80,21 @@ namespace OStimAnimationTool.Core.Models
             set => SetProperty(ref _oldPath, value);
         }
 
-        public int Speed
+        public List<string> FnisArgs
         {
-            get => _speed;
-            set => SetProperty(ref _speed, value, NameChanged);
+            get => _fnisArgs;
+            set => SetProperty(ref _fnisArgs, value);
         }
 
-        public AnimationSet AnimationSet
+        public string Creature
         {
-            get => _animationSet;
-            set => SetProperty(ref _animationSet, value);
+            get => _creature;
+            set => SetProperty(ref _creature, value);
         }
 
         public bool Equals(Animation? other)
         {
-            if (other is null)
-                throw new NullReferenceException();
-
-            return AnimationName.Equals(other.AnimationName);
+            return other is not null && AnimationName.Equals(other.AnimationName);
         }
 
         public void NameChanged()
