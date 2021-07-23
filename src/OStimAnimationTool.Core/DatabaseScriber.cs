@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 using System.Xml;
 using OStimAnimationTool.Core.Models;
 using static System.String;
@@ -42,6 +43,39 @@ namespace OStimAnimationTool.Core
                         File.Copy(animation.OldPath, Path.Combine(setDir, animation.AnimationName + ".hkx"));
                     animation.OldPath = newPath; // Updating Animation Location
                 }
+
+                foreach (var misc in _animationDatabase.Misc)
+                {
+                    var newPath = Path.Combine(_animationDatabase.SafePath, Path.GetFileName(misc));
+                    if(Directory.Exists(misc))
+                        DirectoryCopy(misc, newPath);
+                    else if(File.Exists(misc))
+                    {
+                        File.Copy(misc,newPath);
+                    }
+                }
+            }
+        }
+        
+        private static void DirectoryCopy(string sourceDirName, string destDirName)
+        {
+            DirectoryInfo dir = new(sourceDirName);
+
+            DirectoryInfo[] dirs = dir.GetDirectories();
+           
+            Directory.CreateDirectory(destDirName);        
+            
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string tempPath = Path.Combine(destDirName, file.Name);
+                file.CopyTo(tempPath, false);
+            }
+            
+            foreach (DirectoryInfo subdir in dirs)
+            {
+                    string tempPath = Path.Combine(destDirName, subdir.Name);
+                    DirectoryCopy(subdir.FullName, tempPath);
             }
         }
 
