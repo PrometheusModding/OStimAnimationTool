@@ -25,7 +25,7 @@ namespace AnimationDatabaseExplorer.ViewModels
 
             OpenSetTabCommand = new DelegateCommand<AnimationSet>(OpenSet);
             DragDropCommand = new DelegateCommand<object[]>(DragDropAction);
-            //SearchTreeViewCommand = new DelegateCommand<string>(SearchTreeView);
+            SearchTreeViewCommand = new DelegateCommand<string>(SearchTreeView);
         }
 
         public ObservableCollection<Module> Modules
@@ -38,23 +38,37 @@ namespace AnimationDatabaseExplorer.ViewModels
         public DelegateCommand<AnimationSet> OpenSetTabCommand { get; }
 
         public DelegateCommand<object[]> DragDropCommand { get; }
-        //public DelegateCommand<string> SearchTreeViewCommand { get; }
+        public DelegateCommand<string> SearchTreeViewCommand { get; }
 
 
-        /*private void SearchTreeView(string searchFilter)
+        private void SearchTreeView(string searchFilter)
         {
             if (string.IsNullOrEmpty(searchFilter))
             {
-                AnimationSets = AnimationDatabase.Instance.AnimationSets;
+                Modules = AnimationDatabase.Instance.Modules;
             }
             else
             {
-                AnimationSets = new ObservableCollection<AnimationSet>();
-                foreach (var n in AnimationDatabase.Instance.AnimationSets)
-                    if (n.SetName.ToLower().StartsWith(searchFilter.Trim().ToLower()))
-                        AnimationSets.Add(n);
+                Module? activeModule = null;
+                Modules = new ObservableCollection<Module>();
+                foreach (var module in AnimationDatabase.Instance.Modules)
+                {
+                    foreach (var animationSet in module.AnimationSets)
+                    {
+                        if (!animationSet.SetName.ToLower().Contains(searchFilter.Trim().ToLower())) continue;
+                        if (!Modules.Contains(module))
+                        {
+                            var newModule = new Module(module.Name) {Creatures = module.Creatures};
+                            newModule.AnimationSets = new ObservableCollection<AnimationSet>();
+                                Modules.Add(newModule);
+                                activeModule = newModule;
+                        }
+
+                        activeModule?.AnimationSets.Add(animationSet);
+                    }
+                }
             }
-        }*/
+        }
 
         private void DragDropAction(object[] dataContext)
         {

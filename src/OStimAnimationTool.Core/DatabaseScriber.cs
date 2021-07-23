@@ -20,7 +20,7 @@ namespace OStimAnimationTool.Core
             foreach (var module in _animationDatabase.Modules)
             foreach (var animationSet in module.AnimationSets)
             {
-                if (!animationSet.ChangedThisSession) continue;
+                if (animationSet.Is0SexAnimation || !animationSet.ChangedThisSession) continue;
                 // Base Path for all Animation Sets
                 string setDir = Path.Combine(_animationDatabase.SafePath, @"meshes\0SA\mod\0Sex\anim\",
                     animationSet.Module.Name, animationSet.PositionKey.Replace("!", ""),
@@ -296,54 +296,64 @@ namespace OStimAnimationTool.Core
             writer.WriteAttributeString("Name", databaseName);
 
             foreach (var module in AnimationDatabase.Instance.Modules)
-            foreach (var animationSet in module.AnimationSets)
-                switch (animationSet)
-                {
-                    case HubAnimationSet hubAnimationSet:
+            {
+                writer.WriteStartElement("Module");
+                writer.WriteAttributeString("Name", module.Name);
+                if (module.Creatures != null)
+                    foreach (var creature in module.Creatures)
                     {
-                        writer.WriteStartElement("Hub");
-                        writer.WriteAttributeString("SceneID", animationSet.SceneId);
-                        writer.WriteAttributeString("Animator", animationSet.Animator);
-                        writer.WriteAttributeString("Description", animationSet.Description);
-
-                        foreach (var animation in animationSet.Animations)
-                        {
-                            writer.WriteStartElement("Animation");
-                            writer.WriteAttributeString("Name", animation.AnimationName);
-                            writer.WriteAttributeString("Actor", animation.Actor.ToString());
-                            writer.WriteAttributeString("Speed", animation.Speed.ToString());
-                            writer.WriteEndElement();
-                        }
-
-                        foreach (var destination in hubAnimationSet.Destinations)
-                        {
-                            writer.WriteStartElement("Destinations");
-                            writer.WriteAttributeString("Destination", destination.SceneId);
-                            writer.WriteEndElement();
-                        }
-
-                        writer.WriteEndElement();
-                        break;
+                        writer.WriteAttributeString("Creature", creature);
                     }
-                    case TransitionAnimationSet transitionAnimationSet:
-                        writer.WriteStartElement("Transition");
-                        writer.WriteAttributeString("Destination", transitionAnimationSet.Destination.SceneId);
-                        writer.WriteAttributeString("SceneID", animationSet.SceneId);
-                        writer.WriteAttributeString("Animator", animationSet.Animator);
-                        writer.WriteAttributeString("Description", animationSet.Description);
 
-                        foreach (var animation in animationSet.Animations)
+                foreach (var animationSet in module.AnimationSets)
+                    switch (animationSet)
+                    {
+                        case HubAnimationSet hubAnimationSet:
                         {
-                            writer.WriteStartElement("Animation");
-                            writer.WriteAttributeString("Name", animation.AnimationName);
-                            writer.WriteAttributeString("Actor", animation.Actor.ToString());
-                            writer.WriteAttributeString("Speed", animation.Speed.ToString());
-                            writer.WriteEndElement();
-                        }
+                            writer.WriteStartElement("Hub");
+                            writer.WriteAttributeString("SceneID", animationSet.SceneId);
+                            writer.WriteAttributeString("Animator", animationSet.Animator);
+                            writer.WriteAttributeString("Description", animationSet.Description);
 
-                        writer.WriteEndElement();
-                        break;
-                }
+                            foreach (var animation in animationSet.Animations)
+                            {
+                                writer.WriteStartElement("Animation");
+                                writer.WriteAttributeString("Name", animation.AnimationName);
+                                writer.WriteAttributeString("Actor", animation.Actor.ToString());
+                                writer.WriteAttributeString("Speed", animation.Speed.ToString());
+                                writer.WriteEndElement();
+                            }
+
+                            foreach (var destination in hubAnimationSet.Destinations)
+                            {
+                                writer.WriteStartElement("Destinations");
+                                writer.WriteAttributeString("Destination", destination.SceneId);
+                                writer.WriteEndElement();
+                            }
+
+                            writer.WriteEndElement();
+                            break;
+                        }
+                        case TransitionAnimationSet transitionAnimationSet:
+                            writer.WriteStartElement("Transition");
+                            writer.WriteAttributeString("Destination", transitionAnimationSet.Destination.SceneId);
+                            writer.WriteAttributeString("SceneID", animationSet.SceneId);
+                            writer.WriteAttributeString("Animator", animationSet.Animator);
+                            writer.WriteAttributeString("Description", animationSet.Description);
+
+                            foreach (var animation in animationSet.Animations)
+                            {
+                                writer.WriteStartElement("Animation");
+                                writer.WriteAttributeString("Name", animation.AnimationName);
+                                writer.WriteAttributeString("Actor", animation.Actor.ToString());
+                                writer.WriteAttributeString("Speed", animation.Speed.ToString());
+                                writer.WriteEndElement();
+                            }
+
+                            writer.WriteEndElement();
+                            break;
+                    }
+            }
 
             writer.WriteEndElement();
             writer.Close();

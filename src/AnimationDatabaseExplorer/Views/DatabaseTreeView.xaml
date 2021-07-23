@@ -20,7 +20,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <TextBox Name="SearchBar">
             <i:Interaction.Triggers>
@@ -30,7 +30,8 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
-        <TreeView Name="TreeView" Grid.Row="1">
+        <TreeView Name="TreeView"
+                  Grid.Row="1">
             <TreeView.Resources>
                 <Style x:Key="ContextMenuStyle" TargetType="TextBlock">
                     <Setter Property="ContextMenu" Value="{DynamicResource TreeViewContextMenu}" />
@@ -61,9 +62,8 @@
                     </TextBlock>
                 </DataTemplate>
             </TreeView.Resources>
-            <TreeViewItem
-                ItemsSource="{Binding Modules, UpdateSourceTrigger=PropertyChanged}"
-                Header="{Binding Name, Source={x:Static models:AnimationDatabase.Instance}, UpdateSourceTrigger=PropertyChanged}" />
+            <TreeViewItem ItemsSource="{Binding Modules, UpdateSourceTrigger=PropertyChanged}"
+                          Header="{Binding Name, Source={x:Static models:AnimationDatabase.Instance}}"/>
         </TreeView>
     </Grid>
 </ContentControl>

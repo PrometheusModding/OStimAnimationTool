@@ -15,6 +15,7 @@ namespace OStimAnimationTool.Core.Models
         private Module _module = new("");
         private string _positionKey = Empty;
         private string _setName;
+        private bool _is0sexAnimation;
 
         public AnimationSet(string setName)
         {
@@ -84,6 +85,12 @@ namespace OStimAnimationTool.Core.Models
         {
             get => _description;
             set => SetProperty(ref _description, value, () => ChangedThisSession = true);
+        }
+
+        public bool Is0SexAnimation
+        {
+            get => _is0sexAnimation;
+            set => SetProperty(ref _is0sexAnimation, value);
         }
 
         public int Actors => GetActorCount();

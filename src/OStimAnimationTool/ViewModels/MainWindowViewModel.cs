@@ -215,6 +215,7 @@ namespace OStimConversionTool.ViewModels
                 var animationSet = SetFinder(set.Attribute("SceneID")?.Value ?? string.Empty);
                 animationSet.Animator = set.Attribute("Animator")?.Value ?? string.Empty;
                 animationSet.Description = set.Attribute("Description")?.Value ?? string.Empty;
+                animationSet.Is0SexAnimation = true;
 
                 foreach (var animation in set.Elements("Animation"))
                     animationSet.Animations.Add(new Animation(animation.Attribute("OldPath")?.Value ?? string.Empty,
