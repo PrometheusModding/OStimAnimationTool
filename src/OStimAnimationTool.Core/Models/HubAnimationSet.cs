@@ -9,6 +9,10 @@ namespace OStimAnimationTool.Core.Models
         public HubAnimationSet(string setName) : base(setName)
         {
         }
+        
+        public HubAnimationSet(Module module, string positionKey, string animationClass, string setName) : base(module, positionKey, animationClass, setName)
+        {
+        }
 
         public ObservableCollection<AnimationSet> Destinations
         {

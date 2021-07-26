@@ -8,20 +8,28 @@ namespace OStimAnimationTool.Core.Models
 {
     public class AnimationSet : BindableBase, IEquatable<AnimationSet>
     {
+        private Module _module = new("");
         private string _animationClass = Empty;
+        private string _positionKey = Empty;
+        private string _setName;
         private ObservableCollection<Animation> _animations = new();
         private string _animator = Empty;
         private string _description = Empty;
-        private Module _module = new("");
-        private string _positionKey = Empty;
-        private string _setName;
-        private bool _is0sexAnimation;
+        private bool _is0SexAnimation;
 
         public AnimationSet(string setName)
         {
             _setName = setName;
         }
 
+        protected AnimationSet(Module module, string positionKey, string animationClass, string setName)
+        {
+            _module = module;
+            _positionKey = positionKey;
+            _animationClass = animationClass;
+            _setName = setName;
+        }
+        
         public string SceneId => _module.Name + $"|{_positionKey}" + $"|{_animationClass}" + $"|{_setName}";
 
         public Module Module
@@ -40,7 +48,6 @@ namespace OStimAnimationTool.Core.Models
             set => SetProperty(ref _positionKey, value, () =>
             {
                 RaisePropertyChanged(nameof(SceneId));
-                foreach (var animation in Animations) animation.NameChanged();
                 ChangedThisSession = true;
             });
         }
@@ -73,8 +80,6 @@ namespace OStimAnimationTool.Core.Models
             set => SetProperty(ref _animations, value);
         }
 
-        public bool ChangedThisSession { get; set; }
-
         public string Animator
         {
             get => _animator;
@@ -89,26 +94,24 @@ namespace OStimAnimationTool.Core.Models
 
         public bool Is0SexAnimation
         {
-            get => _is0sexAnimation;
-            set => SetProperty(ref _is0sexAnimation, value);
+            get => _is0SexAnimation;
+            set => SetProperty(ref _is0SexAnimation, value);
         }
+        
+        // Variable to determine if this AnimationSet Changed this Session.
+        // Gets set if certain Properties change.
+        public bool ChangedThisSession { get; private set; }
 
-        public int Actors => GetActorCount();
+        // Returns the Amount of Actors in the AnimationSet based on the Animations in this Set.
+        public int Actors => Animations.Select(animation => animation.Actor).Prepend(1).Max() + 1;
 
         public bool Equals(AnimationSet? other)
         {
-            if (other is null)
-                throw new NullReferenceException();
-
-            return SetName.Equals(other.SetName);
+            return SetName.Equals(other?.SceneId);
         }
 
-        private int GetActorCount()
-        {
-            return Animations.Select(animation => animation.Actor).Prepend(1).Max() + 1;
-        }
-
-        public void NameChanged()
+        // Method to raise PropertyChanged Notifications for SceneId from within Module
+        public void SceneIdChanged()
         {
             RaisePropertyChanged(nameof(SceneId));
         }

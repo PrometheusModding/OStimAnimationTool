@@ -22,7 +22,7 @@ namespace OStimAnimationTool.Core.Models
             get => _name;
             set => SetProperty(ref _name, value, () =>
             {
-                foreach (var animationSet in AnimationSets) animationSet.NameChanged();
+                foreach (var animationSet in AnimationSets) animationSet.SceneIdChanged();
             });
         }
 
