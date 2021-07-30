@@ -10,6 +10,7 @@
                 xmlns:core="clr-namespace:OStimAnimationTool.Core;assembly=OStimAnimationTool.Core"
                 xmlns:prism="http://prismlibrary.com/"
                 xmlns:animationDatabaseExplorer="clr-namespace:AnimationDatabaseExplorer"
+                xmlns:controls="clr-namespace:OStimAnimationTool.Core.Controls;assembly=OStimAnimationTool.Core"
                 mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:DatabaseTreeViewModel}">
     <ContentControl.Resources>
         <ResourceDictionary>
@@ -48,14 +49,14 @@
                 <DataTemplate DataType="{x:Type models:AnimationSet}">
                     <TextBlock Text="{Binding Path=SetName}" Style="{StaticResource ContextMenuStyle}"
                                core:DragDrop.IsDragSource="True"
-                               core:DragDrop.DragDropContainer="{Binding OverlayCanvas, RelativeSource={RelativeSource AncestorType=core:ExtendedRibbonWindow}}"
+                               core:DragDrop.DragDropContainer="{Binding OverlayCanvas, RelativeSource={RelativeSource AncestorType=controls:CustomRibbonWindow}}"
                                core:DragDrop.DragDropPreviewControl="{StaticResource DragPreviewControl}"
                                core:DragDrop.DragDropPreviewControlDataContext="{Binding }"
                                core:DragDrop.ItemDropped="{Binding DataContext.DragDropCommand, RelativeSource={RelativeSource AncestorType=TreeView}}">
                         <core:DragDrop.DropTarget>
                             <MultiBinding Converter="{StaticResource DragDropConverter}">
                                 <Binding Path="DropTarget"
-                                         RelativeSource="{RelativeSource AncestorType=core:ExtendedRibbonWindow}" />
+                                         RelativeSource="{RelativeSource AncestorType=controls:CustomRibbonWindow}" />
                                 <Binding Path="Items" ElementName="TreeView" />
                             </MultiBinding>
                         </core:DragDrop.DropTarget>
@@ -63,7 +64,7 @@
                 </DataTemplate>
             </TreeView.Resources>
             <TreeViewItem ItemsSource="{Binding Modules, UpdateSourceTrigger=PropertyChanged}"
-                          Header="{Binding Name, Source={x:Static models:AnimationDatabase.Instance}}"/>
+                          Header="{Binding Name, Source={x:Static models:AnimationDatabase.Instance}}" />
         </TreeView>
     </Grid>
 </ContentControl>

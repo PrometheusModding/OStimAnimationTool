@@ -16,7 +16,7 @@ namespace OStimAnimationTool.Core.Models
         public Animation(AnimationSet animationSet, string animationName)
         {
             _animationSet = animationSet;
-            
+
             switch (animationSet)
             {
                 case HubAnimationSet:

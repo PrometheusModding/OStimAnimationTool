@@ -52,20 +52,18 @@ namespace AnimationDatabaseExplorer.ViewModels
                 Module? activeModule = null;
                 Modules = new ObservableCollection<Module>();
                 foreach (var module in AnimationDatabase.Instance.Modules)
+                foreach (var animationSet in module.AnimationSets)
                 {
-                    foreach (var animationSet in module.AnimationSets)
+                    if (!animationSet.SetName.ToLower().Contains(searchFilter.Trim().ToLower())) continue;
+                    if (!Modules.Contains(module))
                     {
-                        if (!animationSet.SetName.ToLower().Contains(searchFilter.Trim().ToLower())) continue;
-                        if (!Modules.Contains(module))
-                        {
-                            var newModule = new Module(module.Name) {Creatures = module.Creatures};
-                            newModule.AnimationSets = new ObservableCollection<AnimationSet>();
-                                Modules.Add(newModule);
-                                activeModule = newModule;
-                        }
-
-                        activeModule?.AnimationSets.Add(animationSet);
+                        var newModule = new Module(module.Name) { Creatures = module.Creatures };
+                        newModule.AnimationSets = new ObservableCollection<AnimationSet>();
+                        Modules.Add(newModule);
+                        activeModule = newModule;
                     }
+
+                    activeModule?.AnimationSets.Add(animationSet);
                 }
             }
         }
@@ -73,7 +71,7 @@ namespace AnimationDatabaseExplorer.ViewModels
         private void DragDropAction(object[] dataContext)
         {
             if (dataContext[0] is not AnimationSet animationSet) return;
-            if (dataContext[1] is TreeViewItem {DataContext: Module module})
+            if (dataContext[1] is TreeViewItem { DataContext: Module module })
             {
                 animationSet.Module.AnimationSets.Remove(animationSet);
                 module.AnimationSets.Add(animationSet);
@@ -88,7 +86,7 @@ namespace AnimationDatabaseExplorer.ViewModels
         //Logic for Opening a new AnimationSet Tab
         private void OpenSet(AnimationSet animationSet)
         {
-            var p = new NavigationParameters {{"animationSet", animationSet}};
+            var p = new NavigationParameters { { "animationSet", animationSet } };
             _regionManager.RequestNavigate("WorkspaceRegion", "SetWorkspaceView", p);
         }
     }

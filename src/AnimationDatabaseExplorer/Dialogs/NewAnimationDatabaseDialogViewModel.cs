@@ -47,7 +47,7 @@ namespace AnimationDatabaseExplorer.Dialogs
         {
             const ButtonResult result = ButtonResult.OK;
 
-            var p = new DialogParameters {{"name", Name}};
+            var p = new DialogParameters { { "name", Name } };
             RequestClose?.Invoke(new DialogResult(result, p));
         }
     }

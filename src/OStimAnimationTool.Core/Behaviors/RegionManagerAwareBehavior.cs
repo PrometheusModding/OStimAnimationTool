@@ -1,12 +1,8 @@
-#region
-
 using System;
 using System.Collections.Specialized;
 using System.Windows;
 using OStimAnimationTool.Core.Interfaces;
 using Prism.Regions;
-
-#endregion
 
 namespace OStimAnimationTool.Core.Behaviors
 {
@@ -26,25 +22,36 @@ namespace OStimAnimationTool.Core.Behaviors
                 case NotifyCollectionChangedAction.Add:
                 {
                     if (e.NewItems != null)
+                    {
                         foreach (var item in e.NewItems)
                         {
                             var regionManager = Region.RegionManager;
 
                             if (item is FrameworkElement element)
+                            {
                                 if (element.GetValue(RegionManager.RegionManagerProperty) is IRegionManager
                                     scopedRegionManager)
+                                {
                                     regionManager = scopedRegionManager;
+                                }
+                            }
 
                             InvokeOnRegionManagerAwareElement(item, x => x.RegionManager = regionManager);
                         }
+                    }
 
                     break;
                 }
                 case NotifyCollectionChangedAction.Remove:
                 {
                     if (e.OldItems != null)
+                    {
                         foreach (var item in e.OldItems)
+                        {
                             InvokeOnRegionManagerAwareElement(item, x => x.RegionManager = null);
+                        }
+                    }
+
                     break;
                 }
             }
@@ -57,15 +64,24 @@ namespace OStimAnimationTool.Core.Behaviors
                 case IRegionManagerAware regionManagerAwareItem:
                     invocation(regionManagerAwareItem);
                     break;
-                case FrameworkElement {DataContext: IRegionManagerAware regionManagerAwareDataContext} frameworkElement:
+
+                case FrameworkElement
+                    {
+                        DataContext: IRegionManagerAware regionManagerAwareDataContext
+                    }
+                    frameworkElement:
                 {
                     if (frameworkElement.Parent is FrameworkElement
                     {
                         DataContext: IRegionManagerAware
                         regionManagerAwareDataContextParent
                     })
+                    {
                         if (regionManagerAwareDataContext == regionManagerAwareDataContextParent)
+                        {
                             return;
+                        }
+                    }
 
                     invocation(regionManagerAwareDataContext);
                     break;

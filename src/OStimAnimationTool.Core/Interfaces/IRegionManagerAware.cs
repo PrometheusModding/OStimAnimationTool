@@ -1,8 +1,4 @@
-#region
-
 using Prism.Regions;
-
-#endregion
 
 namespace OStimAnimationTool.Core.Interfaces
 {

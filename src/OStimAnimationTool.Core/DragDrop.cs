@@ -52,14 +52,14 @@ namespace OStimAnimationTool.Core
 
         public DropState DropState
         {
-            get => (DropState) GetValue(DropStateProperty);
+            get => (DropState)GetValue(DropStateProperty);
             set => SetValue(DropStateProperty, value);
         }
 
 
         private static void DropStateChanged(DependencyObject element, DependencyPropertyChangedEventArgs e)
         {
-            var instance = (DragDropPreviewBase) element;
+            var instance = (DragDropPreviewBase)element;
             instance.StateChangedHandler(element, e);
         }
 
@@ -109,7 +109,7 @@ namespace OStimAnimationTool.Core
 
         public static ICommand GetItemDropped(DependencyObject element)
         {
-            return (ICommand) element.GetValue(ItemDroppedProperty);
+            return (ICommand)element.GetValue(ItemDroppedProperty);
         }
 
         public static void SetItemDropped(DependencyObject element, ICommand value)
@@ -131,7 +131,7 @@ namespace OStimAnimationTool.Core
 
         public static Panel GetDragDropContainer(DependencyObject element)
         {
-            return (Panel) element.GetValue(DragDropContainerProperty);
+            return (Panel)element.GetValue(DragDropContainerProperty);
         }
 
         public static void SetDragDropContainer(DependencyObject element, Panel value)
@@ -149,7 +149,7 @@ namespace OStimAnimationTool.Core
 
         public static DragDropPreviewBase GetDragDropPreviewControl(DependencyObject element)
         {
-            return (DragDropPreviewBase) element.GetValue(DragDropPreviewControlProperty);
+            return (DragDropPreviewBase)element.GetValue(DragDropPreviewControlProperty);
         }
 
         public static void SetDragDropPreviewControl(DependencyObject element, DragDropPreviewBase value)
@@ -185,7 +185,7 @@ namespace OStimAnimationTool.Core
 
         public static List<UIElement> GetDropTarget(DependencyObject element)
         {
-            return (List<UIElement>) element.GetValue(DropTargetProperty);
+            return (List<UIElement>)element.GetValue(DropTargetProperty);
         }
 
         public static void SetDropTarget(DependencyObject element, UIElement value)
@@ -203,7 +203,7 @@ namespace OStimAnimationTool.Core
 
         public static bool GetIsDragSource(DependencyObject element)
         {
-            return (bool) element.GetValue(IsDragSourceProperty);
+            return (bool)element.GetValue(IsDragSourceProperty);
         }
 
         public static void SetIsDragSource(DependencyObject element, bool value)
@@ -240,15 +240,15 @@ namespace OStimAnimationTool.Core
 
                 _initialPosition = e.GetPosition(_topWindow);
 
-                _dragDropContainer = GetDragDropContainer((DependencyObject) sender) as Canvas ??
+                _dragDropContainer = GetDragDropContainer((DependencyObject)sender) as Canvas ??
                                      FindParent<Canvas>(visual);
 
                 _dropTargets = GetDropTarget(sender as DependencyObject ?? throw new Exception());
 
                 _dragDropPreviewControlDataContext =
-                    GetDragDropPreviewControlDataContext((DependencyObject) sender);
+                    GetDragDropPreviewControlDataContext((DependencyObject)sender);
 
-                _itemDroppedCommand = GetItemDropped((DependencyObject) sender);
+                _itemDroppedCommand = GetItemDropped((DependencyObject)sender);
             }
             catch (Exception exception)
             {
@@ -269,7 +269,7 @@ namespace OStimAnimationTool.Core
             if (_mouseCaptured || _dragDropPreviewControlDataContext is null ||
                 !SufficientMovement(_initialPosition, e.GetPosition(_topWindow))) return;
 
-            _dragDropPreviewControl = GetDragDropPreviewControl((DependencyObject) sender);
+            _dragDropPreviewControl = GetDragDropPreviewControl((DependencyObject)sender);
             _dragDropPreviewControl.DataContext = _dragDropPreviewControlDataContext;
             _dragDropPreviewControl.Opacity = 0.7;
 
@@ -340,13 +340,13 @@ namespace OStimAnimationTool.Core
                 case DropState.CanDrop:
 
                     if (_dragDropPreviewControl.Resources.Contains("canDropChanged"))
-                        ((Storyboard) _dragDropPreviewControl.Resources["canDropChanged"]).Begin(
+                        ((Storyboard)_dragDropPreviewControl.Resources["canDropChanged"]).Begin(
                             _dragDropPreviewControl);
 
                     break;
                 case DropState.CannotDrop:
                     if (_dragDropPreviewControl.Resources.Contains("cannotDropChanged"))
-                        ((Storyboard) _dragDropPreviewControl.Resources["cannotDropChanged"]).Begin(
+                        ((Storyboard)_dragDropPreviewControl.Resources["cannotDropChanged"]).Begin(
                             _dragDropPreviewControl);
 
                     break;
@@ -384,7 +384,7 @@ namespace OStimAnimationTool.Core
                             var opacityAnim = CreateDoubleAnimation(0);
                             Storyboard.SetTargetProperty(opacityAnim, new PropertyPath("(UIElement.Opacity)"));
 
-                            var canDropSb = new Storyboard {FillBehavior = FillBehavior.Stop};
+                            var canDropSb = new Storyboard { FillBehavior = FillBehavior.Stop };
                             canDropSb.Children.Add(scaleXAnim);
                             canDropSb.Children.Add(scaleYAnim);
                             canDropSb.Children.Add(opacityAnim);
@@ -392,7 +392,7 @@ namespace OStimAnimationTool.Core
 
                             canDropSb.Begin(_dragDropPreviewControl);
 
-                            object?[] dataContext = {_dragDropPreviewControlDataContext, _dropTarget};
+                            object?[] dataContext = { _dragDropPreviewControlDataContext, _dropTarget };
                             _itemDroppedCommand?.Execute(dataContext);
                         }
                         catch (Exception exception)
@@ -418,7 +418,7 @@ namespace OStimAnimationTool.Core
                             opacityAnim.BeginTime = TimeSpan.FromMilliseconds(150);
                             Storyboard.SetTargetProperty(opacityAnim, new PropertyPath("(UIElement.Opacity)"));
 
-                            var cannotDropSb = new Storyboard {FillBehavior = FillBehavior.Stop};
+                            var cannotDropSb = new Storyboard { FillBehavior = FillBehavior.Stop };
                             cannotDropSb.Children.Add(translateXAnim);
                             cannotDropSb.Children.Add(translateYAnim);
                             cannotDropSb.Children.Add(opacityAnim);

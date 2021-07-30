@@ -1,31 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
-		<TargetFramework>net5.0-windows</TargetFramework>
-		<RootNamespace>OStimConversionTool</RootNamespace>
-		<UseWPF>true</UseWPF>
-		<AssemblyName>OStimAnimationTool</AssemblyName>
-		<Authors>Prometheus</Authors>
-		<Version>0.5.1</Version>
-		<Nullable>enable</Nullable>
-		<IsPackable>false</IsPackable>
-		<EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
-	</PropertyGroup>
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net5.0-windows</TargetFramework>
+        <RootNamespace>OStimConversionTool</RootNamespace>
+        <UseWPF>true</UseWPF>
+        <AssemblyName>OStimAnimationTool</AssemblyName>
+        <Authors>Prometheus</Authors>
+        <Version>0.5.1</Version>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    </PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-	  <Optimize>false</Optimize>
-	</PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <Optimize>false</Optimize>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<Folder Include="ViewModels\" />
-	</ItemGroup>
+    <ItemGroup>
+        <Folder Include="ViewModels\"/>
+    </ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\OStimAnimationTool.Core\OStimAnimationTool.Core.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\OStimAnimationTool.Core\OStimAnimationTool.Core.csproj"/>
+    </ItemGroup>
 
-	<ItemGroup>
-	  <PackageReference Include="MaterialDesignThemes" Version="4.2.0-ci2603" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="MaterialDesignThemes" Version="4.2.0-ci2603"/>
+    </ItemGroup>
 </Project>

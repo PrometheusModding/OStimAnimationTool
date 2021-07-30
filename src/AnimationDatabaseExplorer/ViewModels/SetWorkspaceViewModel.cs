@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using AnimationDatabaseExplorer.Views;
 using OStimAnimationTool.Core.Events;
 using OStimAnimationTool.Core.Models;
 using OStimAnimationTool.Core.ViewModels;
@@ -107,7 +108,9 @@ namespace AnimationDatabaseExplorer.ViewModels
         private void RemoveDestination(AnimationSet animationSet)
         {
             if (AnimationSet is HubAnimationSet hubAnimationSet)
+            {
                 hubAnimationSet.Destinations.Remove(animationSet);
+            }
         }
 
         private void AddDestination(AnimationSet animationSet)
@@ -118,6 +121,19 @@ namespace AnimationDatabaseExplorer.ViewModels
                 hubAnimationSet.Destinations.Add(animationSet);
         }
 
+        public override bool IsNavigationTarget(NavigationContext navigationContext)
+        {
+            foreach (var view in _regionManager.Regions["WorkspaceRegion"].Views)
+            {
+                if (view is not SetWorkspaceView { DataContext: SetWorkspaceViewModel setWorkspaceViewModel }) continue;
+                var animationSet = navigationContext.Parameters.GetValue<AnimationSet>("animationSet");
+                return setWorkspaceViewModel.AnimationSet != null &&
+                       setWorkspaceViewModel.AnimationSet.Equals(animationSet);
+            }
+
+            return false;
+        }
+
         public override void OnNavigatedTo(NavigationContext navigationContext)
         {
             AnimationSet = navigationContext.Parameters.GetValue<AnimationSet>("animationSet");
@@ -125,7 +141,7 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         private void OpenAnimationDetail(Animation animation)
         {
-            var p = new NavigationParameters {{"animation", animation}};
+            var p = new NavigationParameters { { "animation", animation } };
             _regionManager.RequestNavigate("AnimationDetailRegion", "AnimationDetailView", p);
         }
 

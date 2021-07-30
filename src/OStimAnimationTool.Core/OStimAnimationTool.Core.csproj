@@ -1,21 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net5.0-windows</TargetFramework>
+        <UseWPF>true</UseWPF>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="DynamicData" Version="7.1.1" />
-    <PackageReference Include="Fluent.Ribbon" Version="9.0.0-alpha0148" />
-    <PackageReference Include="NodeNetwork" Version="5.2.0" />
-    <PackageReference Include="NodeNetworkToolkit" Version="5.2.0" />
-    <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="DynamicData" Version="7.1.1" />
+        <PackageReference Include="Fluent.Ribbon" Version="9.0.0-alpha0148" />
+        <PackageReference Include="NodeNetwork" Version="5.2.0" />
+        <PackageReference Include="NodeNetworkToolkit" Version="5.2.0" />
+        <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Regions\RibbonRegionAdapter.cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Regions\RibbonRegionAdapter.cs" />
+    </ItemGroup>
 
 </Project>

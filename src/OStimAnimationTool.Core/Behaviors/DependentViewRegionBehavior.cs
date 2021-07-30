@@ -1,15 +1,12 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using OStimAnimationTool.Core.Attributes;
 using OStimAnimationTool.Core.Interfaces;
 using Prism.Regions;
-
-#endregion
 
 namespace OStimAnimationTool.Core.Behaviors
 {
@@ -30,6 +27,7 @@ namespace OStimAnimationTool.Core.Behaviors
                 case NotifyCollectionChangedAction.Add:
                 {
                     if (e.NewItems != null)
+                    {
                         foreach (var view in e.NewItems)
                         {
                             var viewList = new List<DependentViewInfo>();
@@ -46,32 +44,44 @@ namespace OStimAnimationTool.Core.Behaviors
 
                                     if (info.View is ISupportDataContext infoDataContext &&
                                         view is ISupportDataContext viewDataContext)
+                                    {
                                         infoDataContext.DataContext =
                                             viewDataContext.DataContext;
+                                    }
 
                                     viewList.Add(info);
                                 }
 
                                 if (!_dependentViewCache.ContainsKey(view))
+                                {
                                     _dependentViewCache.Add(view, viewList);
+                                }
                             }
 
                             viewList.ForEach(x => Region.RegionManager.Regions[x.TargetRegionName].Add(x.View));
                         }
+                    }
 
                     break;
                 }
                 case NotifyCollectionChangedAction.Remove:
                 {
                     if (e.OldItems != null)
+                    {
                         foreach (var oldView in e.OldItems)
                         {
                             if (_dependentViewCache.ContainsKey(oldView))
+                            {
                                 _dependentViewCache[oldView].ForEach(x =>
                                     Region.RegionManager.Regions[x.TargetRegionName].Remove(x.View));
+                            }
+
                             if (!ShouldKeepAlive(oldView))
+                            {
                                 _dependentViewCache.Remove(oldView);
+                            }
                         }
+                    }
 
                     break;
                 }
@@ -81,39 +91,43 @@ namespace OStimAnimationTool.Core.Behaviors
         private static bool ShouldKeepAlive(object oldView)
         {
             var lifetime = GetItemOrContextLifeTime(oldView);
+            
             if (lifetime != null)
+            {
                 return lifetime.KeepAlive;
+            }
 
             var lifetimeAttribute = GetItemOrContextLifeTimeAttribute(oldView);
+            
             return lifetimeAttribute == null || lifetimeAttribute.KeepAlive;
         }
 
         private static RegionMemberLifetimeAttribute? GetItemOrContextLifeTimeAttribute(object oldView)
         {
             var lifeAttribute = GetCustomAttributes<RegionMemberLifetimeAttribute>(oldView.GetType()).FirstOrDefault();
+            
             if (lifeAttribute != null)
-                return lifeAttribute;
-
-            if (oldView is FrameworkElement {DataContext: { }} frameworkElement)
             {
-                var dataContext = frameworkElement.DataContext;
-                var contextLifeTimeAttribute = GetCustomAttributes<RegionMemberLifetimeAttribute>(dataContext.GetType())
-                    .FirstOrDefault();
-                return contextLifeTimeAttribute;
+                return lifeAttribute;
             }
 
-            return null;
+            if (oldView is not FrameworkElement { DataContext: { } } frameworkElement) return null;
+            
+            var dataContext = frameworkElement.DataContext;
+            var contextLifeTimeAttribute = GetCustomAttributes<RegionMemberLifetimeAttribute>(dataContext.GetType())
+                .FirstOrDefault();
+            
+            return contextLifeTimeAttribute;
         }
 
         private static IRegionMemberLifetime? GetItemOrContextLifeTime(object oldView)
         {
-            if (oldView is IRegionMemberLifetime regionLifeTime)
-                return regionLifeTime;
-
-            if (oldView is FrameworkElement framework)
-                return framework.DataContext as IRegionMemberLifetime;
-
-            return null;
+            return oldView switch
+            {
+                IRegionMemberLifetime regionLifeTime => regionLifeTime,
+                FrameworkElement framework => framework.DataContext as IRegionMemberLifetime,
+                _ => null
+            };
         }
 
         private static DependentViewInfo CreateDependentView(DependentViewAttribute atr)

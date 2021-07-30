@@ -2,7 +2,7 @@
 
 namespace OStimAnimationTool.Core.Controls
 {
-    public class StartScreen2 : StartScreen
+    public class CustomStartScreen : StartScreen
     {
         protected override bool Show()
         {

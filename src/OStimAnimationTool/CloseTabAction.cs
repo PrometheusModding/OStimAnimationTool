@@ -12,7 +12,7 @@ namespace OStimConversionTool
         {
             if (parameter is not RoutedEventArgs args) return;
 
-            var tabItem = FindParent<TabItem>((DependencyObject) args.OriginalSource);
+            var tabItem = FindParent<TabItem>((DependencyObject)args.OriginalSource);
             if (tabItem is null) return;
 
             var tabControl = FindParent<TabControl>(tabItem);
@@ -26,9 +26,9 @@ namespace OStimConversionTool
         private static void RemoveItemFromRegion(object item, IRegion region)
         {
             var navigationContext = new NavigationContext(region.NavigationService, null);
-            
+
             if (!CanRemove(item, navigationContext)) return;
-            
+
             region.RegionManager.Regions.Remove("AnimationDetailRegion");
             region.Remove(item);
         }
@@ -42,14 +42,12 @@ namespace OStimConversionTool
                 case IConfirmNavigationRequest confirmRequestItem:
                     confirmRequestItem.ConfirmNavigationRequest(navigationContext, result => { canRemove = result; });
                     break;
-                
+
                 case FrameworkElement frameworkElement when canRemove:
                 {
                     if (frameworkElement.DataContext is IConfirmNavigationRequest confirmNavigationRequest)
-                    {
                         confirmNavigationRequest.ConfirmNavigationRequest(navigationContext,
                             result => { canRemove = result; });
-                    }
 
                     break;
                 }

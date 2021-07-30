@@ -1,4 +1,4 @@
-<core:ExtendedRibbonWindow
+<controls:CustomRibbonWindow
     x:Class="OStimConversionTool.Views.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:prism="http://prismlibrary.com/"
@@ -7,7 +7,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:fluent="urn:fluent-ribbon"
     xmlns:viewModels="clr-namespace:OStimConversionTool.ViewModels"
-    xmlns:core="clr-namespace:OStimAnimationTool.Core;assembly=OStimAnimationTool.Core"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:OStimConversionTool"
@@ -202,7 +201,7 @@
             </Grid.ColumnDefinitions>
             <fluent:Ribbon prism:RegionManager.RegionName="RibbonRegion" Grid.ColumnSpan="6">
                 <fluent:Ribbon.StartScreen>
-                    <controls:StartScreen2 IsOpen="True">
+                    <controls:CustomStartScreen IsOpen="True">
                         <fluent:StartScreenTabControl>
                             <fluent:StartScreenTabControl.LeftContent>
                                 <StackPanel Orientation="Vertical">
@@ -218,7 +217,7 @@
                                 <StackPanel Orientation="Vertical" />
                             </fluent:StartScreenTabControl.RightContent>
                         </fluent:StartScreenTabControl>
-                    </controls:StartScreen2>
+                    </controls:CustomStartScreen>
                 </fluent:Ribbon.StartScreen>
                 <fluent:Ribbon.Menu>
                     <fluent:Backstage>
@@ -255,4 +254,4 @@
                             Grid.Column="5" />
         </Grid>
     </Grid>
-</core:ExtendedRibbonWindow>
+</controls:CustomRibbonWindow>

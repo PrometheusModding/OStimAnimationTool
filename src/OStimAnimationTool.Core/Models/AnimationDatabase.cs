@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using Prism.Mvvm;
 
 namespace OStimAnimationTool.Core.Models
@@ -22,7 +21,7 @@ namespace OStimAnimationTool.Core.Models
             get => _name;
             set => SetProperty(ref _name, value);
         }
-        
+
         public ObservableCollection<Module> Modules
         {
             get => _modules;
@@ -34,7 +33,7 @@ namespace OStimAnimationTool.Core.Models
             get => _misc;
             set => SetProperty(ref _misc, value);
         }
-        
+
         public string SafePath { get; set; } = string.Empty;
     }
 }

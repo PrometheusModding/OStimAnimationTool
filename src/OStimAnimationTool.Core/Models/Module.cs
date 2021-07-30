@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Prism.Mvvm;
 
 namespace OStimAnimationTool.Core.Models
@@ -35,7 +33,7 @@ namespace OStimAnimationTool.Core.Models
             get => _animationSets;
             set => SetProperty(ref _animationSets, value);
         }
-        
+
         public List<string> Creatures { get; init; } = new();
 
         public bool Equals(Module? other)

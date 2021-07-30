@@ -1,19 +1,13 @@
-#region
-
 using System.Windows;
-using System.Windows.Controls;
 using Fluent;
 using NodeNetwork;
 using OStimAnimationTool.Core.Behaviors;
-using OStimAnimationTool.Core.Commands;
 using OStimAnimationTool.Core.Prism;
 using OStimAnimationTool.Core.Regions;
 using OStimConversionTool.Views;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
-
-#endregion
 
 namespace OStimConversionTool
 {
@@ -28,13 +22,11 @@ namespace OStimConversionTool
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterSingleton<IRegionNavigationContentLoader, ScopedRegionNavigationContentLoader>();
-            containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
         }
 
         protected override void ConfigureRegionAdapterMappings(RegionAdapterMappings regionAdapterMappings)
         {
             base.ConfigureRegionAdapterMappings(regionAdapterMappings);
-            regionAdapterMappings.RegisterMapping<DockPanel>(Container.Resolve<DockPanelRegionAdapter>());
             regionAdapterMappings.RegisterMapping<Ribbon>(Container.Resolve<FluentRibbonRegionAdapter>());
         }
 

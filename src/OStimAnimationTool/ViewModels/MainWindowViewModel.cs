@@ -284,6 +284,9 @@ namespace OStimConversionTool.ViewModels
 
             try
             {
+                AnimationDatabase.Instance.Modules.Clear();
+                AnimationDatabase.Instance.Misc.Clear();
+
                 var databaseFile = fileDialog.FileName;
 
                 // Load Database Xml
@@ -313,6 +316,7 @@ namespace OStimConversionTool.ViewModels
                         if (animationSet is not HubAnimationSet hubAnimationSet)
                             throw new BadXmlException($"{databaseFile}: Invalid Animationset");
 
+                        animationSet.Module = module;
                         animationSet.Animator = hubAnimationSetElement.Attribute("Animator")?.Value ??
                                                 string.Empty;
                         animationSet.Description = hubAnimationSetElement.Attribute("Description")?.Value ??
@@ -342,9 +346,10 @@ namespace OStimConversionTool.ViewModels
                         if (sceneId is null) throw new BadXmlException($"{databaseFile}: Invalid SceneID");
 
                         var animationSet = SetFinder(sceneId.Split('|'));
-                        if (animationSet is not HubAnimationSet hubAnimationSet)
+                        if (animationSet is not TransitionAnimationSet transitionAnimationSet)
                             throw new BadXmlException($"{databaseFile}: Invalid Animationset");
 
+                        animationSet.Module = module;
                         animationSet.Animator = transitionAnimationSetElement.Attribute("Animator")?.Value ??
                                                 string.Empty;
                         animationSet.Description = transitionAnimationSetElement.Attribute("Description")?.Value ??
@@ -352,9 +357,12 @@ namespace OStimConversionTool.ViewModels
 
                         var destinationSceneId = transitionAnimationSetElement.Attribute("Destination")?.Value;
                         if (destinationSceneId is null)
-                            throw new BadXmlException($"{databaseFile}: Invalid Animationset");
-                        var destination = SetFinder(destinationSceneId.Split('|'));
+                            throw new BadXmlException($"{databaseFile}: Invalid SceneID");
 
+                        var destination = SetFinder(destinationSceneId.Split('|'));
+                        if (destination is null) throw new BadXmlException($"{databaseFile}: Invalid Animationset");
+
+                        transitionAnimationSet.Destination = destination;
 
                         foreach (var animationElement in transitionAnimationSetElement.Elements("Animation"))
                         {
@@ -366,7 +374,6 @@ namespace OStimConversionTool.ViewModels
             }
             catch (BadXmlException)
             {
-                
             }
 
             _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");

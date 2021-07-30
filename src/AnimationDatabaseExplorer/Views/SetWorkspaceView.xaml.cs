@@ -1,4 +1,4 @@
-﻿using OStimAnimationTool.Core;
+﻿using OStimAnimationTool.Core.Attributes;
 using OStimAnimationTool.Core.Interfaces;
 
 namespace AnimationDatabaseExplorer.Views

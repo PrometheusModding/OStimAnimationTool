@@ -1,10 +1,6 @@
-﻿#region
-
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using Fluent;
 using Prism.Regions;
-
-#endregion
 
 namespace OStimAnimationTool.Core.Regions
 {
@@ -40,13 +36,13 @@ namespace OStimAnimationTool.Core.Regions
             };
         }
 
-        private void RemoveViewFromRegion(object view, Ribbon regionTarget)
+        private static void RemoveViewFromRegion(object view, Ribbon regionTarget)
         {
             if (view is RibbonTabItem ribbonTabItem)
                 regionTarget.Tabs.Add(ribbonTabItem);
         }
 
-        private void AddViewToRegion(object view, Ribbon regionTarget)
+        private static void AddViewToRegion(object view, Ribbon regionTarget)
         {
             if (view is RibbonTabItem ribbonTabItem)
                 regionTarget.Tabs.Add(ribbonTabItem);

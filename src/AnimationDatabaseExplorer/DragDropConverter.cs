@@ -19,7 +19,7 @@ namespace AnimationDatabaseExplorer
                     case ItemCollection items:
                         if (items[0] is TreeViewItem treeViewItem)
                             elements.AddRange(from object? item in treeViewItem.Items
-                                select (UIElement) treeViewItem.ItemContainerGenerator.ContainerFromItem(item));
+                                select (UIElement)treeViewItem.ItemContainerGenerator.ContainerFromItem(item));
 
                         break;
                     case UIElement uiElement:

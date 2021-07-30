@@ -111,7 +111,7 @@ namespace OStimAnimationTool.Core.Models
 
         public bool Equals(AnimationSet? other)
         {
-            return SetName.Equals(other?.SceneId);
+            return SceneId.Equals(other?.SceneId);
         }
 
         // Method to raise PropertyChanged Notifications for SceneId from within Module
