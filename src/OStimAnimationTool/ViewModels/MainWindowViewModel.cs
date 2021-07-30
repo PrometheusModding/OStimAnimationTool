@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
@@ -15,6 +18,7 @@ using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
 using Prism.Services.Dialogs;
+using DialogResult = System.Windows.Forms.DialogResult;
 
 namespace OStimConversionTool.ViewModels
 {
@@ -30,7 +34,6 @@ namespace OStimConversionTool.ViewModels
         private readonly IDialogService _dialogService;
         private readonly IEventAggregator _eventAggregator;
         private readonly IRegionManager _regionManager;
-        private string _oSexDirectory = string.Empty;
 
         public MainWindowViewModel(IDialogService dialogService, IRegionManager regionManager,
             IEventAggregator eventAggregator)
@@ -59,26 +62,32 @@ namespace OStimConversionTool.ViewModels
                            .PositionKey)));
         }*/
 
+        // Method for initializing New Database
         private void NewAnimationDatabase()
         {
             _dialogService.ShowDialog("NewAnimationDatabaseDialog", result =>
             {
                 if (result.Result != ButtonResult.OK) return;
+                
+                // Clearing Database
+                AnimationDatabase.Instance.Modules.Clear();
+                AnimationDatabase.Instance.Misc.Clear();
+                AnimationDatabase.Instance.SafePath = string.Empty;
+                
                 if (!string.IsNullOrEmpty(result.Parameters.GetValue<string>("name")))
                 {
                     AnimationDatabase.Instance.Name = result.Parameters.GetValue<string>("name");
                 }
 
+                // Loading default OSex Animations
                 FolderBrowserDialog folderBrowserDialog = new();
                 {
                     folderBrowserDialog.UseDescriptionForTitle = true;
                     folderBrowserDialog.Description =
-                        @"Choose the following Path in your OSex Animation: Data\meshes\0SA\mod\0Sex\scene";
+                        @"Please select your OSex scene Folder";
                     folderBrowserDialog.ShowDialog();
-
-                    // Loading of the default OSex Animations
+                    
                     var oSexXmlDirectory = folderBrowserDialog.SelectedPath;
-                    _oSexDirectory = oSexXmlDirectory.Replace("scene", "anim");
                     LoadOSexAnimations(oSexXmlDirectory);
                 }
 
@@ -98,8 +107,9 @@ namespace OStimConversionTool.ViewModels
         }
 
         // Method for loading OSex Animations into a new Database
-        private void LoadOSexAnimations(string sceneDir)
+        private static void LoadOSexAnimations(string sceneDir)
         {
+            var oSexDirectory = sceneDir.Replace("scene", "anim");
             // Creating the Modules depending on the Folders inside your OSex Scene Directory
             foreach (var moduleDir in Directory.GetDirectories(sceneDir))
             {
@@ -195,12 +205,12 @@ namespace OStimConversionTool.ViewModels
                                         for (var i = 0; i < int.Parse(actors); i++)
                                         {
                                             var oldPath = sceneIdArray[0].Equals("EMF")
-                                                ? Path.Combine(_oSexDirectory, sceneIdArray[0],
+                                                ? Path.Combine(oSexDirectory, sceneIdArray[0],
                                                     sceneIdArray[1].Replace("!", ""),
                                                     sceneIdArray[2], transitionAnimationSet.ParentSet,
                                                     transitionAnimationSet.Emf,
                                                     animationId + $"_{i}.hkx")
-                                                : Path.Combine(_oSexDirectory, sceneIdArray[0],
+                                                : Path.Combine(oSexDirectory, sceneIdArray[0],
                                                     sceneIdArray[1].Replace("!", ""),
                                                     sceneIdArray[2], transitionAnimationSet.ParentSet,
                                                     animationId + $"_{i}.hkx");
@@ -255,7 +265,7 @@ namespace OStimConversionTool.ViewModels
                                         {
                                             for (var i = 0; i < int.Parse(actors); i++)
                                             {
-                                                var oldPath = Path.Combine(_oSexDirectory, sceneIdArray[0],
+                                                var oldPath = Path.Combine(oSexDirectory, sceneIdArray[0],
                                                     sceneIdArray[1].Replace("!", ""), sceneIdArray[2], sceneIdArray[3],
                                                     anim + $"_{i}.hkx");
                                                 
@@ -292,20 +302,64 @@ namespace OStimConversionTool.ViewModels
 
         private void LoadDatabase()
         {
-            /*
-                        var fileDialog = new OpenFileDialog
-                        {
-                            Filter = "Animation Database file (*.xml)|*xml",
-                            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                        };
+            var fileDialog = new OpenFileDialog
+            {
+                Filter = "Animation Database file (*.json)|*json",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
             
-                        if (fileDialog.ShowDialog() != true) return;
+            if(fileDialog.ShowDialog() != DialogResult.OK) return;
             
-                        AnimationDatabase.Instance.SafePath = Path.GetDirectoryName(fileDialog.FileName)!;
-                        XElement doc = XElement.Load(fileDialog.FileName);
-                        AnimationDatabase.Instance.Name = doc.Attribute("Name")?.Value ?? string.Empty;
-                        var elements = doc.Elements("Hub").ToList();
-                        elements.AddRange(doc.Elements("Transition"));
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                Converters =
+                {
+                    new AnimationSetConverter()
+                }
+            };
+            AnimationDatabase animationDatabase = JsonSerializer.Deserialize<AnimationDatabase>(File.ReadAllText(fileDialog.FileName), options) ?? throw new InvalidOperationException();
+
+            AnimationDatabase.Instance.Name = animationDatabase.Name;
+            AnimationDatabase.Instance.Modules = animationDatabase.Modules;
+            AnimationDatabase.Instance.Misc = animationDatabase.Misc;
+            
+            _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");
+            _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish();
+            
+            AnimationDatabase.Instance.SafePath = Path.GetDirectoryName(fileDialog.FileName) ?? throw new InvalidOperationException();
+            XElement doc = XElement.Load(fileDialog.FileName);
+            AnimationDatabase.Instance.Name = doc.Attribute("Name")?.Value;
+            foreach (var module in doc.Elements("Module"))
+            {
+                foreach (var hubAnimationSetElement in module.Elements("Hub"))
+                {
+                    var sceneId = hubAnimationSetElement.Attribute("SceneID").Value;
+                    var animationSet = SetFinder(sceneId.Split('|'));
+                    if (animationSet is not HubAnimationSet hubAnimationSet) throw new Exception();
+                    animationSet.Animator = hubAnimationSetElement.Attribute("Animator").Value;
+                    animationSet.Description = hubAnimationSetElement.Attribute("Description").Value;
+
+                    foreach (var destination in hubAnimationSetElement.Elements("Destination"))
+                    {
+                        var destinationSceneId = destination.Value;
+                        var destinationSet = SetFinder(destinationSceneId.Split('|'));
+                        hubAnimationSet.Destinations.Add(destination);
+                    }
+
+                    foreach (var animationElement in hubAnimationSetElement.Elements("Animation"))
+                    {
+                        var animation = new Animation();
+                        animation.AnimationName = 
+                    }
+                }
+                foreach (var transitionAnimationSet in module.Elements("Transition"))
+                {
+                    
+                }
+            }
+            
+            elements.AddRange(doc.Elements("Transition"));
                         foreach (var set in elements)
                         {
                             var animationSet = SetFinder(set.Attribute("SceneID")?.Value ?? string.Empty);
@@ -336,17 +390,18 @@ namespace OStimConversionTool.ViewModels
             
                             animationSet.ChangedThisSession = false;
                         }
-            
+
                         foreach (var module in AnimationDatabase.Instance.Modules)
                         {
                             module.AnimationSets.ToObservableChangeSet().AutoRefresh(x => x.SceneId)
                                 .Subscribe(_ => SaveDatabaseCommand.RaiseCanExecuteChanged());
-            
+
                             _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");
                             _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish();
-                        }*/
+                        }
         }
 
+        // Method for Saving Database
         private static void SaveDatabase()
         {
             if (string.IsNullOrEmpty(AnimationDatabase.Instance.SafePath))
@@ -361,7 +416,7 @@ namespace OStimConversionTool.ViewModels
             DatabaseScriber databaseScriber = new();
             databaseScriber.XmlScriber();
             databaseScriber.FnisScriber();
-            databaseScriber.DatabaseFileScriber();
+            // databaseScriber.DatabaseFileScriber();
         }
 
         private static AnimationSet? SetFinder(IReadOnlyList<string> sceneId)
@@ -393,17 +448,6 @@ namespace OStimConversionTool.ViewModels
             }
 
             return null;
-        }
-        
-        private static Module ModuleFinder(string name)
-        {
-            foreach (var module in AnimationDatabase.Instance.Modules)
-                if (module.Name == name)
-                    return module;
-
-            var newModule = new Module(name);
-            AnimationDatabase.Instance.Modules.Add(newModule);
-            return newModule;
         }
     }
 }

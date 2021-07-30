@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Windows.Forms;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Xml;
 using OStimAnimationTool.Core.Models;
 using static System.String;
@@ -11,6 +12,11 @@ namespace OStimAnimationTool.Core
     // Class responsible for Saving Database related Files
     public class DatabaseScriber
     {
+        public static readonly JsonSerializerOptions Options = new()
+        {
+            ReferenceHandler = ReferenceHandler.Preserve
+        };
+
         // Getting Initial Values from the Animation Database Instance
         private readonly AnimationDatabase _animationDatabase = AnimationDatabase.Instance;
         private readonly string _safePath = AnimationDatabase.Instance.SafePath;
@@ -19,63 +25,87 @@ namespace OStimAnimationTool.Core
         public DatabaseScriber()
         {
             foreach (var module in _animationDatabase.Modules)
-            foreach (var animationSet in module.AnimationSets)
             {
-                if (animationSet.Is0SexAnimation || !animationSet.ChangedThisSession) continue;
-                // Base Path for all Animation Sets
-                string setDir = Path.Combine(_animationDatabase.SafePath, @"meshes\0SA\mod\0Sex\anim\",
-                    animationSet.Module.Name, animationSet.PositionKey.Replace("!", ""),
-                    animationSet.AnimationClass);
-
-                // Specifying Path depending on type of Animation Set
-                setDir = animationSet is TransitionAnimationSet transitionAnimationSet
-                    ? Path.Combine(setDir, transitionAnimationSet.ParentSet)
-                    : Path.Combine(setDir, animationSet.SetName);
-
-                // Adding Set Folder if missing
-                if (!Directory.Exists(setDir))
-                    Directory.CreateDirectory(setDir);
-
-                foreach (var animation in animationSet.Animations)
+                foreach (var animationSet in module.AnimationSets)
                 {
-                    var newPath = Path.Combine(setDir, animation.AnimationName + ".hkx");
-                    if (!File.Exists(newPath))
-                        File.Copy(animation.OldPath, Path.Combine(setDir, animation.AnimationName + ".hkx"));
-                    animation.OldPath = newPath; // Updating Animation Location
-                }
+                    if (animationSet.Is0SexAnimation || !animationSet.ChangedThisSession) continue;
 
-                foreach (var misc in _animationDatabase.Misc)
-                {
-                    var newPath = Path.Combine(_animationDatabase.SafePath, Path.GetFileName(misc));
-                    if(Directory.Exists(misc))
-                        DirectoryCopy(misc, newPath);
-                    else if(File.Exists(misc))
+                    // Base Path for all Animation Sets
+                    string setDir = Path.Combine(_animationDatabase.SafePath, @"meshes\0SA\mod\0Sex\anim\",
+                        animationSet.Module.Name, animationSet.PositionKey.Replace("!", ""),
+                        animationSet.AnimationClass);
+
+                    // Specifying Path depending on type of Animation Set
+                    setDir = animationSet is TransitionAnimationSet transitionAnimationSet
+                        ? Path.Combine(setDir, transitionAnimationSet.ParentSet)
+                        : Path.Combine(setDir, animationSet.SetName);
+
+                    // Adding Set Folder if missing
+                    if (!Directory.Exists(setDir))
                     {
-                        File.Copy(misc,newPath);
+                        Directory.CreateDirectory(setDir);
+                    }
+
+                    // Copying of .hkx files
+                    foreach (var animation in animationSet.Animations)
+                    {
+                        var newPath = Path.Combine(setDir, animation.AnimationName + ".hkx");
+
+                        if (!File.Exists(newPath))
+                        {
+                            File.Copy(animation.OldPath, newPath);
+                        }
+
+                        animation.OldPath = newPath; // Updating Animation Location
+                    }
+
+                    // Copying of Miscellaneous files e.g. .esp, .nif, etc.
+                    foreach (var misc in _animationDatabase.Misc)
+                    {
+                        var newPath = Path.GetFileName(misc).ToLowerInvariant().Equals("animobjects")
+                            ? Path.Combine(_animationDatabase.SafePath, "meshes", Path.GetFileName(misc))
+                            : Path.Combine(_animationDatabase.SafePath, Path.GetFileName(misc));
+
+                        if (Directory.Exists(misc))
+                        {
+                            DirectoryCopy(misc, newPath);
+                        }
+                        else if (File.Exists(misc))
+                        {
+                            File.Copy(misc, newPath, false);
+                        }
                     }
                 }
             }
+
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = Options.ReferenceHandler,
+                Converters = {new AnimationSetConverter()}
+            };
+
+            var databaseJson = JsonSerializer.Serialize(_animationDatabase, options);
+            File.WriteAllText(Path.Combine(_safePath, $"{_animationDatabase.Name}.json"), databaseJson);
         }
-        
+
         private static void DirectoryCopy(string sourceDirName, string destDirName)
         {
             DirectoryInfo dir = new(sourceDirName);
+            if (!Directory.Exists(destDirName))
+            {
+                Directory.CreateDirectory(destDirName);
+            }
 
-            DirectoryInfo[] dirs = dir.GetDirectories();
-           
-            Directory.CreateDirectory(destDirName);        
-            
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files)
+            foreach (FileInfo file in dir.GetFiles())
             {
                 string tempPath = Path.Combine(destDirName, file.Name);
                 file.CopyTo(tempPath, false);
             }
-            
-            foreach (DirectoryInfo subdir in dirs)
+
+            foreach (DirectoryInfo subdir in dir.GetDirectories())
             {
-                    string tempPath = Path.Combine(destDirName, subdir.Name);
-                    DirectoryCopy(subdir.FullName, tempPath);
+                string tempPath = Path.Combine(destDirName, subdir.Name);
+                DirectoryCopy(subdir.FullName, tempPath);
             }
         }
 
@@ -286,6 +316,7 @@ namespace OStimAnimationTool.Core
             }
         }
 
+        // Method responsible for creating FNIS files
         public void FnisScriber()
         {
             foreach (var module in AnimationDatabase.Instance.Modules)
@@ -296,21 +327,28 @@ namespace OStimAnimationTool.Core
 
                 if (!Directory.Exists(fnisDir))
                     Directory.CreateDirectory(fnisDir);
-                if (module.Creatures != null)
-                    foreach (var creature in module.Creatures)
-                        File.WriteAllText(Path.Combine(fnisDir, $"FNIS_0Sex_{moduleKey}_A{creature}_List.txt"), Empty);
+
+                // Support for different Creatures
+                foreach (var creature in module.Creatures)
+                {
+                    File.WriteAllText(Path.Combine(fnisDir, $"FNIS_0Sex_{moduleKey}_A{creature}_List.txt"), Empty);
+                }
 
                 foreach (var animationSet in module.AnimationSets)
-                foreach (var animation in animationSet.Animations)
                 {
-                    var animationName = animation.AnimationName;
-                    var setFolder = animationSet is TransitionAnimationSet transitionAnimationSet
-                        ? transitionAnimationSet.ParentSet
-                        : animationSet.SetName;
-                    var contents =
-                        @$"b -Tn{animation.FnisArgs[0]} {animationName} ..\..\..\..\{Path.Combine(@"0SA\mod\0Sex\anim\", moduleKey, animationSet.PositionKey.Replace("!", ""), animationSet.AnimationClass, setFolder, animationName + ".hkx")} {animation.FnisArgs[1]} {Environment.NewLine}";
-                    File.AppendAllText(Path.Combine(fnisDir, $"FNIS_0Sex_{moduleKey}_A{animation.Creature}_List.txt"),
-                        contents);
+                    if (animationSet.Is0SexAnimation) continue;
+                    foreach (var animation in animationSet.Animations)
+                    {
+                        var animationName = animation.AnimationName;
+                        var setFolder = animationSet is TransitionAnimationSet transitionAnimationSet
+                            ? transitionAnimationSet.ParentSet
+                            : animationSet.SetName;
+                        var contents =
+                            @$"b -Tn{animation.FnisArgs[0]} {animationName} ..\..\..\..\{Path.Combine(@"0SA\mod\0Sex\anim\", moduleKey, animationSet.PositionKey.Replace("!", ""), animationSet.AnimationClass, setFolder, animationName + ".hkx")} {animation.FnisArgs[1]} {Environment.NewLine}";
+
+                        File.AppendAllText(
+                            Path.Combine(fnisDir, $"FNIS_0Sex_{moduleKey}_A{animation.Creature}_List.txt"), contents);
+                    }
                 }
             }
         }
@@ -333,21 +371,20 @@ namespace OStimAnimationTool.Core
             {
                 writer.WriteStartElement("Module");
                 writer.WriteAttributeString("Name", module.Name);
-                if (module.Creatures != null)
-                    foreach (var creature in module.Creatures)
-                    {
-                        writer.WriteAttributeString("Creature", creature);
-                    }
 
                 foreach (var animationSet in module.AnimationSets)
                     switch (animationSet)
                     {
                         case HubAnimationSet hubAnimationSet:
-                        {
                             writer.WriteStartElement("Hub");
                             writer.WriteAttributeString("SceneID", animationSet.SceneId);
                             writer.WriteAttributeString("Animator", animationSet.Animator);
                             writer.WriteAttributeString("Description", animationSet.Description);
+
+                            foreach (var destination in hubAnimationSet.Destinations)
+                            {
+                                writer.WriteElementString("Destination", destination.SceneId);
+                            }
 
                             foreach (var animation in animationSet.Animations)
                             {
@@ -358,22 +395,15 @@ namespace OStimAnimationTool.Core
                                 writer.WriteEndElement();
                             }
 
-                            foreach (var destination in hubAnimationSet.Destinations)
-                            {
-                                writer.WriteStartElement("Destinations");
-                                writer.WriteAttributeString("Destination", destination.SceneId);
-                                writer.WriteEndElement();
-                            }
-
                             writer.WriteEndElement();
                             break;
-                        }
+
                         case TransitionAnimationSet transitionAnimationSet:
                             writer.WriteStartElement("Transition");
-                            writer.WriteAttributeString("Destination", transitionAnimationSet.Destination.SceneId);
                             writer.WriteAttributeString("SceneID", animationSet.SceneId);
                             writer.WriteAttributeString("Animator", animationSet.Animator);
                             writer.WriteAttributeString("Description", animationSet.Description);
+                            writer.WriteAttributeString("Destination", transitionAnimationSet.Destination.SceneId);
 
                             foreach (var animation in animationSet.Animations)
                             {

@@ -102,13 +102,14 @@ namespace AnimationDatabaseExplorer.ViewModels
                 };
 
                 if (!AnimationDatabase.Instance.Contains(animationSet))
-                    AnimationDatabase.Instance.Add(animationSet);
+                    //AnimationDatabase.Instance.Add(animationSet);
 
                 if (!animationSet.Animations.Contains(animation))
                     animationSet.Animations.Add(animation);
             }
         }
 
+        // Method responsible for processing entire SLPack
         private static void AddSlFolder()
         {
             string sLFolderPath;
@@ -118,95 +119,136 @@ namespace AnimationDatabaseExplorer.ViewModels
                 folderDialog.ShowDialog();
                 sLFolderPath = folderDialog.SelectedPath;
             }
-
-            Test(sLFolderPath);
+            
+            var module = new Module(Path.GetFileName(sLFolderPath)[..3]);
+            AnimationDatabase.Instance.Modules.Add(module);
+            
+            SearchSlFolder(sLFolderPath, module);
         }
 
-        private static void Test(string directory)
+        // Recursive search for relevant data within SLDirectory
+        private static void SearchSlFolder(string rootDirectory, Module module)
         {
-            var module = new Module(Path.GetFileName(directory)[..3]);
-            AnimationDatabase.Instance.Modules.Add(module);
-            foreach (var direc in Directory.GetDirectories(directory))
-                switch (Path.GetFileName(direc).ToLowerInvariant())
+            foreach (var directory in Directory.GetDirectories(rootDirectory))
+            {
+                // The "animobjects", "textures" and .esp are simply added to the Miscellaneous List of the Database.
+                // The "actors" is used to determine the AnimationSets which the Pack contains.
+                switch (Path.GetFileName(directory).ToLowerInvariant())
                 {
                     case "meshes":
                     {
-                        foreach (var dir in Directory.GetDirectories(direc))
+                        foreach (var dir in Directory.GetDirectories(directory))
+                        {
                             switch (Path.GetFileName(dir).ToLowerInvariant())
                             {
                                 case "actors":
                                     foreach (var d in Directory.GetDirectories(dir)) FnisFinder(d, module);
                                     break;
+                                
                                 case "animobjects":
-                                    AnimationDatabase.Instance.Misc.Add(direc);
+                                    AnimationDatabase.Instance.Misc.Add(dir);
                                     break;
                             }
+                        }
 
                         break;
                     }
+
                     case "textures":
-                        AnimationDatabase.Instance.Misc.Add(direc);
+                        AnimationDatabase.Instance.Misc.Add(directory);
+                        break;
+
+                    default:
+                        SearchSlFolder(directory, module);
                         break;
                 }
-
-            foreach (var file in Directory.GetFiles(directory))
-                if (Path.GetExtension(file) == ".esp")
-                    AnimationDatabase.Instance.Misc.Add(file);
-        }
-
-        private static void FnisFinder(string actorsDir, Module module)
-        {
-            var animationsDir = Path.Combine(actorsDir, "animations");
-            if (!Directory.Exists(animationsDir)) return;
-            foreach (var dir in Directory.GetDirectories(animationsDir))
-            foreach (var file in Directory.GetFiles(dir))
+            }
+            
+            foreach (var file in Directory.GetFiles(rootDirectory))
             {
-                var fileArgs = Path.GetFileName(file).Split('_');
-                if (fileArgs[0].ToLowerInvariant() != "fnis") continue;
-                var creature = Path.GetFileName(actorsDir).ToLowerInvariant() != "character"
-                    ? $"_{fileArgs[^2]}"
-                    : string.Empty;
-
-                if (module.Creatures != null && !module.Creatures.Contains(creature))
-                    module.Creatures.Add(creature);
-
-                foreach (var line in File.ReadAllLines(file))
+                if (Path.GetExtension(file) == ".esp")
                 {
-                    if (string.IsNullOrEmpty(line) || line[0] != 's' && line[0] != '+' && line[0] != 'b') continue;
-                    var fnisArgs = line.Split(' ');
-                    var setIndex = fnisArgs[1][0] == '-' ? 2 : 1;
-
-                    var animationSet = SetFinder(fnisArgs[setIndex][..^6], module);
-
-                    List<string> animationFnisArgs = new() {string.Empty};
-                    if (setIndex == 2)
-                    {
-                        animationFnisArgs.Replace(string.Empty, $",{fnisArgs[1][1..]}");
-                        animationFnisArgs.AddRange(fnisArgs[4..]);
-                    }
-                    else
-                    {
-                        animationFnisArgs.AddRange(fnisArgs[3..]);
-                    }
-
-                    var animation = new Animation(Path.Combine(dir, fnisArgs[setIndex + 1]), animationSet,
-                        (int) char.GetNumericValue(fnisArgs[setIndex + 1][^5]) - 1,
-                        (int) char.GetNumericValue(fnisArgs[setIndex + 1][^8]) == 1 ? 1 : 0,
-                        animationFnisArgs, creature);
-
-                    animationSet.Animations.Add(animation);
-
-                    if (!module.AnimationSets.Contains(animationSet)) module.AnimationSets.Add(animationSet);
+                    AnimationDatabase.Instance.Misc.Add(file);
                 }
             }
         }
 
+        // Method responsible for parsing FNIS Files
+        private static void FnisFinder(string actorsDir, Module module)
+        {
+            var animationsDir = Path.Combine(actorsDir, "animations");
+            
+            if (!Directory.Exists(animationsDir)) return;
+
+            foreach (var dir in Directory.GetDirectories(animationsDir))
+            {
+                foreach (var file in Directory.GetFiles(dir))
+                {
+                    // Looking for FNIS keyword in filename
+                    var fileArgs = Path.GetFileName(file).Split('_');
+                    if (fileArgs[0].ToLowerInvariant() != "fnis") continue;
+                    
+                    // If the FNIS File isn't located in the character directory also looks for the race named in FNIS filename.
+                    var creature = Path.GetFileName(actorsDir).ToLowerInvariant() != "character"
+                        ? $"_{fileArgs[^2]}"
+                        : string.Empty;
+
+                    if (!module.Creatures.Contains(creature))
+                    {
+                        module.Creatures.Add(creature);
+                    }
+
+                    foreach (var line in File.ReadAllLines(file))
+                    {
+                        // Only certain Animation types are supported
+                        if (string.IsNullOrEmpty(line) || line[0] != 's' && line[0] != '+' && line[0] != 'b') continue;
+                        
+                        // Splitting the Line into single arguments
+                        var fnisArgs = line.Split(' ');
+                        
+                        // Looking for options in Line
+                        var setIndex = fnisArgs[1][0] == '-' ? 2 : 1;
+                        
+                        // Creating new AnimationSet or using existing one
+                        var animationSet = SetFinder(fnisArgs[setIndex][..^6], module);
+
+                        List<string> animationFnisArgs = new() {string.Empty};
+                        
+                        if (setIndex == 2)
+                        {
+                            // If existent adds options to FnisArgs
+                            animationFnisArgs.Replace(string.Empty, $",{fnisArgs[1][1..]}");
+                            animationFnisArgs.AddRange(fnisArgs[4..]);
+                        }
+                        else
+                        {
+                            animationFnisArgs.AddRange(fnisArgs[3..]);
+                        }
+
+                        var animation = new Animation(Path.Combine(dir, fnisArgs[setIndex + 1]), animationSet,
+                            (int) char.GetNumericValue(fnisArgs[setIndex + 1][^5]) - 1,
+                            (int) char.GetNumericValue(fnisArgs[setIndex + 1][^8]) == 1 ? 1 : 0,
+                            animationFnisArgs, creature);
+
+                        animationSet.Animations.Add(animation);
+                    }
+                }
+            }
+        }
+
+        // Returns existing Set if already in Database else creates a new one.
         private static AnimationSet SetFinder(string setName, Module module)
         {
             foreach (var _ in AnimationDatabase.Instance.Modules)
-            foreach (var animSet in module.AnimationSets)
-                if (setName.Equals(animSet.SetName))
-                    return animSet;
+            {
+                foreach (var animSet in module.AnimationSets)
+                {
+                    if (setName.Equals(animSet.SetName))
+                    {
+                        return animSet;
+                    }
+                }
+            }
 
             HubAnimationSet animationSet = new(setName);
             module.AnimationSets.Add(animationSet);

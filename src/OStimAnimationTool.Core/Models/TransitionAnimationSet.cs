@@ -7,11 +7,15 @@ namespace OStimAnimationTool.Core.Models
     {
         private AnimationSet _destination = new(string.Empty);
 
+        public TransitionAnimationSet()
+        {
+        }
+        
         public TransitionAnimationSet(string setName) : base(setName)
         {
         }
         
-        public TransitionAnimationSet(Module module, string positionKey, string animationClass, string setName) : base(module, positionKey, animationClass, setName)
+        public TransitionAnimationSet(Module moduleName, string positionKey, string animationClass, string setName) : base(moduleName, positionKey, animationClass, setName)
         {
         }
 

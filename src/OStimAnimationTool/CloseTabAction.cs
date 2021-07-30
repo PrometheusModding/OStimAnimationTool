@@ -1,12 +1,8 @@
-#region
-
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Xaml.Behaviors;
 using Prism.Regions;
-
-#endregion
 
 namespace OStimConversionTool
 {
@@ -14,18 +10,15 @@ namespace OStimConversionTool
     {
         protected override void Invoke(object parameter)
         {
-            if (parameter is not RoutedEventArgs args)
-                return;
+            if (parameter is not RoutedEventArgs args) return;
 
-            var tabItem = FindParent<TabItem>(args.OriginalSource as DependencyObject);
-            if (tabItem is null)
-                return;
+            var tabItem = FindParent<TabItem>((DependencyObject) args.OriginalSource);
+            if (tabItem is null) return;
 
             var tabControl = FindParent<TabControl>(tabItem);
 
             var region = RegionManager.GetObservableRegion(tabControl).Value;
-            if (region is null)
-                return;
+            if (region is null) return;
 
             RemoveItemFromRegion(tabItem, region);
         }
@@ -33,29 +26,39 @@ namespace OStimConversionTool
         private static void RemoveItemFromRegion(object item, IRegion region)
         {
             var navigationContext = new NavigationContext(region.NavigationService, null);
-            if (CanRemove(item, navigationContext))
-            {
-                region.RegionManager.Regions.Remove("AnimationDetailRegion");
-                region.Remove(item);
-            }
+            
+            if (!CanRemove(item, navigationContext)) return;
+            
+            region.RegionManager.Regions.Remove("AnimationDetailRegion");
+            region.Remove(item);
         }
 
         private static bool CanRemove(object item, NavigationContext navigationContext)
         {
             var canRemove = true;
 
-            if (item is IConfirmNavigationRequest confirmRequestItem)
-                confirmRequestItem.ConfirmNavigationRequest(navigationContext, result => { canRemove = result; });
+            switch (item)
+            {
+                case IConfirmNavigationRequest confirmRequestItem:
+                    confirmRequestItem.ConfirmNavigationRequest(navigationContext, result => { canRemove = result; });
+                    break;
+                
+                case FrameworkElement frameworkElement when canRemove:
+                {
+                    if (frameworkElement.DataContext is IConfirmNavigationRequest confirmNavigationRequest)
+                    {
+                        confirmNavigationRequest.ConfirmNavigationRequest(navigationContext,
+                            result => { canRemove = result; });
+                    }
 
-            if (item is FrameworkElement frameworkElement && canRemove)
-                if (frameworkElement.DataContext is IConfirmNavigationRequest confirmNavigationRequest)
-                    confirmNavigationRequest.ConfirmNavigationRequest(navigationContext,
-                        result => { canRemove = result; });
+                    break;
+                }
+            }
 
             return canRemove;
         }
 
-        private static T? FindParent<T>(DependencyObject? child) where T : DependencyObject
+        private static T? FindParent<T>(DependencyObject child) where T : DependencyObject
         {
             var parentObject = VisualTreeHelper.GetParent(child);
 

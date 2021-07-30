@@ -6,6 +6,10 @@ namespace OStimAnimationTool.Core.Models
     {
         private ObservableCollection<AnimationSet> _destinations = new();
 
+        public HubAnimationSet()
+        {
+        }
+        
         public HubAnimationSet(string setName) : base(setName)
         {
         }

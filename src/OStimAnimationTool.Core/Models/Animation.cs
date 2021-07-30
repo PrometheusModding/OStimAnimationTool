@@ -1,28 +1,21 @@
-#region
-
 using System;
 using System.Collections.Generic;
 using Prism.Mvvm;
 
-#endregion
-
 namespace OStimAnimationTool.Core.Models
 {
-    public enum AnimationType
-    {
-        Human,
-        Creature,
-        AnimObject
-    }
-
     public class Animation : BindableBase, IEquatable<Animation>
     {
         private int _actor;
-        private AnimationSet _animationSet;
+        private AnimationSet _animationSet = new();
         private string _creature = string.Empty;
         private List<string> _fnisArgs = new();
-        private string _oldPath;
+        private string _oldPath = string.Empty;
         private int _speed;
+
+        public Animation()
+        {
+        }
 
         public Animation(string oldPath, AnimationSet animationSet)
         {

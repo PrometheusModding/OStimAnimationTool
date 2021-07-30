@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Prism.Mvvm;
 
 namespace OStimAnimationTool.Core.Models
@@ -12,12 +14,9 @@ namespace OStimAnimationTool.Core.Models
         private List<string> _misc = new();
         private ObservableCollection<Module> _modules = new();
         private string _name = "New Animation Database";
-
-        private AnimationDatabase()
-        {
-        }
-
+        
         public static AnimationDatabase Instance => Lazy.Value;
+
         public static bool IsValueCreated => Lazy.IsValueCreated;
 
         public ObservableCollection<Module> Modules
@@ -44,12 +43,23 @@ namespace OStimAnimationTool.Core.Models
         {
             return Modules.Any(module => module.AnimationSets.Contains(animationSet));
         }
-
-        public void Add(AnimationSet animationSet)
+    }
+    
+    public class DatabaseConverter : JsonConverter<AnimationDatabase>
+    {
+        public override AnimationDatabase Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            foreach (var module in Modules)
-                if (module.Name == "0MF")
-                    module.AnimationSets.Add(animationSet);
+            
+        }
+
+        public override void Write(Utf8JsonWriter writer, AnimationDatabase database, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            
+            writer.WriteString("Name", database.Name);
+            JsonSerializer.Serialize(writer, database.Modules);
+            
+            writer.WriteEndObject();
         }
     }
 }
