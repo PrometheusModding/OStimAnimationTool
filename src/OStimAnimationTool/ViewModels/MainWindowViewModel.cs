@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
@@ -68,16 +65,14 @@ namespace OStimConversionTool.ViewModels
             _dialogService.ShowDialog("NewAnimationDatabaseDialog", result =>
             {
                 if (result.Result != ButtonResult.OK) return;
-                
+
                 // Clearing Database
                 AnimationDatabase.Instance.Modules.Clear();
                 AnimationDatabase.Instance.Misc.Clear();
                 AnimationDatabase.Instance.SafePath = string.Empty;
-                
+
                 if (!string.IsNullOrEmpty(result.Parameters.GetValue<string>("name")))
-                {
                     AnimationDatabase.Instance.Name = result.Parameters.GetValue<string>("name");
-                }
 
                 // Loading default OSex Animations
                 FolderBrowserDialog folderBrowserDialog = new();
@@ -86,7 +81,7 @@ namespace OStimConversionTool.ViewModels
                     folderBrowserDialog.Description =
                         @"Please select your OSex scene Folder";
                     folderBrowserDialog.ShowDialog();
-                    
+
                     var oSexXmlDirectory = folderBrowserDialog.SelectedPath;
                     LoadOSexAnimations(oSexXmlDirectory);
                 }
@@ -95,10 +90,8 @@ namespace OStimConversionTool.ViewModels
                     _ =>
                     {
                         foreach (var module in AnimationDatabase.Instance.Modules)
-                        {
                             module.AnimationSets.ToObservableChangeSet().AutoRefresh(x => x.SceneId)
                                 .Subscribe(_ => SaveDatabaseCommand.RaiseCanExecuteChanged());
-                        }
                     });
 
                 _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");
@@ -119,286 +112,265 @@ namespace OStimConversionTool.ViewModels
             }
 
             foreach (var moduleDir in Directory.GetDirectories(sceneDir))
-            {
-                foreach (var positionDir in Directory.GetDirectories(moduleDir))
+            foreach (var positionDir in Directory.GetDirectories(moduleDir))
+            foreach (var classDir in Directory.GetDirectories(positionDir))
+            foreach (var file in Directory.GetFiles(classDir))
+                try
                 {
-                    foreach (var classDir in Directory.GetDirectories(positionDir))
+                    // Loading Xml Files
+                    XElement doc = XElement.Load(file);
+
+                    // Getting necessary information from the .xml
+                    var sceneId = doc.Attribute("id")?.Value;
+                    if (sceneId is null) throw new BadXmlException($"{file}: Bad Xml, Faulty SceneID");
+                    var actors = doc.Attribute("actors")?.Value;
+                    if (actors is null)
+                        throw new BadXmlException($"{file}: Bad Xml, Missing Actors Attribute");
+                    var animationId = doc.Element("anim")?.Attribute("id")?.Value;
+                    if (animationId is null)
+                        throw new BadXmlException($"{file}: Bad Xml, Missing AnimationID");
+
+                    // Getting optional information from the .xml
+                    var description = doc.Element("info")?
+                        .Attribute("name")?.Value;
+                    var animator = doc.Element("info")?
+                        .Attribute("animator")?.Value;
+
+                    var sceneIdArray = sceneId.Split('|');
+
+                    if (sceneIdArray.Length != 4)
+                        throw new BadXmlException($"{file}: Bad Xml, Faulty SceneID");
+
+                    // Checking if SceneID matches File Location
+                    if (sceneIdArray[0] != Path.GetFileName(moduleDir))
+                        throw new BadXmlException(
+                            $"{file}: Bad Xml, (Module) SceneID doesn't match file location");
+                    if (sceneIdArray[1].Replace("!", "") != Path.GetFileName(positionDir))
+                        throw new BadXmlException(
+                            $"{file}: Bad Xml, (PositionKey) SceneID doesn't match file location");
+                    if (sceneIdArray[2] != Path.GetFileName(classDir))
+                        throw new BadXmlException(
+                            $"{file}: Bad Xml, (AnimationClass) SceneID doesn't match file location");
+                    if (sceneIdArray[3] != Path.GetFileNameWithoutExtension(file))
+                        throw new BadXmlException(
+                            $"{file}: Bad Xml, (SetName) SceneID doesn't match file location");
+
+                    // Modifying AnimationSet with correct sceneID if already in the Database else creates a new AnimationSet
+                    var animationSet = SetFinder(sceneIdArray);
+                    if (animationSet is null) throw new BadXmlException($"{file}: BadXml");
+
+                    if (description != null) animationSet.Description = description;
+                    if (animator != null) animationSet.Animator = animator;
+                    animationSet.Is0SexAnimation = true;
+
+                    AnimationSet? destinationAnimationSet;
+                    switch (animationSet)
                     {
-                        foreach (var file in Directory.GetFiles(classDir))
+                        case TransitionAnimationSet transitionAnimationSet:
+                            var destinationId = doc.Element("anim")?.Attribute("dest")?.Value;
+                            if (destinationId is null)
+                                throw new BadXmlException(
+                                    $"{file}: BadXml, Transition is missing Destination");
+
+                            // Appending to SceneID if "^" Notation is used
+                            if (destinationId.StartsWith('^')) destinationId = sceneId + destinationId[1..];
+
+                            // Setting the Transition Destination
+                            var destinationIdArray = destinationId.Split('|');
+                            if (destinationIdArray.Length != 4)
+                                throw new BadXmlException(
+                                    $"{file}: BadXml, Destination has faulty SceneID");
+
+                            destinationAnimationSet = SetFinder(destinationIdArray);
+                            if (destinationAnimationSet is null)
+                                throw new BadXmlException(
+                                    $"{file}: BadXml, Destination has faulty SceneID");
+                            transitionAnimationSet.Destination = destinationAnimationSet;
+
+                            // Defining Animations Contained in AnimationSet
+                            for (var i = 0; i < int.Parse(actors); i++)
+                            {
+                                var oldPath = sceneIdArray[0].Equals("EMF")
+                                    ? Path.Combine(oSexDirectory, sceneIdArray[0],
+                                        sceneIdArray[1].Replace("!", ""),
+                                        sceneIdArray[2], transitionAnimationSet.ParentSet,
+                                        transitionAnimationSet.Emf,
+                                        animationId + $"_{i}.hkx")
+                                    : Path.Combine(oSexDirectory, sceneIdArray[0],
+                                        sceneIdArray[1].Replace("!", ""),
+                                        sceneIdArray[2], transitionAnimationSet.ParentSet,
+                                        animationId + $"_{i}.hkx");
+
+                                var animation = new Animation(oldPath, animationSet)
+                                {
+                                    Speed = 0,
+                                    Actor = i
+                                };
+
+                                if (File.Exists(animation.OldPath)) animationSet.Animations.Add(animation);
+                            }
+
+                            break;
+
+                        case HubAnimationSet hubAnimationSet:
                         {
-                            try
+                            // Destinations are different in the AutoStart-Xml
+                            var destinations = file == "AutoStartBasic"
+                                ? doc.Elements("togs").Elements("tog0").Elements("dest").Attributes("id")
+                                    .Select(d => d.Value).ToList()
+                                : doc.Elements("nav").Elements("tab").Elements("page").Elements("option")
+                                    .Attributes("go").Select(d => d.Value).ToList();
+
+                            // Adding destinations to the AnimationSets Destination List
+                            // Annotation: LINQ handles "^"-Notation
+                            foreach (var destIdArray in destinations.Select(s => s.StartsWith('^')
+                                ? sceneId + s[1..]
+                                : s).Select(destId => destId.Split('|')))
                             {
-                                // Loading Xml Files
-                                XElement doc = XElement.Load(file);
-
-                                // Getting necessary information from the .xml
-                                var sceneId = doc.Attribute("id")?.Value;
-                                if (sceneId is null) throw new BadXmlException($"{file}: Bad Xml, Faulty SceneID");
-                                var actors = doc.Attribute("actors")?.Value;
-                                if (actors is null)
-                                    throw new BadXmlException($"{file}: Bad Xml, Missing Actors Attribute");
-                                var animationId = doc.Element("anim")?.Attribute("id")?.Value;
-                                if (animationId is null)
-                                    throw new BadXmlException($"{file}: Bad Xml, Missing AnimationID");
-
-                                // Getting optional information from the .xml
-                                var description = doc.Element("info")?
-                                    .Attribute("name")?.Value;
-                                var animator = doc.Element("info")?
-                                    .Attribute("animator")?.Value;
-
-                                var sceneIdArray = sceneId.Split('|');
-
-                                if (sceneIdArray.Length != 4)
-                                    throw new BadXmlException($"{file}: Bad Xml, Faulty SceneID");
-
-                                // Checking if SceneID matches File Location
-                                if (sceneIdArray[0] != Path.GetFileName(moduleDir))
+                                if (destIdArray.Length != 4)
                                     throw new BadXmlException(
-                                        $"{file}: Bad Xml, (Module) SceneID doesn't match file location");
-                                if (sceneIdArray[1].Replace("!", "") != Path.GetFileName(positionDir))
-                                    throw new BadXmlException(
-                                        $"{file}: Bad Xml, (PositionKey) SceneID doesn't match file location");
-                                if (sceneIdArray[2] != Path.GetFileName(classDir))
-                                    throw new BadXmlException(
-                                        $"{file}: Bad Xml, (AnimationClass) SceneID doesn't match file location");
-                                if (sceneIdArray[3] != Path.GetFileNameWithoutExtension(file))
-                                    throw new BadXmlException(
-                                        $"{file}: Bad Xml, (SetName) SceneID doesn't match file location");
+                                        $"{file}: BadXml, Destination has faulty SceneID");
 
-                                // Modifying AnimationSet with correct sceneID if already in the Database else creates a new AnimationSet
-                                var animationSet = SetFinder(sceneIdArray);
-                                if (animationSet is null) throw new BadXmlException($"{file}: BadXml");
+                                destinationAnimationSet = SetFinder(destIdArray);
+                                if (destinationAnimationSet is null)
+                                    throw new BadXmlException(
+                                        $"{file}: BadXml, Destination has faulty SceneID");
+                                hubAnimationSet.Destinations.Add(destinationAnimationSet);
+                            }
 
-                                if (description != null) animationSet.Description = description;
-                                if (animator != null) animationSet.Animator = animator;
-                                animationSet.Is0SexAnimation = true;
+                            // Defining Animations Contained in AnimationSet
+                            var animations = doc.Element("speed") is null
+                                ? new List<string> { animationId }
+                                : doc.Elements("speed").Elements("sp").Elements("anim").Attributes("id")
+                                    .Select(animation => animation.Value);
 
-                                AnimationSet? destinationAnimationSet;
-                                switch (animationSet)
+                            foreach (var anim in animations)
+                                for (var i = 0; i < int.Parse(actors); i++)
                                 {
-                                    case TransitionAnimationSet transitionAnimationSet:
-                                        var destinationId = doc.Element("anim")?.Attribute("dest")?.Value;
-                                        if (destinationId is null)
-                                            throw new BadXmlException(
-                                                $"{file}: BadXml, Transition is missing Destination");
+                                    var oldPath = Path.Combine(oSexDirectory, sceneIdArray[0],
+                                        sceneIdArray[1].Replace("!", ""), sceneIdArray[2], sceneIdArray[3],
+                                        anim + $"_{i}.hkx");
 
-                                        // Appending to SceneID if "^" Notation is used
-                                        if (destinationId.StartsWith('^'))
-                                        {
-                                            destinationId = sceneId + destinationId[1..];
-                                        }
-
-                                        // Setting the Transition Destination
-                                        var destinationIdArray = destinationId.Split('|');
-                                        if (destinationIdArray.Length != 4)
-                                            throw new BadXmlException(
-                                                $"{file}: BadXml, Destination has faulty SceneID");
-
-                                        destinationAnimationSet = SetFinder(destinationIdArray);
-                                        if (destinationAnimationSet is null)
-                                            throw new BadXmlException(
-                                                $"{file}: BadXml, Destination has faulty SceneID");
-                                        transitionAnimationSet.Destination = destinationAnimationSet;
-
-                                        // Defining Animations Contained in AnimationSet
-                                        for (var i = 0; i < int.Parse(actors); i++)
-                                        {
-                                            var oldPath = sceneIdArray[0].Equals("EMF")
-                                                ? Path.Combine(oSexDirectory, sceneIdArray[0],
-                                                    sceneIdArray[1].Replace("!", ""),
-                                                    sceneIdArray[2], transitionAnimationSet.ParentSet,
-                                                    transitionAnimationSet.Emf,
-                                                    animationId + $"_{i}.hkx")
-                                                : Path.Combine(oSexDirectory, sceneIdArray[0],
-                                                    sceneIdArray[1].Replace("!", ""),
-                                                    sceneIdArray[2], transitionAnimationSet.ParentSet,
-                                                    animationId + $"_{i}.hkx");
-
-                                            var animation = new Animation(oldPath, animationSet)
-                                            {
-                                                Speed = 0,
-                                                Actor = i
-                                            };
-
-                                            if (File.Exists(animation.OldPath))
-                                            {
-                                                animationSet.Animations.Add(animation);
-                                            }
-                                        }
-
-                                        break;
-
-                                    case HubAnimationSet hubAnimationSet:
+                                    var animation = new Animation(oldPath, animationSet)
                                     {
-                                        // Destinations are different in the AutoStart-Xml
-                                        var destinations = file == "AutoStartBasic"
-                                            ? doc.Elements("togs").Elements("tog0").Elements("dest").Attributes("id")
-                                                .Select(d => d.Value).ToList()
-                                            : doc.Elements("nav").Elements("tab").Elements("page").Elements("option")
-                                                .Attributes("go").Select(d => d.Value).ToList();
+                                        Speed = (int)char.GetNumericValue(anim[^1]),
+                                        Actor = i
+                                    };
 
-                                        // Adding destinations to the AnimationSets Destination List
-                                        // Annotation: LINQ handles "^"-Notation
-                                        foreach (var destIdArray in destinations.Select(s => s.StartsWith('^')
-                                            ? sceneId + s[1..]
-                                            : s).Select(destId => destId.Split('|')))
-                                        {
-                                            if (destIdArray.Length != 4)
-                                                throw new BadXmlException(
-                                                    $"{file}: BadXml, Destination has faulty SceneID");
-
-                                            destinationAnimationSet = SetFinder(destIdArray);
-                                            if (destinationAnimationSet is null)
-                                                throw new BadXmlException(
-                                                    $"{file}: BadXml, Destination has faulty SceneID");
-                                            hubAnimationSet.Destinations.Add(destinationAnimationSet);
-                                        }
-
-                                        // Defining Animations Contained in AnimationSet
-                                        var animations = doc.Element("speed") is null
-                                            ? new List<string> {animationId}
-                                            : doc.Elements("speed").Elements("sp").Elements("anim").Attributes("id")
-                                                .Select(animation => animation.Value);
-
-                                        foreach (var anim in animations)
-                                        {
-                                            for (var i = 0; i < int.Parse(actors); i++)
-                                            {
-                                                var oldPath = Path.Combine(oSexDirectory, sceneIdArray[0],
-                                                    sceneIdArray[1].Replace("!", ""), sceneIdArray[2], sceneIdArray[3],
-                                                    anim + $"_{i}.hkx");
-                                                
-                                                var animation = new Animation(oldPath, animationSet)
-                                                {
-                                                    Speed = (int) char.GetNumericValue(anim[^1]),
-                                                    Actor = i
-                                                };
-
-                                                if (File.Exists(animation.OldPath))
-                                                {
-                                                    animationSet.Animations.Add(animation);
-                                                }
-                                            }
-                                        }
-
-                                        break;
-                                    }
+                                    if (File.Exists(animation.OldPath)) animationSet.Animations.Add(animation);
                                 }
-                            }
-                            catch (XmlException e)
-                            {
-                                Console.WriteLine(e);
-                                if (e is BadXmlException)
-                                {
-                                    MessageBox.Show(e.Message);
-                                }
-                            }
+
+                            break;
                         }
                     }
                 }
-            }
+                catch (XmlException e)
+                {
+                    Console.WriteLine(e);
+                    if (e is BadXmlException) MessageBox.Show(e.Message);
+                }
         }
 
+        // Method responsible for loading Database Files
         private void LoadDatabase()
         {
             var fileDialog = new OpenFileDialog
             {
-                Filter = "Animation Database file (*.json)|*json",
+                Filter = "Animation Database file (*.xml)|*xml",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             };
-            
-            if(fileDialog.ShowDialog() != DialogResult.OK) return;
-            
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                Converters =
-                {
-                    new AnimationSetConverter()
-                }
-            };
-            AnimationDatabase animationDatabase = JsonSerializer.Deserialize<AnimationDatabase>(File.ReadAllText(fileDialog.FileName), options) ?? throw new InvalidOperationException();
 
-            AnimationDatabase.Instance.Name = animationDatabase.Name;
-            AnimationDatabase.Instance.Modules = animationDatabase.Modules;
-            AnimationDatabase.Instance.Misc = animationDatabase.Misc;
-            
-            _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");
-            _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish();
-            
-            AnimationDatabase.Instance.SafePath = Path.GetDirectoryName(fileDialog.FileName) ?? throw new InvalidOperationException();
-            XElement doc = XElement.Load(fileDialog.FileName);
-            AnimationDatabase.Instance.Name = doc.Attribute("Name")?.Value;
-            foreach (var module in doc.Elements("Module"))
-            {
-                foreach (var hubAnimationSetElement in module.Elements("Hub"))
-                {
-                    var sceneId = hubAnimationSetElement.Attribute("SceneID").Value;
-                    var animationSet = SetFinder(sceneId.Split('|'));
-                    if (animationSet is not HubAnimationSet hubAnimationSet) throw new Exception();
-                    animationSet.Animator = hubAnimationSetElement.Attribute("Animator").Value;
-                    animationSet.Description = hubAnimationSetElement.Attribute("Description").Value;
+            if (fileDialog.ShowDialog() != DialogResult.OK) return;
 
-                    foreach (var destination in hubAnimationSetElement.Elements("Destination"))
+            try
+            {
+                var databaseFile = fileDialog.FileName;
+
+                // Load Database Xml
+                XElement doc = XElement.Load(databaseFile);
+
+                AnimationDatabase.Instance.Name = doc.Attribute("Name")?.Value ??
+                                                  throw new BadXmlException($"{databaseFile}: Invalid Name");
+                AnimationDatabase.Instance.SafePath = Path.GetDirectoryName(fileDialog.FileName) ??
+                                                      throw new BadXmlException($"{databaseFile}Invalid Safe Location");
+
+                // Parser for Database Xml
+                foreach (var moduleElement in doc.Elements("Module"))
+                {
+                    var moduleName = moduleElement.Attribute("Name")?.Value;
+                    if (moduleName is null) throw new BadXmlException($"{databaseFile}: Invalid Module Name");
+
+                    var module = new Module(moduleName);
+                    AnimationDatabase.Instance.Modules.Add(module);
+
+                    // Different parsing for Hub- and Transitionanimationsets
+                    foreach (var hubAnimationSetElement in moduleElement.Elements("Hub"))
                     {
-                        var destinationSceneId = destination.Value;
-                        var destinationSet = SetFinder(destinationSceneId.Split('|'));
-                        hubAnimationSet.Destinations.Add(destination);
+                        var sceneId = hubAnimationSetElement.Attribute("SceneID")?.Value;
+                        if (sceneId is null) throw new BadXmlException($"{databaseFile}: Invalid SceneID");
+
+                        var animationSet = SetFinder(sceneId.Split('|'));
+                        if (animationSet is not HubAnimationSet hubAnimationSet)
+                            throw new BadXmlException($"{databaseFile}: Invalid Animationset");
+
+                        animationSet.Animator = hubAnimationSetElement.Attribute("Animator")?.Value ??
+                                                string.Empty;
+                        animationSet.Description = hubAnimationSetElement.Attribute("Description")?.Value ??
+                                                   string.Empty;
+
+                        foreach (var destination in hubAnimationSetElement.Elements("Destination"))
+                        {
+                            var destinationSceneId = destination.Value;
+
+                            var destinationSet = SetFinder(destinationSceneId.Split('|'));
+                            if (destinationSet is null)
+                                throw new BadXmlException($"{databaseFile}: Invalid Animationset");
+
+                            hubAnimationSet.Destinations.Add(destinationSet);
+                        }
+
+                        foreach (var animationElement in hubAnimationSetElement.Elements("Animation"))
+                        {
+                            var animation = new Animation(animationSet, animationElement.Value);
+                            animationSet.Animations.Add(animation);
+                        }
                     }
 
-                    foreach (var animationElement in hubAnimationSetElement.Elements("Animation"))
+                    foreach (var transitionAnimationSetElement in moduleElement.Elements("Transition"))
                     {
-                        var animation = new Animation();
-                        animation.AnimationName = 
+                        var sceneId = transitionAnimationSetElement.Attribute("SceneID")?.Value;
+                        if (sceneId is null) throw new BadXmlException($"{databaseFile}: Invalid SceneID");
+
+                        var animationSet = SetFinder(sceneId.Split('|'));
+                        if (animationSet is not HubAnimationSet hubAnimationSet)
+                            throw new BadXmlException($"{databaseFile}: Invalid Animationset");
+
+                        animationSet.Animator = transitionAnimationSetElement.Attribute("Animator")?.Value ??
+                                                string.Empty;
+                        animationSet.Description = transitionAnimationSetElement.Attribute("Description")?.Value ??
+                                                   string.Empty;
+
+                        var destinationSceneId = transitionAnimationSetElement.Attribute("Destination")?.Value;
+                        if (destinationSceneId is null)
+                            throw new BadXmlException($"{databaseFile}: Invalid Animationset");
+                        var destination = SetFinder(destinationSceneId.Split('|'));
+
+
+                        foreach (var animationElement in transitionAnimationSetElement.Elements("Animation"))
+                        {
+                            var animation = new Animation(animationSet, animationElement.Value);
+                            animationSet.Animations.Add(animation);
+                        }
                     }
-                }
-                foreach (var transitionAnimationSet in module.Elements("Transition"))
-                {
-                    
                 }
             }
-            
-            elements.AddRange(doc.Elements("Transition"));
-                        foreach (var set in elements)
-                        {
-                            var animationSet = SetFinder(set.Attribute("SceneID")?.Value ?? string.Empty);
-                            animationSet.Animator = set.Attribute("Animator")?.Value ?? string.Empty;
-                            animationSet.Description = set.Attribute("Description")?.Value ?? string.Empty;
-                            animationSet.Is0SexAnimation = true;
-            
-                            foreach (var animation in set.Elements("Animation"))
-                                animationSet.Animations.Add(new Animation(animation.Attribute("OldPath")?.Value ?? string.Empty,
-                                    animationSet)
-                                {
-                                    Actor = Convert.ToInt32(animation.Attribute("Actor")?.Value),
-                                    Speed = Convert.ToInt32(animation.Attribute("Speed")?.Value)
-                                });
-            
-                            switch (animationSet)
-                            {
-                                case TransitionAnimationSet transitionAnimationSet:
-                                    transitionAnimationSet.Destination =
-                                        SetFinder(set.Attribute("Destination")?.Value ?? string.Empty);
-                                    break;
-                                case HubAnimationSet hubAnimationSet:
-                                    foreach (var destination in set.Elements("Destinations").Attributes("Destination")
-                                        .Select(destination => destination.Value))
-                                        hubAnimationSet.Destinations.Add(SetFinder(destination));
-                                    break;
-                            }
-            
-                            animationSet.ChangedThisSession = false;
-                        }
+            catch (BadXmlException)
+            {
+                
+            }
 
-                        foreach (var module in AnimationDatabase.Instance.Modules)
-                        {
-                            module.AnimationSets.ToObservableChangeSet().AutoRefresh(x => x.SceneId)
-                                .Subscribe(_ => SaveDatabaseCommand.RaiseCanExecuteChanged());
-
-                            _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");
-                            _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish();
-                        }
+            _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");
+            _eventAggregator.GetEvent<OpenDatabaseEvent>().Publish();
         }
 
         // Method for Saving Database
@@ -416,7 +388,7 @@ namespace OStimConversionTool.ViewModels
             DatabaseScriber databaseScriber = new();
             databaseScriber.XmlScriber();
             databaseScriber.FnisScriber();
-            // databaseScriber.DatabaseFileScriber();
+            databaseScriber.DatabaseFileScriber();
         }
 
         private static AnimationSet? SetFinder(IReadOnlyList<string> sceneId)

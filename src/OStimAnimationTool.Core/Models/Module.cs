@@ -21,8 +21,6 @@ namespace OStimAnimationTool.Core.Models
             _name = name;
         }
 
-        public List<string> Creatures { get; init; } = new();
-
         public string Name
         {
             get => _name;
@@ -37,28 +35,12 @@ namespace OStimAnimationTool.Core.Models
             get => _animationSets;
             set => SetProperty(ref _animationSets, value);
         }
+        
+        public List<string> Creatures { get; init; } = new();
 
         public bool Equals(Module? other)
         {
             return Name == other?.Name;
-        }
-    }
-
-    class ModuleConverter :JsonConverter<Module>
-    {
-        public override Module? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Write(Utf8JsonWriter writer, Module module, JsonSerializerOptions options)
-        {
-            writer.WriteStartObject();
-            
-            writer.WriteString("Name", module.Name);
-            JsonSerializer.Serialize(writer, module.AnimationSets);
-            
-            writer.WriteEndObject();
         }
     }
 }

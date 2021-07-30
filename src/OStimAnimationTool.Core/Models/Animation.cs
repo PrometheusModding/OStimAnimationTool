@@ -13,8 +13,20 @@ namespace OStimAnimationTool.Core.Models
         private string _oldPath = string.Empty;
         private int _speed;
 
-        public Animation()
+        public Animation(AnimationSet animationSet, string animationName)
         {
+            _animationSet = animationSet;
+            
+            switch (animationSet)
+            {
+                case HubAnimationSet:
+                    _speed = animationName[^3];
+                    _actor = animationName[^1];
+                    break;
+                case TransitionAnimationSet:
+                    _actor = animationName[^1];
+                    break;
+            }
         }
 
         public Animation(string oldPath, AnimationSet animationSet)

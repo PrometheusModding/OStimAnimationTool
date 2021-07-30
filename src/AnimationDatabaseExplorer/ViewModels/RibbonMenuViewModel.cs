@@ -76,7 +76,7 @@ namespace AnimationDatabaseExplorer.ViewModels
         }
 
         private static void AddSlAnimationSet()
-        {
+        {/*
             var fileDialog = new OpenFileDialog
             {
                 Multiselect = true,
@@ -106,7 +106,7 @@ namespace AnimationDatabaseExplorer.ViewModels
 
                 if (!animationSet.Animations.Contains(animation))
                     animationSet.Animations.Add(animation);
-            }
+            }*/
         }
 
         // Method responsible for processing entire SLPack
