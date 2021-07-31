@@ -376,6 +376,7 @@ namespace OStimAnimationTool.Core
                                 writer.WriteAttributeString("Name", animation.AnimationName);
                                 writer.WriteAttributeString("FnisArguments", Join( ",", animation.FnisArgs));
                                 writer.WriteAttributeString("Creature", animation.Creature);
+                                writer.WriteEndElement();
                             }
 
                             writer.WriteEndElement();
@@ -394,6 +395,7 @@ namespace OStimAnimationTool.Core
                                 writer.WriteAttributeString("Name", animation.AnimationName);
                                 writer.WriteAttributeString("FnisArguments", Join( ",", animation.FnisArgs));
                                 writer.WriteAttributeString("Creature", animation.Creature);
+                                writer.WriteEndElement();
                             }
 
                             writer.WriteEndElement();
