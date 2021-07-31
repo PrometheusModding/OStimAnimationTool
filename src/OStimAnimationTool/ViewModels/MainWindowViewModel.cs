@@ -185,6 +185,7 @@ namespace OStimConversionTool.ViewModels
                             if (destinationAnimationSet is null)
                                 throw new BadXmlException(
                                     $"{file}: BadXml, Destination has faulty SceneID");
+                            destinationAnimationSet.Is0SexAnimation = true;
                             transitionAnimationSet.Destination = destinationAnimationSet;
 
                             // Defining Animations Contained in AnimationSet
@@ -235,6 +236,7 @@ namespace OStimConversionTool.ViewModels
                                 if (destinationAnimationSet is null)
                                     throw new BadXmlException(
                                         $"{file}: BadXml, Destination has faulty SceneID");
+                                destinationAnimationSet.Is0SexAnimation = true;
                                 hubAnimationSet.Destinations.Add(destinationAnimationSet);
                             }
 
@@ -266,7 +268,6 @@ namespace OStimConversionTool.ViewModels
                 }
                 catch (XmlException e)
                 {
-                    Console.WriteLine(e);
                     if (e is BadXmlException) MessageBox.Show(e.Message);
                 }
         }
@@ -335,7 +336,16 @@ namespace OStimConversionTool.ViewModels
 
                         foreach (var animationElement in hubAnimationSetElement.Elements("Animation"))
                         {
-                            var animation = new Animation(animationSet, animationElement.Value);
+                            var name = animationElement.Attribute("Name")?.Value;
+                            if (name is null) throw new BadXmlException($"{databaseFile}: Invalid animation name");
+                            
+                            var fnisArgs = animationElement.Attribute("FnisArgument")?.Value.Split(',');
+                            if (fnisArgs is null) throw new BadXmlException($"{databaseFile}: Invalid FNIS arguments");
+                            
+                            var creature = animationElement.Attribute("Creature")?.Value;
+                            if (creature is null) throw new BadXmlException($"{databaseFile}: Invalid Creature");
+                            
+                            var animation = new Animation(animationSet, name, fnisArgs, creature);
                             animationSet.Animations.Add(animation);
                         }
                     }
@@ -366,14 +376,24 @@ namespace OStimConversionTool.ViewModels
 
                         foreach (var animationElement in transitionAnimationSetElement.Elements("Animation"))
                         {
-                            var animation = new Animation(animationSet, animationElement.Value);
+                            var name = animationElement.Attribute("Name")?.Value;
+                            if (name is null) throw new BadXmlException($"{databaseFile}: Invalid animation name");
+                            
+                            var fnisArgs = animationElement.Attribute("FnisArgument")?.Value.Split(',');
+                            if (fnisArgs is null) throw new BadXmlException($"{databaseFile}: Invalid FNIS arguments");
+                            
+                            var creature = animationElement.Attribute("Creature")?.Value;
+                            if (creature is null) throw new BadXmlException($"{databaseFile}: Invalid Creature");
+                            
+                            var animation = new Animation(animationSet, name, fnisArgs, creature);
                             animationSet.Animations.Add(animation);
                         }
                     }
                 }
             }
-            catch (BadXmlException)
+            catch (BadXmlException e)
             {
+                MessageBox.Show(e.Message);
             }
 
             _regionManager.RequestNavigate("TreeViewRegion", "DatabaseTreeView");
@@ -388,9 +408,12 @@ namespace OStimConversionTool.ViewModels
                 FolderBrowserDialog folderBrowserDialog = new();
                 {
                     folderBrowserDialog.ShowDialog();
-                    AnimationDatabase.Instance.SafePath = folderBrowserDialog.SelectedPath;
                 }
+                
+                if (!Directory.Exists(folderBrowserDialog.SelectedPath)) return;
+                AnimationDatabase.Instance.SafePath = folderBrowserDialog.SelectedPath;
             }
+            
 
             DatabaseScriber databaseScriber = new();
             databaseScriber.XmlScriber();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using DynamicData;
@@ -201,17 +202,22 @@ namespace AnimationDatabaseExplorer.ViewModels
                     // Creating new AnimationSet or using existing one
                     var animationSet = SetFinder(fnisArgs[setIndex][..^6], module);
 
-                    List<string> animationFnisArgs = new() { string.Empty };
+                    var animationFnisArgs = new string[2];
 
                     if (setIndex == 2)
                     {
                         // If existent adds options to FnisArgs
-                        animationFnisArgs.Replace(string.Empty, $",{fnisArgs[1][1..]}");
-                        animationFnisArgs.AddRange(fnisArgs[4..]);
+                        animationFnisArgs[0] = $",{fnisArgs[1][1..]}";
+                        animationFnisArgs[1] = string.Join(' ', fnisArgs[4..]) == string.Empty
+                            ? " "
+                            : string.Join(' ', fnisArgs[4..]);
                     }
                     else
                     {
-                        animationFnisArgs.AddRange(fnisArgs[3..]);
+                        animationFnisArgs[0] = " ";
+                        animationFnisArgs[1] = string.Join(' ', fnisArgs[3..]) == string.Empty
+                            ? " "
+                            : string.Join(' ', fnisArgs[3..]);
                     }
 
                     var animation = new Animation(Path.Combine(dir, fnisArgs[setIndex + 1]), animationSet,

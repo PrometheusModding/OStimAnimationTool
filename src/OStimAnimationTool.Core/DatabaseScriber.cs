@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -60,8 +61,13 @@ namespace OStimAnimationTool.Core
                         : Path.Combine(_animationDatabase.SafePath, Path.GetFileName(misc));
 
                     if (Directory.Exists(misc))
+                    {
                         DirectoryCopy(misc, newPath);
-                    else if (File.Exists(misc)) File.Copy(misc, newPath, false);
+                    }
+                    else if (File.Exists(misc))
+                    {
+                        File.Copy(misc, newPath, true);
+                    }
                 }
             }
         }
@@ -74,7 +80,7 @@ namespace OStimAnimationTool.Core
             foreach (FileInfo file in dir.GetFiles())
             {
                 string tempPath = Path.Combine(destDirName, file.Name);
-                file.CopyTo(tempPath, false);
+                file.CopyTo(tempPath, true);
             }
 
             foreach (DirectoryInfo subDir in dir.GetDirectories())
@@ -296,20 +302,27 @@ namespace OStimAnimationTool.Core
         {
             foreach (var module in AnimationDatabase.Instance.Modules)
             {
+                if (module.AnimationSets.All(set => set.Is0SexAnimation)) continue;
+                
                 var moduleKey = module.Name;
                 var fnisDir = Path.Combine(_safePath,
                     @$"meshes\actors\character\animations\0Sex_{moduleKey}_A");
 
                 if (!Directory.Exists(fnisDir))
+                {
                     Directory.CreateDirectory(fnisDir);
+                }
 
                 // Support for different Creatures
                 foreach (var creature in module.Creatures)
+                {
                     File.WriteAllText(Path.Combine(fnisDir, $"FNIS_0Sex_{moduleKey}_A{creature}_List.txt"), Empty);
+                }
 
                 foreach (var animationSet in module.AnimationSets)
                 {
                     if (animationSet.Is0SexAnimation) continue;
+                    
                     foreach (var animation in animationSet.Animations)
                     {
                         var animationName = animation.AnimationName;
@@ -358,7 +371,12 @@ namespace OStimAnimationTool.Core
                                 writer.WriteElementString("Destination", destination.SceneId);
 
                             foreach (var animation in animationSet.Animations)
-                                writer.WriteElementString("Animation", animation.AnimationName);
+                            {
+                                writer.WriteStartElement("Animation");
+                                writer.WriteAttributeString("Name", animation.AnimationName);
+                                writer.WriteAttributeString("FnisArguments", Join( ",", animation.FnisArgs));
+                                writer.WriteAttributeString("Creature", animation.Creature);
+                            }
 
                             writer.WriteEndElement();
                             break;
@@ -371,7 +389,12 @@ namespace OStimAnimationTool.Core
                             writer.WriteAttributeString("Destination", transitionAnimationSet.Destination.SceneId);
 
                             foreach (var animation in animationSet.Animations)
-                                writer.WriteElementString("Animation", animation.AnimationName);
+                            {
+                                writer.WriteStartElement("Animation");
+                                writer.WriteAttributeString("Name", animation.AnimationName);
+                                writer.WriteAttributeString("FnisArguments", Join( ",", animation.FnisArgs));
+                                writer.WriteAttributeString("Creature", animation.Creature);
+                            }
 
                             writer.WriteEndElement();
                             break;

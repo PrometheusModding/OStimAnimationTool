@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using log4net.Util;
 using Prism.Mvvm;
 
 namespace OStimAnimationTool.Core.Models
@@ -7,15 +8,22 @@ namespace OStimAnimationTool.Core.Models
     public class Animation : BindableBase, IEquatable<Animation>
     {
         private int _actor;
-        private AnimationSet _animationSet = new();
+        private AnimationSet _animationSet;
         private string _creature = string.Empty;
-        private List<string> _fnisArgs = new();
+        private string[] _fnisArgs = new string[2];
         private string _oldPath = string.Empty;
         private int _speed;
 
-        public Animation(AnimationSet animationSet, string animationName)
+        public Animation(AnimationSet animationSet, string animationName, string[] fnisArgs, string creature)
         {
             _animationSet = animationSet;
+            _fnisArgs = fnisArgs;
+            _creature = creature;
+
+            if (!_animationSet.Module.Creatures.Contains(_creature))
+            {
+                _animationSet.Module.Creatures.Add(_creature);
+            }
 
             switch (animationSet)
             {
@@ -35,7 +43,7 @@ namespace OStimAnimationTool.Core.Models
             _animationSet = animationSet;
         }
 
-        public Animation(string oldPath, AnimationSet animationSet, int speed, int actor, List<string> fnisArgs,
+        public Animation(string oldPath, AnimationSet animationSet, int speed, int actor, string[] fnisArgs,
             string creature)
         {
             _oldPath = oldPath;
@@ -85,7 +93,7 @@ namespace OStimAnimationTool.Core.Models
             set => SetProperty(ref _oldPath, value);
         }
 
-        public List<string> FnisArgs
+        public string[] FnisArgs
         {
             get => _fnisArgs;
             set => SetProperty(ref _fnisArgs, value);
