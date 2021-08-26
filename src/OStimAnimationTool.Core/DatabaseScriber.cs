@@ -226,65 +226,73 @@ namespace OStimAnimationTool.Core
 
                             writer.WriteStartElement("nav");
 
-                            writer.WriteStartElement("tab");
-                            writer.WriteAttributeString("actor", "0");
-                            writer.WriteAttributeString("icon", "sdom");
-                            writer.WriteAttributeString("text", "$name");
-
-                            writer.WriteStartElement("hue");
-                            writer.WriteAttributeString("n", "hu");
-                            writer.WriteAttributeString("cmd", "rg");
-                            writer.WriteAttributeString("a", "0");
-                            writer.WriteEndElement();
-
-                            writer.WriteStartElement("bnhue");
-                            writer.WriteAttributeString("cmd", "rn");
-                            writer.WriteAttributeString("a", "0");
-                            writer.WriteEndElement();
-
-                            writer.WriteStartElement("page");
-                            writer.WriteAttributeString("icon", "mtri");
-
-                            writer.WriteStartElement("hue");
-                            writer.WriteAttributeString("n", "hu");
-                            writer.WriteAttributeString("cmd", "rg");
-                            writer.WriteAttributeString("a", "0");
-                            writer.WriteEndElement();
-
-                            foreach (var destination in hubAnimationSet.Destinations)
+                            foreach (var tab in hubAnimationSet.NavTabs)
                             {
-                                writer.WriteStartElement("option");
-                                writer.WriteAttributeString("halo", "hgentle");
-                                writer.WriteAttributeString("icon", "");
-                                writer.WriteAttributeString("go", destination.SceneId);
-                                writer.WriteAttributeString("text", "test");
+                                writer.WriteStartElement("tab");
+                                writer.WriteAttributeString("actor", ((int)tab.Actor).ToString());
+                                writer.WriteAttributeString("icon", tab.Icon.ToString().ToLowerInvariant());
+                                writer.WriteAttributeString("text", "$name");
 
-                                writer.WriteStartElement("enhance");
-                                writer.WriteAttributeString("a", "1");
-                                writer.WriteEndElement();
-
-                                writer.WriteStartElement("hhue");
+                                writer.WriteStartElement("hue");
                                 writer.WriteAttributeString("n", "hu");
                                 writer.WriteAttributeString("cmd", "rg");
-                                writer.WriteAttributeString("a", "0");
+                                writer.WriteAttributeString("a", ((int)tab.TextColor).ToString());
                                 writer.WriteEndElement();
 
-                                writer.WriteStartElement("ihue");
-                                writer.WriteAttributeString("cmd", "body");
-                                writer.WriteAttributeString("a", "1");
+                                writer.WriteStartElement("bnhue");
+                                writer.WriteAttributeString("cmd", "rn");
+                                writer.WriteAttributeString("a", ((int)tab.IconColor).ToString());
                                 writer.WriteEndElement();
 
-                                writer.WriteStartElement("ihue");
-                                writer.WriteAttributeString("n", "gx");
-                                writer.WriteAttributeString("cmd", "rg");
-                                writer.WriteAttributeString("a", "1");
-                                writer.WriteEndElement();
+                                foreach (var page in tab.Pages)
+                                {
+                                    writer.WriteStartElement("page");
+                                    writer.WriteAttributeString("icon", page.Icon.ToString().ToLowerInvariant());
+
+                                    writer.WriteStartElement("hue");
+                                    writer.WriteAttributeString("n", "hu");
+                                    writer.WriteAttributeString("cmd", "rg");
+                                    writer.WriteAttributeString("a", page.IconColor.ToString());
+                                    writer.WriteEndElement();
+
+                                    foreach (var option in page.Options)
+                                    {
+                                        writer.WriteStartElement("option");
+                                        writer.WriteAttributeString("halo", "hgentle");
+                                        writer.WriteAttributeString("icon", "");
+                                        writer.WriteAttributeString("go", option.Destination.SceneId);
+                                        writer.WriteAttributeString("text", "test");
+
+                                        writer.WriteStartElement("enhance");
+                                        writer.WriteAttributeString("a", "1");
+                                        writer.WriteEndElement();
+
+                                        writer.WriteStartElement("hhue");
+                                        writer.WriteAttributeString("n", "hu");
+                                        writer.WriteAttributeString("cmd", "rg");
+                                        writer.WriteAttributeString("a", "0");
+                                        writer.WriteEndElement();
+
+                                        writer.WriteStartElement("ihue");
+                                        writer.WriteAttributeString("cmd", "body");
+                                        writer.WriteAttributeString("a", "1");
+                                        writer.WriteEndElement();
+
+                                        writer.WriteStartElement("ihue");
+                                        writer.WriteAttributeString("n", "gx");
+                                        writer.WriteAttributeString("cmd", "rg");
+                                        writer.WriteAttributeString("a", "1");
+                                        writer.WriteEndElement();
+
+                                        writer.WriteEndElement();
+                                    }
+
+                                    writer.WriteEndElement();
+                                }
 
                                 writer.WriteEndElement();
                             }
 
-                            writer.WriteEndElement();
-                            writer.WriteEndElement();
                             writer.WriteEndElement();
 
                             break;
@@ -367,8 +375,8 @@ namespace OStimAnimationTool.Core
                             writer.WriteAttributeString("Animator", animationSet.Animator);
                             writer.WriteAttributeString("Description", animationSet.Description);
 
-                            foreach (var destination in hubAnimationSet.Destinations)
-                                writer.WriteElementString("Destination", destination.SceneId);
+                            foreach (var destination in hubAnimationSet.NavTabs)
+                                writer.WriteElementString("Destination", "");
 
                             foreach (var animation in animationSet.Animations)
                             {

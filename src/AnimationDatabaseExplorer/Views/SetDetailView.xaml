@@ -25,9 +25,10 @@
                 <DockPanel Grid.Row="1">
                     <Label Content="Destinations" FontSize="14" />
                     <DataGrid Name="DestinationsDatagrid"
-                              ItemsSource="{Binding Destinations, UpdateSourceTrigger=PropertyChanged}"
+                              ItemsSource="{Binding NavTabs, UpdateSourceTrigger=PropertyChanged}"
                               AutoGenerateColumns="False"
-                              Margin="5,-5,5,0">
+                              Margin="5,-5,5,0"
+                              CanUserAddRows="False">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="Set Name">
                                 <DataGridTemplateColumn.CellTemplate>

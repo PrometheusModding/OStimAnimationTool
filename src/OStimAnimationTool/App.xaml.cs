@@ -2,6 +2,7 @@ using System.Windows;
 using Fluent;
 using NodeNetwork;
 using OStimAnimationTool.Core.Behaviors;
+using OStimAnimationTool.Core.Controls;
 using OStimAnimationTool.Core.Prism;
 using OStimAnimationTool.Core.Regions;
 using OStimConversionTool.Views;

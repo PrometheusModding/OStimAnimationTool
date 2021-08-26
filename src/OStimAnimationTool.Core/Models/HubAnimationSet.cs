@@ -1,10 +1,11 @@
 ﻿using System.Collections.ObjectModel;
+using OStimAnimationTool.Core.Models.Navigation;
 
 namespace OStimAnimationTool.Core.Models
 {
     public class HubAnimationSet : AnimationSet
     {
-        private ObservableCollection<AnimationSet> _destinations = new();
+        private ObservableCollection<Tab> _navTabs = new();
 
         public HubAnimationSet()
         {
@@ -19,10 +20,10 @@ namespace OStimAnimationTool.Core.Models
         {
         }
 
-        public ObservableCollection<AnimationSet> Destinations
+        public ObservableCollection<Tab> NavTabs
         {
-            get => _destinations;
-            set => SetProperty(ref _destinations, value);
+            get => _navTabs;
+            set => SetProperty(ref _navTabs, value);
         }
     }
 }

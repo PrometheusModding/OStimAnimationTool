@@ -1,11 +1,16 @@
 ﻿using System.Collections.ObjectModel;
+using AnimationDatabaseExplorer.Dialogs;
 using AnimationDatabaseExplorer.Views;
+using MaterialDesignThemes.Wpf;
 using OStimAnimationTool.Core.Events;
 using OStimAnimationTool.Core.Models;
+using OStimAnimationTool.Core.Models.Navigation;
 using OStimAnimationTool.Core.ViewModels;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
+using Prism.Services.Dialogs;
+using ChangeTabIconView = AnimationDatabaseExplorer.Views.ChangeTabIconView;
 
 namespace AnimationDatabaseExplorer.ViewModels
 {
@@ -13,18 +18,24 @@ namespace AnimationDatabaseExplorer.ViewModels
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IRegionManager _regionManager;
+        private readonly IDialogService _dialogService;
         private AnimationSet? _animationSet;
+        private ObservableCollection<Page>? _pages;
+        private ObservableCollection<Option>? _options;
 
-        public SetWorkspaceViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
+        public SetWorkspaceViewModel(IRegionManager regionManager, IEventAggregator eventAggregator, IDialogService dialogService)
         {
             _regionManager = regionManager;
             _eventAggregator = eventAggregator;
+            _dialogService = dialogService;
 
             eventAggregator.GetEvent<AddDestinationEvent>().Subscribe(AddDestination);
 
             OpenAnimationDetailCommand = new DelegateCommand<Animation>(OpenAnimationDetail);
             AnimationClassMenuCommand = new DelegateCommand<string>(SetAnimationClass);
             RemoveDestinationCommand = new DelegateCommand<AnimationSet>(RemoveDestination);
+            TabChangedCommand = new DelegateCommand<Tab>(TabChanged);
+            ChangeTabIconCommand = new DelegateCommand(ChangeTabIcon);
 
             AnimationClassMenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
             {
@@ -93,32 +104,70 @@ namespace AnimationDatabaseExplorer.ViewModels
             };
         }
 
+        public IRegionManager RegionManager
+        {
+            get => _regionManager;
+        }
+
         public ObservableCollection<AnimationClassMenuItemViewModel> AnimationClassMenuItems { get; }
 
         public DelegateCommand<Animation> OpenAnimationDetailCommand { get; }
         public DelegateCommand<string> AnimationClassMenuCommand { get; }
         public DelegateCommand<AnimationSet> RemoveDestinationCommand { get; }
+        public DelegateCommand<Tab> TabChangedCommand { get; }
+        public DelegateCommand ChangeTabIconCommand { get; }
 
         public AnimationSet? AnimationSet
         {
             get => _animationSet;
-            private set => SetProperty(ref _animationSet, value);
+            private set => SetProperty(ref _animationSet, value, () => RaisePropertyChanged(nameof(NavTabs)));
+        }
+
+        public ObservableCollection<Tab> NavTabs
+        {
+            get
+            {
+                if (AnimationSet is HubAnimationSet hubAnimationSet) return hubAnimationSet.NavTabs;
+                return new ObservableCollection<Tab>();
+            }
+        }
+
+        public ObservableCollection<Page>? Pages
+        {
+            get => _pages;
+            set => SetProperty(ref _pages, value);
+        }
+
+        public ObservableCollection<Option>? Options
+        {
+            get => _options;
+            set => SetProperty(ref _options, value);
+        }
+
+        private void TabChanged(Tab tab)
+        {
+            Pages = tab.Pages;
         }
 
         private void RemoveDestination(AnimationSet animationSet)
         {
-            if (AnimationSet is HubAnimationSet hubAnimationSet)
+            /*if (AnimationSet is HubAnimationSet hubAnimationSet)
             {
-                hubAnimationSet.Destinations.Remove(animationSet);
-            }
+                hubAnimationSet.NavTabs.Remove(animationSet);
+            }*/
         }
 
         private void AddDestination(AnimationSet animationSet)
         {
             if (!IsActive) return;
             if (AnimationSet is not HubAnimationSet hubAnimationSet) return;
-            if (!hubAnimationSet.Destinations.Contains(animationSet))
-                hubAnimationSet.Destinations.Add(animationSet);
+            /*if (!hubAnimationSet.NavTabs.Contains(animationSet))
+                hubAnimationSet.NavTabs.Add(animationSet);*/
+        }
+
+        private void ChangeTabIcon()
+        {
+            DialogHost.Show(new ChangeTabIconView());
         }
 
         public override bool IsNavigationTarget(NavigationContext navigationContext)

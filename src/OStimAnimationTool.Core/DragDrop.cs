@@ -95,7 +95,7 @@ namespace OStimAnimationTool.Core
             };
         }
 
-        public static bool SufficientMovement(Point initialPosition, Point currentPosition)
+        private static bool SufficientMovement(Point initialPosition, Point currentPosition)
         {
             return Math.Abs(currentPosition.X - initialPosition.X) >= SystemParameters.MinimumHorizontalDragDistance ||
                    Math.Abs(currentPosition.Y - initialPosition.Y) >= SystemParameters.MinimumVerticalDragDistance;

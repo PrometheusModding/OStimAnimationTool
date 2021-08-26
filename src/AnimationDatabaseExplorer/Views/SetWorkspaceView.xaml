@@ -5,9 +5,81 @@
          xmlns:prism="http://prismlibrary.com/"
          xmlns:viewModels="clr-namespace:AnimationDatabaseExplorer.ViewModels"
          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+         xmlns:animationDatabaseExplorer="clr-namespace:AnimationDatabaseExplorer"
+         xmlns:navigation="clr-namespace:OStimAnimationTool.Core.Models.Navigation;assembly=OStimAnimationTool.Core"
+         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
          mc:Ignorable="d"
          Header="{Binding AnimationSet.SetName}"
          HeaderTemplate="{DynamicResource CloseButtonHeader}"
          prism:ViewModelLocator.AutoWireViewModel="True"
          d:DataContext="{d:DesignInstance viewModels:SetWorkspaceViewModel}">
+    <TabItem.Resources>
+        <animationDatabaseExplorer:TabIconConverter x:Key="TabIconConverter" />
+        <animationDatabaseExplorer:ColorConverter x:Key="ColorConverter" />
+        <animationDatabaseExplorer:PageIconConverter x:Key="PageIconConverter" />
+        <animationDatabaseExplorer:IconColorConverter x:Key="IconColorConverter" />
+        <animationDatabaseExplorer:OptionIconConverter x:Key="OptionIconConverter" />
+    </TabItem.Resources>
+    <materialDesign:DialogHost>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ListBox ItemsSource="{Binding ElementName=Pages, Path=SelectedItem.Options}">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type navigation:Option}">
+                    <Image Height="64" Width="64" Source="{Binding Icon, Converter={StaticResource OptionIconConverter}}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ListBox Grid.Row="1" Name="Pages" ItemsSource="{Binding ElementName=Tabs, Path=SelectedItem.Pages}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type navigation:Page}">
+                    <Grid>
+                        <Image Height="32" Width="32">
+                            <Image.Source>
+                                <MultiBinding Converter="{StaticResource IconColorConverter}">
+                                    <Binding Path="IconColor"/>
+                                    <Binding Path="Icon"/>
+                                </MultiBinding>
+                            </Image.Source>
+                        </Image> 
+                        <Image Height="32" Width="32" Source="{Binding Icon, Converter={StaticResource PageIconConverter}}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <TextBox Grid.Row="3"></TextBox>
+        <ListBox Name="Tabs" Grid.Row="4" ItemsSource="{Binding NavTabs, UpdateSourceTrigger=PropertyChanged}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Ellipse Height="24" Width="24" Fill="{Binding IconColor, Converter={StaticResource ColorConverter}}"/>
+                        <Image Name="Test" Height="32" Width="32" Source="{Binding Icon, Converter={StaticResource TabIconConverter}}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Icon="{materialDesign:PackIcon PlusCircleOutline}" Header="Add Tab" Command="{Binding}"/>
+                    <MenuItem Header="Change Icon" Command="{Binding ChangeTabIconCommand}"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+        </ListBox>
+    </Grid>
+    </materialDesign:DialogHost>
 </TabItem>
