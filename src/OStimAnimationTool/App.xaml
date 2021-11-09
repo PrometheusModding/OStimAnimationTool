@@ -3,8 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:prism="http://prismlibrary.com/"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:OStimConversionTool.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -15,6 +15,7 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/Fluent;component/Themes/Themes/light.blue.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <converters:MultiBindingToUiElementListConverter x:Key="MultiBindingToUiElementListConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </prism:PrismApplication>

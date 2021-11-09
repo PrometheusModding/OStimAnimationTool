@@ -1,6 +1,9 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Controls;
+using AnimationDatabaseExplorer.Filters;
 using OStimAnimationTool.Core.Events;
+using OStimAnimationTool.Core.Interfaces;
 using OStimAnimationTool.Core.Models;
 using OStimAnimationTool.Core.ViewModels;
 using Prism.Commands;
@@ -14,6 +17,7 @@ namespace AnimationDatabaseExplorer.ViewModels
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IRegionManager _regionManager;
+        private readonly Collection<IDatabaseFilter> _filters = new();
         private ObservableCollection<Module> _modules;
 
         public DatabaseTreeViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
@@ -25,7 +29,8 @@ namespace AnimationDatabaseExplorer.ViewModels
 
             OpenSetTabCommand = new DelegateCommand<AnimationSet>(OpenSet);
             DragDropCommand = new DelegateCommand<object[]>(DragDropAction);
-            SearchTreeViewCommand = new DelegateCommand<string>(SearchTreeView);
+            AddNameFilterCommand = new DelegateCommand<string>(AddNameFilter);
+            AddSceneTypeFilterCollection = new DelegateCommand<string>(AddTypeFilter);
         }
 
         public ObservableCollection<Module> Modules
@@ -36,36 +41,27 @@ namespace AnimationDatabaseExplorer.ViewModels
 
 
         public DelegateCommand<AnimationSet> OpenSetTabCommand { get; }
-
         public DelegateCommand<object[]> DragDropCommand { get; }
-        public DelegateCommand<string> SearchTreeViewCommand { get; }
+        public DelegateCommand<string> AddNameFilterCommand { get; }
+        public DelegateCommand<string> AddSceneTypeFilterCollection { get; }
 
 
-        private void SearchTreeView(string searchFilter)
+        private void AddNameFilter(string searchFilter)
         {
-            if (string.IsNullOrEmpty(searchFilter))
-            {
-                Modules = AnimationDatabase.Instance.Modules;
-            }
-            else
-            {
-                Module? activeModule = null;
-                Modules = new ObservableCollection<Module>();
-                foreach (var module in AnimationDatabase.Instance.Modules)
-                foreach (var animationSet in module.AnimationSets)
-                {
-                    if (!animationSet.SetName.ToLower().Contains(searchFilter.Trim().ToLower())) continue;
-                    if (!Modules.Contains(module))
-                    {
-                        var newModule = new Module(module.Name) { Creatures = module.Creatures };
-                        newModule.AnimationSets = new ObservableCollection<AnimationSet>();
-                        Modules.Add(newModule);
-                        activeModule = newModule;
-                    }
+            AddFilter(new NameFilter(searchFilter));
 
-                    activeModule?.AnimationSets.Add(animationSet);
-                }
-            }
+            var tempModules = _filters.Aggregate(AnimationDatabase.Instance.Modules,
+                (current, filter) => filter.Apply(current));
+            Modules = tempModules;
+        }
+
+        private void AddTypeFilter(string sceneType)
+        {
+            AddFilter(new SceneTypeFilter(sceneType));
+
+            var tempModules = _filters.Aggregate(AnimationDatabase.Instance.Modules,
+                (current, filter) => filter.Apply(current));
+            Modules = tempModules;
         }
 
         private void DragDropAction(object[] dataContext)
@@ -88,6 +84,19 @@ namespace AnimationDatabaseExplorer.ViewModels
         {
             var p = new NavigationParameters { { "animationSet", animationSet } };
             _regionManager.RequestNavigate("WorkspaceRegion", "SetWorkspaceView", p);
+        }
+
+        private void AddFilter(IDatabaseFilter databaseFilter)
+        {
+            foreach (var filter in _filters)
+            {
+                if (filter.GetType() != databaseFilter.GetType()) continue;
+
+                filter.FilterParameter = databaseFilter.FilterParameter;
+                return;
+            }
+
+            _filters.Add(databaseFilter);
         }
     }
 }

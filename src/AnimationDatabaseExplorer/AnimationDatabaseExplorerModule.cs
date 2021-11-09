@@ -1,5 +1,4 @@
 using AnimationDatabaseExplorer.Dialogs;
-using AnimationDatabaseExplorer.ViewModels;
 using AnimationDatabaseExplorer.Views;
 using Prism.Ioc;
 using Prism.Modularity;

@@ -6,8 +6,8 @@ namespace OStimAnimationTool.Core.Models.Navigation
     public class Page : BindableBase
     {
         private PageIcons _icon;
-        private ObservableCollection<Option> _options = new();
         private Colors _iconIconColor;
+        private ObservableCollection<Option> _options = new();
 
         public PageIcons Icon
         {

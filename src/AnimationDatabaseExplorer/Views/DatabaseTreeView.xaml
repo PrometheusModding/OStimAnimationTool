@@ -9,30 +9,76 @@
                 xmlns:views="clr-namespace:AnimationDatabaseExplorer.Views"
                 xmlns:core="clr-namespace:OStimAnimationTool.Core;assembly=OStimAnimationTool.Core"
                 xmlns:prism="http://prismlibrary.com/"
-                xmlns:animationDatabaseExplorer="clr-namespace:AnimationDatabaseExplorer"
                 xmlns:controls="clr-namespace:OStimAnimationTool.Core.Controls;assembly=OStimAnimationTool.Core"
+                xmlns:converters="clr-namespace:AnimationDatabaseExplorer.Converters"
+                xmlns:views1="clr-namespace:OStimConversionTool.Views;assembly=OStimAnimationTool"
                 mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:DatabaseTreeViewModel}">
     <ContentControl.Resources>
         <ResourceDictionary>
             <views:DragDropPreviewView x:Key="DragPreviewControl" />
-            <animationDatabaseExplorer:DragDropConverter x:Key="DragDropConverter" />
+            <converters:DragDropConverter x:Key="DragDropConverter" />
         </ResourceDictionary>
     </ContentControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBox Name="SearchBar">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="KeyUp">
-                    <prism:InvokeCommandAction Command="{Binding SearchTreeViewCommand}"
-                                               CommandParameter="{Binding Text, ElementName=SearchBar}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </TextBox>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.ColumnSpan="2">
+            <Label Content="Filter By:"
+                   DockPanel.Dock="Top" />
+            <DockPanel>
+                <Label Content="Scene Name"
+                       FontSize="10"
+                       Opacity="0.6"
+                       DockPanel.Dock="Top" />
+                <TextBox Name="SearchBar"
+                         Margin="5,-10,5,0">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="KeyUp">
+                            <prism:InvokeCommandAction Command="{Binding AddNameFilterCommand}"
+                                                       CommandParameter="{Binding Text, ElementName=SearchBar}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox>
+            </DockPanel>
+        </DockPanel>
+        <DockPanel Grid.Row="1"
+                   Grid.Column="0">
+            <Label Content="Scene Type"
+                   FontSize="10"
+                   Opacity="0.6"
+                   DockPanel.Dock="Top" />
+            <ComboBox Name="SetFilter"
+                      Margin="5,-10,5,0">
+                <ComboBoxItem>All</ComboBoxItem>
+                <ComboBoxItem>Hub</ComboBoxItem>
+                <ComboBoxItem>Transition</ComboBoxItem>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <prism:InvokeCommandAction Command="{Binding AddSceneTypeFilterCollection}"
+                                                   CommandParameter="{Binding SelectedItem.(ComboBoxItem.Content), ElementName=SetFilter}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
+        </DockPanel>
+        <DockPanel Grid.Row="1"
+                   Grid.Column="1">
+            <Label Content="Scene Type"
+                   FontSize="10"
+                   Opacity="0.6"
+                   DockPanel.Dock="Top" />
+            <ComboBox />
+        </DockPanel>
         <TreeView Name="TreeView"
-                  Grid.Row="1">
+                  Grid.Row="2"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="2">
             <TreeView.Resources>
                 <Style x:Key="ContextMenuStyle" TargetType="TextBlock">
                     <Setter Property="ContextMenu" Value="{DynamicResource TreeViewContextMenu}" />
@@ -56,8 +102,9 @@
                         <core:DragDrop.DropTarget>
                             <MultiBinding Converter="{StaticResource DragDropConverter}">
                                 <Binding Path="DropTarget"
-                                         RelativeSource="{RelativeSource AncestorType=controls:CustomRibbonWindow}" />
-                                <Binding Path="Items" ElementName="TreeView" />
+                                         RelativeSource="{RelativeSource AncestorType=views1:MainWindow}" />
+                                <Binding Path="Items"
+                                         ElementName="TreeView" />
                             </MultiBinding>
                         </core:DragDrop.DropTarget>
                     </TextBlock>

@@ -10,6 +10,7 @@ namespace AnimationDatabaseExplorer.Views
         {
             InitializeComponent();
         }
+
         public bool CreateRegionManagerScope => true;
     }
 }

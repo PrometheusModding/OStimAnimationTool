@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using AnimationDatabaseExplorer.Dialogs;
+using System.Linq;
 using AnimationDatabaseExplorer.Views;
 using MaterialDesignThemes.Wpf;
 using OStimAnimationTool.Core.Events;
@@ -9,8 +9,6 @@ using OStimAnimationTool.Core.ViewModels;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
-using Prism.Services.Dialogs;
-using ChangeTabIconView = AnimationDatabaseExplorer.Views.ChangeTabIconView;
 
 namespace AnimationDatabaseExplorer.ViewModels
 {
@@ -18,24 +16,26 @@ namespace AnimationDatabaseExplorer.ViewModels
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IRegionManager _regionManager;
-        private readonly IDialogService _dialogService;
+        private Page? _activePage;
+        private Tab? _activeTab;
         private AnimationSet? _animationSet;
-        private ObservableCollection<Page>? _pages;
-        private ObservableCollection<Option>? _options;
+        private ObservableCollection<Tab>? _tabs;
 
-        public SetWorkspaceViewModel(IRegionManager regionManager, IEventAggregator eventAggregator, IDialogService dialogService)
+        public SetWorkspaceViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
         {
             _regionManager = regionManager;
             _eventAggregator = eventAggregator;
-            _dialogService = dialogService;
 
-            eventAggregator.GetEvent<AddDestinationEvent>().Subscribe(AddDestination);
+            eventAggregator.GetEvent<AddDestinationEvent>().Subscribe(AddOption);
 
             OpenAnimationDetailCommand = new DelegateCommand<Animation>(OpenAnimationDetail);
             AnimationClassMenuCommand = new DelegateCommand<string>(SetAnimationClass);
-            RemoveDestinationCommand = new DelegateCommand<AnimationSet>(RemoveDestination);
-            TabChangedCommand = new DelegateCommand<Tab>(TabChanged);
-            ChangeTabIconCommand = new DelegateCommand(ChangeTabIcon);
+            AddTabCommand = new DelegateCommand(AddTab);
+            AddPageCommand = new DelegateCommand(AddPage);
+            DeleteTabCommand = new DelegateCommand<Tab>(DeleteTab);
+            DeletePageCommand = new DelegateCommand<Page>(DeletePage);
+            DeleteOptionCommand = new DelegateCommand<Option>(DeleteOption);
+            ChangeIconCommand = new DelegateCommand<object>(ChangeIcon);
 
             AnimationClassMenuItems = new ObservableCollection<AnimationClassMenuItemViewModel>
             {
@@ -104,70 +104,83 @@ namespace AnimationDatabaseExplorer.ViewModels
             };
         }
 
-        public IRegionManager RegionManager
-        {
-            get => _regionManager;
-        }
-
         public ObservableCollection<AnimationClassMenuItemViewModel> AnimationClassMenuItems { get; }
-
         public DelegateCommand<Animation> OpenAnimationDetailCommand { get; }
         public DelegateCommand<string> AnimationClassMenuCommand { get; }
-        public DelegateCommand<AnimationSet> RemoveDestinationCommand { get; }
-        public DelegateCommand<Tab> TabChangedCommand { get; }
-        public DelegateCommand ChangeTabIconCommand { get; }
+        public DelegateCommand AddTabCommand { get; }
+        public DelegateCommand AddPageCommand { get; }
+        public DelegateCommand<Tab> DeleteTabCommand { get; }
+        public DelegateCommand<Page> DeletePageCommand { get; }
+        public DelegateCommand<Option> DeleteOptionCommand { get; }
+        public DelegateCommand<object> ChangeIconCommand { get; }
+
 
         public AnimationSet? AnimationSet
         {
             get => _animationSet;
-            private set => SetProperty(ref _animationSet, value, () => RaisePropertyChanged(nameof(NavTabs)));
+            private set => SetProperty(ref _animationSet, value, () => RaisePropertyChanged(nameof(Tabs)));
         }
 
-        public ObservableCollection<Tab> NavTabs
+        public Tab? ActiveTab
         {
-            get
+            get => _activeTab;
+            set
             {
-                if (AnimationSet is HubAnimationSet hubAnimationSet) return hubAnimationSet.NavTabs;
-                return new ObservableCollection<Tab>();
+                SetProperty(ref _activeTab, value);
+                if (_activeTab?.Pages.FirstOrDefault() is not null)
+                    ActivePage = _activeTab?.Pages[0];
             }
         }
 
-        public ObservableCollection<Page>? Pages
+        public Page? ActivePage
         {
-            get => _pages;
-            set => SetProperty(ref _pages, value);
+            get => _activePage;
+            set => SetProperty(ref _activePage, value);
         }
 
-        public ObservableCollection<Option>? Options
+        public ObservableCollection<Tab>? Tabs
         {
-            get => _options;
-            set => SetProperty(ref _options, value);
+            get => _tabs;
+            set => SetProperty(ref _tabs, value);
         }
 
-        private void TabChanged(Tab tab)
+        private void AddTab()
         {
-            Pages = tab.Pages;
+            Tabs?.Add(new Tab());
         }
 
-        private void RemoveDestination(AnimationSet animationSet)
+        private void AddPage()
         {
-            /*if (AnimationSet is HubAnimationSet hubAnimationSet)
-            {
-                hubAnimationSet.NavTabs.Remove(animationSet);
-            }*/
+            ActiveTab?.Pages.Add(new Page());
         }
 
-        private void AddDestination(AnimationSet animationSet)
+        private void AddOption(AnimationSet animationSet)
         {
             if (!IsActive) return;
-            if (AnimationSet is not HubAnimationSet hubAnimationSet) return;
-            /*if (!hubAnimationSet.NavTabs.Contains(animationSet))
-                hubAnimationSet.NavTabs.Add(animationSet);*/
+            if (AnimationSet is not HubAnimationSet) return;
+            ActivePage?.Options.Add(new Option(animationSet));
         }
 
-        private void ChangeTabIcon()
+        private void DeleteTab(Tab tab)
+        {
+            Tabs?.Remove(tab);
+        }
+
+        private void DeletePage(Page page)
+        {
+            ActiveTab?.Pages.Remove(page);
+        }
+
+        private void DeleteOption(Option option)
+        {
+            ActivePage?.Options.Remove(option);
+        }
+
+        private void ChangeIcon(object icons)
         {
             DialogHost.Show(new ChangeTabIconView());
+
+            _eventAggregator.GetEvent<ChangeIconEvent>().Publish(icons);
         }
 
         public override bool IsNavigationTarget(NavigationContext navigationContext)
@@ -186,6 +199,14 @@ namespace AnimationDatabaseExplorer.ViewModels
         public override void OnNavigatedTo(NavigationContext navigationContext)
         {
             AnimationSet = navigationContext.Parameters.GetValue<AnimationSet>("animationSet");
+            if (AnimationSet is not HubAnimationSet hubAnimationSet) return;
+
+            Tabs = hubAnimationSet.NavTabs;
+            if (Tabs.FirstOrDefault() is null) return;
+            
+            ActiveTab = Tabs[0];
+            if (_activeTab?.Pages.FirstOrDefault() is not null)
+                ActivePage = _activeTab?.Pages[0];
         }
 
         private void OpenAnimationDetail(Animation animation)

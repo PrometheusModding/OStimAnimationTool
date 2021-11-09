@@ -8,21 +8,18 @@ namespace OStimAnimationTool.Core.Models
 {
     public class AnimationSet : BindableBase, IEquatable<AnimationSet>
     {
-        private string _animationClass = Empty;
+        private string? _animationClass;
         private ObservableCollection<Animation> _animations = new();
         private string _animator = Empty;
         private string _description = Empty;
         private bool _is0SexAnimation;
-        private Module _module = new("");
-        private string _positionKey = Empty;
-        private string _setName = Empty;
+        private Module _module;
+        private string? _positionKey;
+        private string _setName;
 
-        public AnimationSet()
+        public AnimationSet(Module module, string setName)
         {
-        }
-
-        public AnimationSet(string setName)
-        {
+            _module = module;
             _setName = setName;
         }
 
@@ -46,7 +43,7 @@ namespace OStimAnimationTool.Core.Models
             });
         }
 
-        public string PositionKey
+        public string? PositionKey
         {
             get => _positionKey;
             set => SetProperty(ref _positionKey, value, () =>
@@ -56,7 +53,7 @@ namespace OStimAnimationTool.Core.Models
             });
         }
 
-        public string AnimationClass
+        public string? AnimationClass
         {
             get => _animationClass;
             set => SetProperty(ref _animationClass, value, () =>

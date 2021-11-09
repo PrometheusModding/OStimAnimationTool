@@ -9,11 +9,11 @@ namespace OStimAnimationTool.Core.Models.Navigation
 
         private TabIcons _icon;
 
-        private Colors _textColor;
-
         private Colors _iconColor;
 
         private ObservableCollection<Page> _pages = new();
+
+        private Colors _textColor;
 
         private XMenu? _xMenu;
 
@@ -28,19 +28,19 @@ namespace OStimAnimationTool.Core.Models.Navigation
             get => _actor;
             set => SetProperty(ref _actor, value);
         }
-        
+
         public TabIcons Icon
         {
             get => _icon;
             set => SetProperty(ref _icon, value);
         }
-        
+
         public Colors TextColor
         {
             get => _textColor;
             set => SetProperty(ref _textColor, value);
         }
-        
+
         public Colors IconColor
         {
             get => _iconColor;

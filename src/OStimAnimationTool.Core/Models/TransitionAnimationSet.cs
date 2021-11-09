@@ -5,22 +5,14 @@ namespace OStimAnimationTool.Core.Models
 {
     public class TransitionAnimationSet : AnimationSet
     {
-        private AnimationSet _destination = new(string.Empty);
-
-        public TransitionAnimationSet()
-        {
-        }
-
-        public TransitionAnimationSet(string setName) : base(setName)
-        {
-        }
+        private AnimationSet? _destination;
 
         public TransitionAnimationSet(Module moduleName, string positionKey, string animationClass, string setName) :
             base(moduleName, positionKey, animationClass, setName)
         {
         }
 
-        public AnimationSet Destination
+        public AnimationSet? Destination
         {
             get => _destination;
             set => SetProperty(ref _destination, value);
@@ -34,12 +26,14 @@ namespace OStimAnimationTool.Core.Models
         {
             var m = Regex.Match(SetName, @"\+");
             var a = new Range(m.Index + 1, m.Index + 3);
+
             return SetName[a];
         }
 
         private string GetParentSet()
         {
             var m = Regex.Match(SetName, @"\+");
+
             return m.Success ? SetName[..m.Index] : SetName;
         }
     }

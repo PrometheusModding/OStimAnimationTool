@@ -23,7 +23,7 @@
     prism:ViewModelLocator.AutoWireViewModel="True"
     d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
     OverlayCanvas="{Binding ElementName=MainOverlayCanvas}"
-    DropTarget="{Binding ElementName=ContentControl}">
+    DropTarget="{Binding ElementName=Workspace}">
     <Window.Resources>
         <ResourceDictionary>
             <!-- ReSharper disable Xaml.RedundantResource -->
@@ -248,9 +248,15 @@
                     <!--<materialDesign:PackIcon Kind="DotsVertical" />-->
                 </Button>
             </DockPanel>
-            <TabControl prism:RegionManager.RegionName="WorkspaceRegion" Grid.Row="1" Grid.Column="3" />
-            <GridSplitter Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" />
-            <ContentControl Name="ContentControl" prism:RegionManager.RegionName="DetailRegion" Grid.Row="1"
+            <TabControl Name="Workspace"
+                        prism:RegionManager.RegionName="WorkspaceRegion"
+                        Grid.Row="1"
+                        Grid.Column="3" />
+            <GridSplitter Grid.Row="1"
+                          Grid.Column="4"
+                          HorizontalAlignment="Stretch" />
+            <ContentControl prism:RegionManager.RegionName="DetailRegion"
+                            Grid.Row="1"
                             Grid.Column="5" />
         </Grid>
     </Grid>

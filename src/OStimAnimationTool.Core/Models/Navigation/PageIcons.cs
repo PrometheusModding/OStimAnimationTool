@@ -2,22 +2,22 @@
 {
     public enum PageIcons
     {
-        MWhipCream,
-        MTriTri,
-        MTriEx,
-        MTri,
-        MShirt,
-        MOrif,
-        MMagi,
-        MIntimateF,
-        MHeart,
-        MHandEx,
-        MHand,
-        MGenSignM,
-        MGenSignF,
-        MGenIm,
-        MGenImm2,
+        MAss,
         MCuirass,
-        MAss
+        MGenim,
+        MGenimm2,
+        MGenSignF,
+        MGenSignM,
+        MHand,
+        MHandEx,
+        MHeart,
+        MIntimateF,
+        MMagi,
+        MOrif,
+        MShirt,
+        MTri,
+        MTriEx,
+        MTriTri,
+        MWhipcream
     }
 }

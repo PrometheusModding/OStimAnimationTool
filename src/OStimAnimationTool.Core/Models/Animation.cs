@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using log4net.Util;
 using Prism.Mvvm;
 
 namespace OStimAnimationTool.Core.Models
@@ -20,7 +18,7 @@ namespace OStimAnimationTool.Core.Models
             _fnisArgs = fnisArgs;
             _creature = creature;
 
-            if (!_animationSet.Module.Creatures.Contains(_creature))
+            if (_animationSet.Module != null && !_animationSet.Module.Creatures.Contains(_creature))
             {
                 _animationSet.Module.Creatures.Add(_creature);
             }
@@ -60,9 +58,9 @@ namespace OStimAnimationTool.Core.Models
             {
                 return AnimationSet switch
                 {
-                    HubAnimationSet => "0Sx" + _animationSet.Module.Name + $"_{_animationSet.AnimationClass}" +
+                    HubAnimationSet => "0Sx" + _animationSet.Module?.Name + $"_{_animationSet.AnimationClass}" +
                                        $"-{_animationSet.SetName}" + $"_S{_speed.ToString()}" + $"_{_actor.ToString()}",
-                    TransitionAnimationSet => "0Sx" + _animationSet.Module.Name + $"_{_animationSet.AnimationClass}" +
+                    TransitionAnimationSet => "0Sx" + _animationSet.Module?.Name + $"_{_animationSet.AnimationClass}" +
                                               $"-{_animationSet.SetName}" + $"_{_actor.ToString()}",
                     _ => string.Empty
                 };

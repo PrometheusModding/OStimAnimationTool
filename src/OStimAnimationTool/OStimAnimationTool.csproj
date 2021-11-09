@@ -26,6 +26,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MaterialDesignThemes" Version="4.2.0-ci2603"/>
+        <PackageReference Include="DynamicData" Version="7.4.3"/>
     </ItemGroup>
 </Project>

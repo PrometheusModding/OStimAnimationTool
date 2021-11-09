@@ -3,10 +3,10 @@
     public enum TabIcons
     {
         SDom,
-        SSub,
-        SMale,
         SFemale,
+        SMale,
+        SObs,
         SPlus,
-        SObs
+        SSub
     }
 }

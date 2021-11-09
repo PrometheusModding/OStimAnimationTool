@@ -1,17 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using DynamicData;
 using OStimAnimationTool.Core.Events;
 using OStimAnimationTool.Core.Models;
 using OStimAnimationTool.Core.ViewModels;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace AnimationDatabaseExplorer.ViewModels
 {
@@ -23,7 +17,7 @@ namespace AnimationDatabaseExplorer.ViewModels
         {
             _regionManager = regionManager;
 
-            AddAnimationSetCommand = new DelegateCommand(AddAnimationSet, ActiveDatabase);
+            AddAnimationSetCommand = new DelegateCommand(AddAnimationSet, () => false);
             AddSlAnimationSetCommand = new DelegateCommand(AddSlAnimationSet, ActiveDatabase);
             AddSlFolderCommand = new DelegateCommand(AddSlFolder, ActiveDatabase);
 
@@ -46,34 +40,35 @@ namespace AnimationDatabaseExplorer.ViewModels
 
         private static void AddAnimationSet()
         {
-            var openFileDialog = new OpenFileDialog
-            {
-                Multiselect = true,
-                Filter = "Havok Animation files (*.hkx)|*hkx|All files (*.*)|*.*",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-            };
-
-            if (openFileDialog.ShowDialog() != true) return;
-
-            foreach (var filename in openFileDialog.FileNames)
-            {
-                var setName = Path.GetFileName(filename[..^4]);
-                var animationSet = new AnimationSet(setName);
-                var animation = new Animation(filename, animationSet);
-
-                var actorMatch = Regex.Match(setName, @"A(\d)");
-                if (actorMatch.Success)
-                    animation.Actor = int.Parse(actorMatch.Groups[1].Value);
-
-                var speedMatch = Regex.Match(setName, @"S(\d)");
-                if (speedMatch.Success)
-                    animation.Speed = int.Parse(speedMatch.Groups[1].Value);
-
-                if (speedMatch.Success && actorMatch.Success)
-                    setName = actorMatch.Groups[1].Index < speedMatch.Groups[1].Index
-                        ? setName[..(actorMatch.Groups[1].Index - 1)]
-                        : setName[..(speedMatch.Groups[1].Index - 1)];
-            }
+            /*
+                        var openFileDialog = new OpenFileDialog
+                        {
+                            Multiselect = true,
+                            Filter = "Havok Animation files (*.hkx)|*hkx|All files (*.*)|*.*",
+                            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                        };
+            
+                        if (openFileDialog.ShowDialog() != true) return;
+            
+                        foreach (var filename in openFileDialog.FileNames)
+                        {
+                            var setName = Path.GetFileName(filename[..^4]);
+                            var animationSet = new AnimationSet(setName);
+                            var animation = new Animation(filename, animationSet);
+            
+                            var actorMatch = Regex.Match(setName, @"A(\d)");
+                            if (actorMatch.Success)
+                                animation.Actor = int.Parse(actorMatch.Groups[1].Value);
+            
+                            var speedMatch = Regex.Match(setName, @"S(\d)");
+                            if (speedMatch.Success)
+                                animation.Speed = int.Parse(speedMatch.Groups[1].Value);
+            
+                            if (speedMatch.Success && actorMatch.Success)
+                                setName = actorMatch.Groups[1].Index < speedMatch.Groups[1].Index
+                                    ? setName[..(actorMatch.Groups[1].Index - 1)]
+                                    : setName[..(speedMatch.Groups[1].Index - 1)];
+                        }*/
         }
 
         private static void AddSlAnimationSet()
@@ -238,7 +233,7 @@ namespace AnimationDatabaseExplorer.ViewModels
                 if (setName.Equals(animSet.SetName))
                     return animSet;
 
-            HubAnimationSet animationSet = new(setName);
+            HubAnimationSet animationSet = new(module, setName);
             module.AnimationSets.Add(animationSet);
             animationSet.Module = module;
             return animationSet;

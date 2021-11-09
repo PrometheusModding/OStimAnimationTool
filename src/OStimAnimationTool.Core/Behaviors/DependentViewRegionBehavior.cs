@@ -91,32 +91,32 @@ namespace OStimAnimationTool.Core.Behaviors
         private static bool ShouldKeepAlive(object oldView)
         {
             var lifetime = GetItemOrContextLifeTime(oldView);
-            
+
             if (lifetime != null)
             {
                 return lifetime.KeepAlive;
             }
 
             var lifetimeAttribute = GetItemOrContextLifeTimeAttribute(oldView);
-            
+
             return lifetimeAttribute == null || lifetimeAttribute.KeepAlive;
         }
 
         private static RegionMemberLifetimeAttribute? GetItemOrContextLifeTimeAttribute(object oldView)
         {
             var lifeAttribute = GetCustomAttributes<RegionMemberLifetimeAttribute>(oldView.GetType()).FirstOrDefault();
-            
+
             if (lifeAttribute != null)
             {
                 return lifeAttribute;
             }
 
             if (oldView is not FrameworkElement { DataContext: { } } frameworkElement) return null;
-            
+
             var dataContext = frameworkElement.DataContext;
             var contextLifeTimeAttribute = GetCustomAttributes<RegionMemberLifetimeAttribute>(dataContext.GetType())
                 .FirstOrDefault();
-            
+
             return contextLifeTimeAttribute;
         }
 

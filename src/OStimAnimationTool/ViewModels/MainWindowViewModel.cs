@@ -28,8 +28,7 @@ namespace OStimConversionTool.ViewModels
         }
     }
 
-    public class
-        MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : ViewModelBase
     {
         private readonly IDialogService _dialogService;
         private readonly IEventAggregator _eventAggregator;
@@ -121,7 +120,7 @@ namespace OStimConversionTool.ViewModels
                 try
                 {
                     // Loading Xml Files
-                    XElement doc = XElement.Load(file);
+                    var doc = XElement.Load(file);
 
                     // Getting necessary information from the .xml
                     var sceneId = doc.Attribute("id")?.Value;
@@ -283,8 +282,8 @@ namespace OStimConversionTool.ViewModels
                                             {
                                                 "mass" => PageIcons.MAss,
                                                 "mcuirass" => PageIcons.MCuirass,
-                                                "mgenim" => PageIcons.MGenIm,
-                                                "mgenimm2" => PageIcons.MGenIm,
+                                                "mgenim" => PageIcons.MGenim,
+                                                "mgenimm2" => PageIcons.MGenimm2,
                                                 "mgensignf" => PageIcons.MGenSignF,
                                                 "mgensignm" => PageIcons.MGenSignM,
                                                 "mhand" => PageIcons.MHand,
@@ -297,7 +296,7 @@ namespace OStimConversionTool.ViewModels
                                                 "mtri" => PageIcons.MTri,
                                                 "mtriex" => PageIcons.MTriEx,
                                                 "mtritri" => PageIcons.MTriTri,
-                                                "mwhipcream" => PageIcons.MWhipCream,
+                                                "mwhipcream" => PageIcons.MWhipcream,
                                                 _ => throw new ArgumentOutOfRangeException()
                                             },
                                             IconColor = pageElement.Element("hue")?.Attribute("a")?.Value switch
@@ -546,7 +545,7 @@ namespace OStimConversionTool.ViewModels
                 var databaseFile = fileDialog.FileName;
 
                 // Load Database Xml
-                XElement doc = XElement.Load(databaseFile);
+                var doc = XElement.Load(databaseFile);
 
                 AnimationDatabase.Instance.Name = doc.Attribute("Name")?.Value ??
                                                   throw new BadXmlException($"{databaseFile}: Invalid Name");
@@ -671,9 +670,7 @@ namespace OStimConversionTool.ViewModels
 
 
             DatabaseScriber databaseScriber = new();
-            databaseScriber.XmlScriber();
-            databaseScriber.FnisScriber();
-            databaseScriber.DatabaseFileScriber();
+            databaseScriber.Write();
         }
 
         private static AnimationSet? SetFinder(IReadOnlyList<string> sceneId)
@@ -698,6 +695,8 @@ namespace OStimConversionTool.ViewModels
                 animationSet = setName.Contains('+')
                     ? new TransitionAnimationSet(module, positionKey, animationClass, setName)
                     : new HubAnimationSet(module, positionKey, animationClass, setName);
+
+                animationSet.Is0SexAnimation = true;
 
                 module.AnimationSets.Add(animationSet);
 

@@ -72,10 +72,10 @@ namespace OStimAnimationTool.Core.Behaviors
                     frameworkElement:
                 {
                     if (frameworkElement.Parent is FrameworkElement
-                    {
-                        DataContext: IRegionManagerAware
-                        regionManagerAwareDataContextParent
-                    })
+                        {
+                            DataContext: IRegionManagerAware
+                            regionManagerAwareDataContextParent
+                        })
                     {
                         if (regionManagerAwareDataContext == regionManagerAwareDataContextParent)
                         {

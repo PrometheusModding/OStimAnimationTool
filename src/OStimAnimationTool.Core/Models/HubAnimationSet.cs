@@ -7,16 +7,12 @@ namespace OStimAnimationTool.Core.Models
     {
         private ObservableCollection<Tab> _navTabs = new();
 
-        public HubAnimationSet()
-        {
-        }
-
-        public HubAnimationSet(string setName) : base(setName)
-        {
-        }
-
         public HubAnimationSet(Module module, string positionKey, string animationClass, string setName) : base(module,
             positionKey, animationClass, setName)
+        {
+        }
+
+        public HubAnimationSet(Module module, string setName) : base(module, setName)
         {
         }
 
