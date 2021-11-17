@@ -51,7 +51,9 @@ jobs:
       run: dotnet publish OStimAnimationTool.sln -c ${{ matrix.Configuration }} -r ${{ matrix.targetRuntime }} -o $env:release_name --no-restore
       
     - name: Package Archive
-      run: 7z a -tzip "$env:release_name.zip" "./env:release_name/*"
+      run: |
+        7z a -tzip "$env:release_name.zip" "./$env:release_name/*"
+        rm -r "$env:release_name"
         
     - name: Release
       uses: softprops/action-gh-release@v1
