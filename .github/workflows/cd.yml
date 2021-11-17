@@ -30,8 +30,8 @@ jobs:
     - name: Set Environment Variables
       shell: bash
       run: |
-        tag=$(git describe --tags --abbrev=0)
-        release_name="OStimAnimationTool-$tag-${{ matrix.targetRuntime }} (${{ matrix.ChannelName }})"
+        RELEASE_VERSION=${GITHUB_REF#refs/*/}
+        release_name="OStimAnimationTool-$RELEASE_VERSION-${{ matrix.targetRuntime }} (${{ matrix.ChannelName }})"
         realeas_name >> $GITHUB_ENV
     
     - name: Checkout
