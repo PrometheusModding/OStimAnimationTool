@@ -44,7 +44,7 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet publish OStimAnimationTool.sln -f net6.0-windows -c ${{ matrix.Configuration }} -r any -o $env:release_name --self-contained --no-restore
+      run: dotnet publish OStimAnimationTool.sln -f net6.0-windows -c ${{ matrix.Configuration }} -o $env:release_name --self-contained --no-restore
       
     - name: Package Archive
       run: |
