@@ -28,6 +28,7 @@ jobs:
       
     steps:
     - name: Set Environment Variables
+      shell: bash
       run: |
         tag=$(git describe --tags --abbrev=0)
         release_name="OStimAnimationTool-$tag-${{ matrix.targetRuntime }} (${{ matrix.ChannelName }})"
