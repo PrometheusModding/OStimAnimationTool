@@ -396,6 +396,7 @@
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="xcopy &quot;$(TargetDir)*.*&quot; &quot;$(SolutionDir)\src\$(SolutionName)\bin\Debug\net5.0-windows\&quot; /Y"/>
+        <Exec Command="xcopy &quot;$(TargetDir)*.*&quot; &quot;$(SolutionDir)\src\$(SolutionName)\bin\Debug\net6.0-windows\&quot; /Y"/>
+        <Exec Command="xcopy &quot;$(TargetDir)*.*&quot; &quot;$(SolutionDir)\src\$(SolutionName)\bin\Release\net6.0-windows\&quot; /Y"/>
     </Target>
 </Project>
