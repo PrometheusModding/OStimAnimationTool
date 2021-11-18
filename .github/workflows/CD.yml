@@ -28,7 +28,7 @@ jobs:
     steps:
     - name: Set Environment Variables
       shell: bash
-      run: echo "release_name="OStimAnimationTool-${GITHUB_REF#refs/*/}-${{ matrix.targetRuntime }} \(${{ matrix.ChannelName }}\)"" >> $GITHUB_ENV
+      run: echo "release_name="OStimAnimationTool-${GITHUB_REF#refs/*/} \(${{ matrix.ChannelName }}\)"" >> $GITHUB_ENV
     
     - name: Checkout
       uses: actions/checkout@v2
