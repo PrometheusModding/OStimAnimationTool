@@ -2,48 +2,14 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0-windows</TargetFramework>
-        <RuntimeIdentifiers>win-x86;win-x64; win-x86</RuntimeIdentifiers>
         <UseWPF>true</UseWPF>
         <Nullable>enable</Nullable>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <OutputPath>bin\Debug\</OutputPath>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <OutputPath>bin\Release\</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\OStimAnimationTool\OStimAnimationTool.csproj"/>
     </ItemGroup>
-
-    <ItemGroup>
-        <Compile Update="Dialogs\NewAnimationDatabaseDialog.xaml.cs">
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Remove="ViewModels\SetNodeGroupIOBinding.cs"/>
-        <Compile Remove="Views\NavNetworkView.xaml.cs"/>
-        <Compile Remove="ViewModels\NavNetworkViewModel.cs"/>
-        <Compile Remove="ViewModels\SetNodeGroupEndpointEditorViewModel.cs"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Page Update="Dialogs\NewAnimationDatabaseDialog.xaml">
-            <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
-        <Page Remove="Views\SetNodeView.xaml"/>
-        <Page Remove="Views\NavNetworkView.xaml"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Reference Include="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-            <HintPath>..\..\..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Windows.Forms\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-
+    
     <ItemGroup>
         <None Remove="Icons\ssub.png"/>
         <None Remove="Icons\sdom.png"/>
@@ -390,10 +356,6 @@
         <Resource Include="Icons\Tab\sobs.svg"/>
         <None Remove="Icons\Tab\splus.svg"/>
         <Resource Include="Icons\Tab\splus.svg"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ReferencePathWithRefAssemblies Update="C:\Users\Admin\.nuget\packages\sharpvectors.reloaded\1.7.6\lib\net5.0-windows\SharpVectors.Rendering.Wpf.dll"/>
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">

@@ -3,24 +3,13 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net6.0-windows</TargetFramework>
-        <RootNamespace>OStimConversionTool</RootNamespace>
         <UseWPF>true</UseWPF>
-        <AssemblyName>OStimAnimationTool</AssemblyName>
-        <Authors>Prometheus</Authors>
-        <Version>1.0.0</Version>
         <Nullable>enable</Nullable>
-        <IsPackable>false</IsPackable>
-        <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
-        <RuntimeIdentifiers>win-x86;win-x64; win-x86</RuntimeIdentifiers>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <Optimize>false</Optimize>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Folder Include="ViewModels\"/>
-    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\OStimAnimationTool.Core\OStimAnimationTool.Core.csproj"/>

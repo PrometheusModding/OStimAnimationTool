@@ -2,21 +2,18 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0-windows</TargetFramework>
-        <RuntimeIdentifiers>win-x86;win-x64; win-x86</RuntimeIdentifiers>
         <UseWPF>true</UseWPF>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <Optimize>false</Optimize>
+    </PropertyGroup>
+    
     <ItemGroup>
         <PackageReference Include="Fluent.Ribbon" Version="9.0.0-rc0278"/>
         <PackageReference Include="MaterialDesignThemes" Version="4.3.0-ci82"/>
         <PackageReference Include="Prism.DryIoc" Version="8.1.97"/>
         <PackageReference Include="SharpVectors.Reloaded" Version="1.7.6"/>
     </ItemGroup>
-
-    <ItemGroup>
-        <Compile Remove="Regions\RibbonRegionAdapter.cs"/>
-        <Compile Remove="Controls\MaterialDesignDialogWindow.cs"/>
-    </ItemGroup>
-
 </Project>
